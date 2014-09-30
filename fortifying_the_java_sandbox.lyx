@@ -1,0 +1,398 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Fortifying the Java Sandbox
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Section
+Background
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Explain Java Sandbox (give example exploit?)
+\end_layout
+
+\begin_layout Plain Layout
+Exploit patterns (see presentation regarding type confusion and privilege
+ escalation)
+\end_layout
+
+\begin_layout Plain Layout
+self-protecting vs defenseless (cite the report where we found the starter
+ list for overly permissive permissions)
+\end_layout
+
+\begin_layout Plain Layout
+Related science:
+\end_layout
+
+\begin_layout Plain Layout
+1.
+ Most Dangerous Code in the World
+\end_layout
+
+\begin_layout Plain Layout
+2.
+ Zero Day Vulnerbilities (Before We Knew It)
+\end_layout
+
+\begin_layout Plain Layout
+3.
+ Password Manager insecurity paper (from Sep 2014)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Metholodogy
+\end_layout
+
+\begin_layout Standard
+While Java exploits tend to follow one of several high-level patterns, the
+ individual vulnerabilities they exploit are diverse in their form and their
+ location in the JRE.
+ Given this complexity, we must understand how benign Java applications
+ interact with the Java sandbox to design justifiable mitigations.
+ The SecurityManager is the means by which applications interact with the
+ Java sandbox, thus we undertook an empirical analysis consisting of static,
+ dynamic, and manual inspections of the open source Java application landscape
+ to investigate uses of the SecurityManager.
+ Our empirical analysis aimed to validate the following hypotheses, roughly
+ categorized by the strength of the mitigation that is possible if the hypothesi
+s is true:
+\series bold
+
+\begin_inset Newline newline
+\end_inset
+
+Weak Hypothesis:
+\series default
+ 
+\shape italic
+Benign applications do not disable the SecurityManager.
+\series bold
+\shape default
+
+\begin_inset Newline newline
+\end_inset
+
+Moderate Hypothesis:
+\series default
+ 
+\shape italic
+Benign applications do not weaken the SecurityManager to allow previously
+ disallowed operations.
+\series bold
+\shape default
+
+\begin_inset Newline newline
+\end_inset
+
+Strong Hypothesis:
+\series default
+ 
+\shape italic
+Benign applications do not change the SecurityManager or the enforced policy
+ in any way if a self-protecting SecurityManager has been set.Benign applications
+ do not change the SecurityManager or the enforced policy in any way if
+ a self-protecting SecurityManager has been set.
+\end_layout
+
+\begin_layout Standard
+We turned to the Qualitas Corpus (QC) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "QualitasCorpus:APSEC:2010"
+
+\end_inset
+
+ and GitHub to form a dataset of applications that use the SecurityManager.
+ To sort out relevant applications in QC we performed a simple grep of each
+ application's source code to find the keyword 
+\shape italic
+SecurityManager
+\shape default
+.
+ Assuming any instance of the keyword was found, we included the application
+ in our dataset.
+ This reduced the overall set of applications to inspect from 112 to 29.
+ While this led to the inclusion of applications that had the keyword in
+ comments or in unit tests that would not appear in production code, these
+ applications were easily sorted out in later steps.
+ We performed a similar process using the GitHub search feature configured
+ to show source code, Java applications, and the most relevant results.
+ At the time of our search, GitHub did not group results by project, thus
+ we searched through the first 20 pages and found 17 projects that used
+ the SecurityManager in code to add to the dataset.
+ While the page limit meant we only looked at a few hundred of the nearly
+ 100,000 results returned, we believe this procedure was sufficient to ensure
+ our dataset is representative of how open source Java applications use
+ the SecurityManager.
+\end_layout
+
+\begin_layout Standard
+We created static and dynamic analysis tools to further sort through the
+ dataset before manually inspecting projects.
+ Our static analysis is a plugin for FindBugs [CITE_FINDBUGS] that uses
+ a dataflow analysis to determine what initialized SecurityManagers may
+ be set as System SecurityManager by calling 
+\family typewriter
+System.setSecurityManager
+\family default
+.
+ We created a dynamic analysis using JVMTI
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+http://docs.oracle.com/javase/7/docs/technotes/guides/jvmti/
+\end_layout
+
+\end_inset
+
+.
+ Our dynamic analysis set a modification watch on the 
+\family typewriter
+security
+\family default
+ field of Java's System class.
+ The security field is a private and static field that stores the SecurityManage
+r object that will be used by all JRE classes when making security policy
+ decisions for the running Java application.
+ The watch printed out the class name, source file name, and line of code
+ where any write to the security field took place.
+ The printed message contained a special notice if the SecurityManager was
+ being set to 
+\family typewriter
+null
+\family default
+.
+ After running both of these tools on each project we were armed with the
+ information required to further narrow our manual inspection efforts: which
+ applications change the SecurityManager, where they make the change, and
+ where SecurityManager objects are initialized.
+\end_layout
+
+\begin_layout Standard
+We split the applications that used the SecurityManager between two reviewers.
+ The reviewers utilized a checklist to ensure that they consistently inspected
+ each application.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Summary-of-checklist"
+
+\end_inset
+
+ provides a summary of the items on our checklist; the full list provides
+ details on carrying out each step.
+ After performing a manual inspection, the reviewer ran the dynamic analysis
+ on the application again, but this time with an emphasis on running executions
+ that were known to exercise the SecurityManager to ensure we didn't miss
+ an important execution.
+ Finally, the reviewer wrote a summary of how the application used the SecurityM
+anager with an emphasis on points that support or reject each hypotheses.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Summary of checklist for manual reviews in the empirical analysis of SecurityMan
+ager usage.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Summary-of-checklist"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Identify call sites for setSecurityManager
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Identify references to SecurityManager objects that reach a call site
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Identify possible values for SecurityManager objects that reach a call site
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Research Questions and Results
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+How commonly are SM's used?
+\end_layout
+
+\begin_layout Plain Layout
+Why do apps use the SM?
+\end_layout
+
+\begin_layout Plain Layout
+What are the common mistakes made by apps using the SM?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mitigations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Embed related work in this section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
