@@ -68,27 +68,9 @@ Fortifying the Java Sandbox
 Introduction
 \end_layout
 
-\begin_layout Section
-Background
-\end_layout
-
 \begin_layout Standard
 \begin_inset Note Comment
 status open
-
-\begin_layout Plain Layout
-Explain Java Sandbox (give example exploit?)
-\end_layout
-
-\begin_layout Plain Layout
-Exploit patterns (see presentation regarding type confusion and privilege
- escalation)
-\end_layout
-
-\begin_layout Plain Layout
-self-protecting vs defenseless (cite the report where we found the starter
- list for overly permissive permissions)
-\end_layout
 
 \begin_layout Plain Layout
 Related science:
@@ -107,6 +89,166 @@ Related science:
 \begin_layout Plain Layout
 3.
  Password Manager insecurity paper (from Sep 2014)
+\end_layout
+
+\begin_layout Plain Layout
+Related science probably makes sense to go right before the flag post paragraph.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Background
+\end_layout
+
+\begin_layout Standard
+The Java sandbox was designed to enable the safe execution of code from
+ untrusted sources.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Sandbox-high-level-summary"
+
+\end_inset
+
+ summarizes components of the sandbox that are relevant to this work.
+ Essentially, when a ClassLoader loads a class from some location (e.g., network,
+ filesystem, etc.) the class is assigned a CodeSource.
+ The CodeSource is used to indicate the origin of the code while it is loaded
+ in the JRE and to associate the class with a ProtectionDomain.
+ ProtectionDomain's segment classes into different groups that are assigned
+ a security policy.
+ Each domain imposes one policy on the classes it contains where a policy
+ includes a set of permissions that grant the contained classes the ability
+ to perform operations such as writing to the filesystem, accessing the
+ network, using certain reflection features, etc.
+ (see a more complete list at CITE_PERMISSIONS_IN_THE_JRE).
+ Each JRE contains a default policy configuration that grants from the local
+ filesystem all permissions but applets a much stricter set of permissions
+ to prevent the applets from performing malicious operations on the host
+ system.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+This probably not the exact graphic we want to use in this paper (too PowerPoint
+y) but we need something like this for this section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename sandbox_overview.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A high-level summary of the Java sandbox as it pertains to this work.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Sandbox-high-level-summary"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To enforce the security policy, a SecurityManager must be set (typically
+ by calling System.setSecurityManager(new SecurityManger()).
+ The SecurityManager acts as the gateway to policy enforcement in the Java
+ sandbox.
+ Whenever Java code wants to ensure a caller has the correct permissions
+ to execute protected code, the callee must query the SecurityManager to
+ ensure that the caller has the correct permissions to perform the protected
+ operation.
+ For example, if an application attempts to use a JRE class to write to
+ a file, the JRE class will ensure that the caller has permission to write
+ to the file before performing the write.
+ When such a query is initiated, the SecurityManager walks the stack frames
+ for the current calling context to ensure every class in the context has
+ the correct permissions or a privileged caller has marked the context as
+ privileged.
+ If the context is not marked as privileged and even one class in the stack
+ frame does not have the correct permissions, the manager will throw a SecurityE
+xception.
+ Stacking walking is discussed in more detail in CITE_STACK_WALKING_SOURCES.
+ Typically a SecurityManager is automatically set by the JRE when a class
+ is loaded using ClassLoaders for sources that are nearly always untrusted
+ such as applets.
+\end_layout
+
+\begin_layout Standard
+Malicious drive-by-downloads using Java applets as the vector were widely
+ reported between 2011 and 2013.
+ While the SecurityManager should prevent applets from performing operations
+ that are useful to a malicious actor, vulnerabilities in privileged JRE
+ classes were leveraged to set the manager to null.
+ The latter operation effectively disables the Java sandbox, thus allowing
+ previously constrained classes to perform any operation that the JRE can
+ perform.
+ These vulnerabilities tend to fall into one of two categories: those that
+ exploit a type confusion vulnerability to set the SecurityManager to null
+ and those that exploit a confused deputy vulnerability in a privileged
+ JRE class to elevate the privileges of a payload class that nulls the SecurityM
+anager.
+
+\series bold
+ In the case of type confusion...
+ In the case of a confused deputy...
+ Essentially all of the recent vulns avoided by cert standard.
+
+\series default
+ In the rest of this paper we concern ourselves with ways to fortify the
+ Java sandbox without breaking backwards compatibility and not with the
+ specifics of particular exploits.
+\end_layout
+
+\begin_layout Standard
+For the purpose of fortifying the sandbox, we distinguish between self-protectin
+g and defenseless SecurityManagers.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+(cite the report where we found the starter list for overly permissive permissio
+ns)
 \end_layout
 
 \end_inset
