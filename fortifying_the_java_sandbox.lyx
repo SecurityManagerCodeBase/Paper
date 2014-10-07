@@ -306,9 +306,7 @@ Strong Hypothesis:
  
 \shape italic
 Benign applications do not change the SecurityManager or the enforced policy
- in any way if a self-protecting SecurityManager has been set.Benign applications
- do not change the SecurityManager or the enforced policy in any way if
- a self-protecting SecurityManager has been set.
+ in any way if a self-protecting SecurityManager has been set.
 \end_layout
 
 \begin_layout Standard
