@@ -126,10 +126,10 @@ reference "fig:Sandbox-high-level-summary"
  to perform operations such as writing to the filesystem, accessing the
  network, using certain reflection features, etc.
  (see a more complete list at CITE_PERMISSIONS_IN_THE_JRE).
- Each JRE contains a default policy configuration that grants from the local
- filesystem all permissions but applets a much stricter set of permissions
- to prevent the applets from performing malicious operations on the host
- system.
+ Each JRE contains a default policy configuration that grants applications
+ from the local filesystem all permissions and applets from the web a strict
+ set of permissions that prevent them from performing malicious operations
+ on the host system.
 \end_layout
 
 \begin_layout Standard
@@ -196,8 +196,8 @@ To enforce the security policy, a SecurityManager must be set (typically
  ensure that the caller has the correct permissions to perform the protected
  operation.
  For example, if an application attempts to use a JRE class to write to
- a file, the JRE class will ensure that the caller has permission to write
- to the file before performing the write.
+ a file (e.g java.io.FileOutputStream), the JRE class will ensure that the
+ caller has permission to write to the file before performing the write.
  When such a query is initiated, the SecurityManager walks the stack frames
  for the current calling context to ensure every class in the context has
  the correct permissions or a privileged caller has marked the context as
@@ -227,7 +227,17 @@ Malicious drive-by-downloads using Java applets as the vector were widely
 anager.
 
 \series bold
- In the case of type confusion...
+ 
+\series default
+In the case of type confusion a vulnerability is exploited to break type
+ safety, thus allowing the attacker to craft an object that can perform
+ operations as if it is an object created from the class of a different
+ type.
+ For example, attackers will craft objects that appear to be either (1)
+ the System class to set the manager to null or (2) a privileged ClassLoader
+ to load a payload class with all permissions.
+
+\series bold
  In the case of a confused deputy...
  Essentially all of the recent vulns avoided by cert standard.
 
