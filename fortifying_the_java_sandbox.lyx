@@ -83,7 +83,7 @@ Related science:
 
 \begin_layout Plain Layout
 2.
- Zero Day Vulnerbilities (Before We Knew It)
+ Zero Day Vulnerabilities (Before We Knew It)
 \end_layout
 
 \begin_layout Plain Layout
@@ -115,17 +115,24 @@ reference "fig:Sandbox-high-level-summary"
 \end_inset
 
  summarizes components of the sandbox that are relevant to this work.
- Essentially, when a ClassLoader loads a class from some location (e.g., network,
- filesystem, etc.) the class is assigned a CodeSource.
- The CodeSource is used to indicate the origin of the code while it is loaded
- in the JRE and to associate the class with a ProtectionDomain.
- ProtectionDomain's segment classes into different groups that are assigned
+ Essentially, when a class loader loads a class from some location (e.g.,
+ network, filesystem, etc.) the class is assigned a code source.
+ The code source is used to indicate the origin of the code while it is
+ loaded in the JRE and to associate the class with a protection domain.
+ Protection domains segment classes into different groups that are assigned
  a security policy.
  Each domain imposes one policy on the classes it contains where a policy
  includes a set of permissions that grant the contained classes the ability
  to perform operations such as writing to the filesystem, accessing the
  network, using certain reflection features, etc.
- (see a more complete list at CITE_PERMISSIONS_IN_THE_JRE).
+ (see a more complete list at 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_permissions_2014"
+
+\end_inset
+
+).
  Each JRE contains a default policy configuration that grants applications
  from the local filesystem all permissions and applets from the web a strict
  set of permissions that prevent them from performing malicious operations
@@ -187,61 +194,125 @@ name "fig:Sandbox-high-level-summary"
 \end_layout
 
 \begin_layout Standard
-To enforce the security policy, a SecurityManager must be set (typically
- by calling System.setSecurityManager(new SecurityManger()).
- The SecurityManager acts as the gateway to policy enforcement in the Java
+To enforce the security policy, a security manager must be set (typically
+ by calling
+\family typewriter
+ System.setSecurityManager(new SecurityManger())
+\family default
+).
+ The security manager acts as the gateway to policy enforcement in the Java
  sandbox.
  Whenever Java code wants to ensure a caller has the correct permissions
- to execute protected code, the callee must query the SecurityManager to
+ to execute protected code, the callee must query the security manager to
  ensure that the caller has the correct permissions to perform the protected
  operation.
  For example, if an application attempts to use a JRE class to write to
  a file (e.g java.io.FileOutputStream), the JRE class will ensure that the
  caller has permission to write to the file before performing the write.
- When such a query is initiated, the SecurityManager walks the stack frames
+ When such a query is initiated, the security manager walks the stack frames
  for the current calling context to ensure every class in the context has
  the correct permissions or a privileged caller has marked the context as
  privileged.
  If the context is not marked as privileged and even one class in the stack
  frame does not have the correct permissions, the manager will throw a SecurityE
 xception.
- Stacking walking is discussed in more detail in CITE_STACK_WALKING_SOURCES.
- Typically a SecurityManager is automatically set by the JRE when a class
- is loaded using ClassLoaders for sources that are nearly always untrusted
+ Stack-based access control is discussed in more detail in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_1998,erlingsson_irm_2000,fournet_stack_2002,pistoia_beyond_2007,zhao_type_2005"
+
+\end_inset
+
+.
+ Typically a security manager is automatically set by the JRE when a class
+ is loaded using class loaders for sources that are nearly always untrusted
  such as applets.
 \end_layout
 
 \begin_layout Standard
 Malicious drive-by-downloads using Java applets as the vector were widely
  reported between 2011 and 2013.
- While the SecurityManager should prevent applets from performing operations
- that are useful to a malicious actor, vulnerabilities in privileged JRE
- classes were leveraged to set the manager to null.
+ While the security manager should prevent applets from performing operations
+ that are useful to a malicious actor, vulnerabilities in the JRE were leveraged
+ to set the manager to null.
  The latter operation effectively disables the Java sandbox, thus allowing
  previously constrained classes to perform any operation that the JRE can
  perform.
  These vulnerabilities tend to fall into one of two categories: those that
- exploit a type confusion vulnerability to set the SecurityManager to null
- and those that exploit a confused deputy vulnerability in a privileged
- JRE class to elevate the privileges of a payload class that nulls the SecurityM
-anager.
+ exploit a type confusion vulnerability to set the security manager to null
+ and those that exploit a confused deputy vulnerability 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hardy_confused_1988"
+
+\end_inset
+
+ in a privileged JRE class to null the security manager.
 
 \series bold
  
-\series default
+\end_layout
+
+\begin_layout Standard
 In the case of type confusion a vulnerability is exploited to break type
  safety, thus allowing the attacker to craft an object that can perform
- operations as if it is an object created from the class of a different
- type.
+ operations as if it is an instantiation of a class of a different type.
  For example, attackers will craft objects that appear to be either (1)
- the System class to set the manager to null or (2) a privileged ClassLoader
- to load a payload class with all permissions.
+ the System class to set the manager to null or (2) a privileged class loader
+ to load a payload class with all permissions (see CVE-2012-0507 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_vulnerability_2012_0507"
+
+\end_inset
+
+).
+ In the case of a confused deputy the exploit uses a privileged class to
+ elevate the payload's privilege or to null the security manager directly
+ or it exploits a privileged class to access a different privileged class
+ that contains a vulnerability that allows the same outcome (see CVE-2012-4681
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_vulnerability_2012_4681"
+
+\end_inset
+
+).
 
 \series bold
- In the case of a confused deputy...
- Essentially all of the recent vulns avoided by cert standard.
+ 
+\end_layout
 
-\series default
+\begin_layout Standard
+Many of the recent vulnerabilities would not have been introduced if the
+ JRE was developed while strictly following 
+\begin_inset Quotes eld
+\end_inset
+
+The CERT Oracle Secure Coding Standard for Java
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "long_cert_2011"
+
+\end_inset
+
+.
+ For example, Svoboda 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
+
+\end_inset
+
+ pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
+ a total of six different secure coding rules and four guidelines.
+ In the typical cases following just one or two of the broken rules and
+ guidelines would have prevented a serious exploit.
  In the rest of this paper we concern ourselves with ways to fortify the
  Java sandbox without breaking backwards compatibility and not with the
  specifics of particular exploits.
@@ -249,16 +320,219 @@ In the case of type confusion a vulnerability is exploited to break type
 
 \begin_layout Standard
 For the purpose of fortifying the sandbox, we distinguish between self-protectin
-g and defenseless SecurityManagers.
+g and defenseless security managers.
+ A 
+\shape italic
+self-protecting
+\shape default
+ security manager enforces a policy that prevents encapsulated classes from
+ changing the manager or the policy it enforces.
+ In contrast, a 
+\shape italic
+defenseless
+\shape default
+ security manager allows encapsulated classes to change the manager or the
+ enforced policy.
+ A defenseless manager does little to improve the security posture of a
+ Java application.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:defenseless-permissions"
+
+\end_inset
+
+ summarizes the set of permissions used to distinguish between self-protecting
+ and defenseless security managers.
+ A manager enforcing a policy that contains even one of the listed permissions
+ is considered to be defenseless.
+ A subset of the permissions in this list were identified in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "security_explorations_2012"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
+\begin_inset Float table
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-(cite the report where we found the starter list for overly permissive permissio
-ns)
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Permission
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Risk
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RuntimePermission(createClassLoader)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Load classes into any protection domain
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RuntimePermission(accessClassInPackage.sun)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Access typically protected and powerful internal classes
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RuntimePermission(setSecurityManager)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change the application's current security manager
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ReflectPermission(suppressAccessChecks)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Allow access to all class fields and methods as if they are public
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+FilePermission(ALL FILES, write | execute)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Write to and execute any file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SecurityPermission(setPolicy)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Modify the application's permissions at will
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A security manager enforcing a policy that contains any permission in this
+ list is defenseless.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:defenseless-permissions"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -267,7 +541,7 @@ ns)
 \end_layout
 
 \begin_layout Section
-Metholodogy
+Methodology
 \end_layout
 
 \begin_layout Standard
@@ -276,10 +550,10 @@ While Java exploits tend to follow one of several high-level patterns, the
  location in the JRE.
  Given this complexity, we must understand how benign Java applications
  interact with the Java sandbox to design justifiable mitigations.
- The SecurityManager is the means by which applications interact with the
+ The security manager is the means by which applications interact with the
  Java sandbox, thus we undertook an empirical analysis consisting of static,
  dynamic, and manual inspections of the open source Java application landscape
- to investigate uses of the SecurityManager.
+ to investigate uses of the security manager.
  Our empirical analysis aimed to validate the following hypotheses, roughly
  categorized by the strength of the mitigation that is possible if the hypothesi
 s is true:
@@ -292,7 +566,7 @@ Weak Hypothesis:
 \series default
  
 \shape italic
-Benign applications do not disable the SecurityManager.
+Benign applications do not disable the security manager.
 \series bold
 \shape default
 
@@ -303,7 +577,7 @@ Moderate Hypothesis:
 \series default
  
 \shape italic
-Benign applications do not weaken the SecurityManager to allow previously
+Benign applications do not weaken the security manager to allow previously
  disallowed operations.
 \series bold
 \shape default
@@ -315,8 +589,8 @@ Strong Hypothesis:
 \series default
  
 \shape italic
-Benign applications do not change the SecurityManager or the enforced policy
- in any way if a self-protecting SecurityManager has been set.
+Benign applications do not change the security manager or the enforced policy
+ in any way if a self-protecting security manager has been set.
 \end_layout
 
 \begin_layout Standard
@@ -327,7 +601,7 @@ key "QualitasCorpus:APSEC:2010"
 
 \end_inset
 
- and GitHub to form a dataset of applications that use the SecurityManager.
+ and GitHub to form a dataset of applications that use the security manager.
  To sort out relevant applications in QC we performed a simple grep of each
  application's source code to find the keyword 
 \shape italic
@@ -344,19 +618,25 @@ SecurityManager
  to show source code, Java applications, and the most relevant results.
  At the time of our search, GitHub did not group results by project, thus
  we searched through the first 20 pages and found 17 projects that used
- the SecurityManager in code to add to the dataset.
+ the security manager in code to add to the dataset.
  While the page limit meant we only looked at a few hundred of the nearly
  100,000 results returned, we believe this procedure was sufficient to ensure
  our dataset is representative of how open source Java applications use
- the SecurityManager.
+ the security manager.
 \end_layout
 
 \begin_layout Standard
 We created static and dynamic analysis tools to further sort through the
  dataset before manually inspecting projects.
- Our static analysis is a plugin for FindBugs [CITE_FINDBUGS] that uses
- a dataflow analysis to determine what initialized SecurityManagers may
- be set as System SecurityManager by calling 
+ Our static analysis is a plugin for FindBugs 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hovemeyer_finding_2004"
+
+\end_inset
+
+ that uses a dataflow analysis to determine what initialized security managers
+ may be set as System security manager by calling 
 \family typewriter
 System.setSecurityManager
 \family default
@@ -382,20 +662,20 @@ r object that will be used by all JRE classes when making security policy
  decisions for the running Java application.
  The watch printed out the class name, source file name, and line of code
  where any write to the security field took place.
- The printed message contained a special notice if the SecurityManager was
- being set to 
+ The printed message contained a special notice if the security manager
+ was being set to 
 \family typewriter
 null
 \family default
 .
  After running both of these tools on each project we were armed with the
  information required to further narrow our manual inspection efforts: which
- applications change the SecurityManager, where they make the change, and
+ applications change the security manager, where they make the change, and
  where SecurityManager objects are initialized.
 \end_layout
 
 \begin_layout Standard
-We split the applications that used the SecurityManager between two reviewers.
+We split the applications that used the security manager between two reviewers.
  The reviewers utilized a checklist to ensure that they consistently inspected
  each application.
  Table 
@@ -409,10 +689,10 @@ reference "tab:Summary-of-checklist"
  details on carrying out each step.
  After performing a manual inspection, the reviewer ran the dynamic analysis
  on the application again, but this time with an emphasis on running executions
- that were known to exercise the SecurityManager to ensure we didn't miss
+ that were known to exercise the security manager to ensure we didn't miss
  an important execution.
- Finally, the reviewer wrote a summary of how the application used the SecurityM
-anager with an emphasis on points that support or reject each hypotheses.
+ Finally, the reviewer wrote a summary of how the application used the security
+ manager with an emphasis on points that support or reject each hypotheses.
 \end_layout
 
 \begin_layout Standard
@@ -439,8 +719,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Summary of checklist for manual reviews in the empirical analysis of SecurityMan
-ager usage.
+Summary of checklist for manual reviews in the empirical analysis of security
+ manager usage.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Summary-of-checklist"
@@ -551,7 +831,7 @@ Embed related work in this section.
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "references"
-options "plain"
+options "ieeetr"
 
 \end_inset
 

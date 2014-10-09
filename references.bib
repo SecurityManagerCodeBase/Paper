@@ -1,3 +1,161 @@
+@article{banerjee_stack-based_2005,
+	title = {Stack-based access control and secure information flow},
+	volume = {15},
+	issn = {1469-7653},
+	url = {http://journals.cambridge.org/article_S0956796804005453},
+	doi = {10.1017/S0956796804005453},
+	abstract = {Access control mechanisms are often used with the intent of enforcing confidentiality and integrity policies, but few rigorous connections have been made between information flow and runtime access control. The Java virtual machine and the .{NET} runtime system provide a dynamic access control mechanism in which permissions are granted to program units and a runtime mechanism checks permissions of code in the calling chain. We investigate a design pattern by which this mechanism can be used to achieve confidentiality and integrity goals: a single interface serves callers of more than one security level and dynamic access control prevents release of high information to low callers. Programs fitting this pattern would be rejected by previous flow analyses. We give a static analysis that admits them, using permission-dependent security types. The analysis is given for a class-based object-oriented language with features including inheritance, dynamic binding, dynamically allocated mutable objects, type casts and recursive types. The analysis is shown to ensure a noninterference property formalizing confidentiality and integrity.},
+	number = {02},
+	urldate = {2014-10-09},
+	journal = {Journal of Functional Programming},
+	author = {Banerjee, Anindya and Naumann, David A.},
+	month = mar,
+	year = {2005},
+	pages = {131--177}
+}
+
+@inproceedings{besson_stack_2004,
+	title = {From stack inspection to access control: {A} security analysis for libraries},
+	shorttitle = {From stack inspection to access control},
+	doi = {10.1109/CSFW.2004.1310732},
+	abstract = {We present a new static analysis for reviewing the security of libraries for systems, such as {JVMs} or the {CLR}, that rely on stack inspection for access control. We describe its implementation for the {CLR}. Our tool inputs a set of libraries plus a description of the permissions granted to unknown, potentially hostile code. It constructs a permission-sensitive call graph, which can be queried to identify potential security defects. It has been applied to large pre-existing libraries. We also develop a new formal model of the essentials of access control in the {CLR} (types, classes and inheritance, access modifiers, permissions, and stack inspection). In this model, we state and prove the correctness of the analysis.},
+	booktitle = {17th {IEEE} Computer Security Foundations Workshop, 2004. Proceedings},
+	author = {Besson, F. and Blanc, T. and Fournet, C. and Gordon, A.D.},
+	month = jun,
+	year = {2004},
+	keywords = {Access Control, access modifier, authorisation, {CLR}, Documentation, formal model, Inspection, Java, {JVM}, object-oriented programming, Permission, permission-sensitive call graph, potentially hostile code, potential security defects, program diagnostics, Runtime library, Security, security analysis, Software libraries, stack inspection, Static Analysis, Testing, Virtual machining},
+	pages = {61--75},
+	file = {IEEE Xplore Abstract Record:/home/mmaass/.mozilla/firefox/4lnfai0n.default/zotero/storage/VHWJUIZS/articleDetails.html:text/html}
+}
+
+@article{d._s._wallach_understanding_1998,
+	title = {Understanding {J}ava {S}tack {I}nspection},
+	issn = {1081-6011},
+	doi = {10.1109/SECPRI.1998.674823},
+	author = {D. S. Wallach, E. W. Felten},
+	year = {1998},
+	pages = {52--63},
+	file = {Understanding Java stack inspection - ResearchGate:/home/mmaass/.mozilla/firefox/4lnfai0n.default/zotero/storage/5W52KMJM/3748086_Understanding_Java_stack_inspection.html:text/html}
+}
+
+@inproceedings{erlingsson_irm_2000,
+	title = {{IRM} {E}nforcement of {J}ava {S}tack {I}nspection},
+	doi = {10.1109/SECPRI.2000.848461},
+	abstract = {Two implementations are given for Java's stack inspection access-control policy. Each implementation is obtained by generating an inlined reference monitor ({IRM}) for a different formulation of the policy. Performance of the implementations is evaluated, and one is found to be competitive with Java's less flexible, {JVM}-resident implementation. The exercise illustrates the power of the {IRM} approach for enforcing security policies},
+	booktitle = {2000 {IEEE} Symposium on Security and Privacy, 2000. S P 2000. Proceedings},
+	author = {{Erlingsson} and Schneider, F.B.},
+	year = {2000},
+	keywords = {authorisation, Binary codes, Computerized monitoring, Computer science, Decoding, distributed programming, Genetics, inlined reference monitor, Inspection, {IRM} approach, {IRM} enforcement, Java, Java stack inspection, {JVM}-resident implementation, Power system security, Runtime, security policy enforcement, stack inspection access-control policy, virtual machines, Virtual machining},
+	pages = {246--255}
+}
+
+
+@inproceedings{fournet_stack_2002,
+	address = {New York, {NY}, {USA}},
+	series = {{POPL} '02},
+	title = {{S}tack {I}nspection: {T}heory and {V}ariants},
+	isbn = {1-58113-450-9},
+	shorttitle = {Stack Inspection},
+	url = {http://doi.acm.org/10.1145/503272.503301},
+	doi = {10.1145/503272.503301},
+	abstract = {Stack inspection is a security mechanism implemented in runtimes such as the {JVM} and the {CLR} to accommodate components with diverse levels of trust. Although stack inspection enables the fine-grained expression of access control policies, it has rather a complex and subtle semantics. We present a formal semantics and an equational theory to explain how stack inspection affects program behaviour and code optimisations. We discuss the security properties enforced by stack inspection, and also consider variants with stronger, simpler properties.},
+	urldate = {2014-10-09},
+	booktitle = {Proceedings of the 29th {ACM} {SIGPLAN}-{SIGACT} Symposium on Principles of Programming Languages},
+	publisher = {{ACM}},
+	author = {Fournet, Cédric and Gordon, Andrew D.},
+	year = {2002},
+	pages = {307--318}
+}
+
+@article{hardy_confused_1988,
+	title = {The {C}onfused {D}eputy: (or {W}hy {C}apabilities {M}ight {H}ave {B}een {I}nvented)},
+	volume = {22},
+	issn = {0163-5980},
+	shorttitle = {The Confused Deputy},
+	url = {http://dl.acm.org/citation.cfm?id=54289.871709},
+	number = {4},
+	urldate = {2014-10-09},
+	journal = {{SIGOPS} Oper. Syst. Rev.},
+	author = {Hardy, Norm},
+	month = oct,
+	year = {1988},
+	pages = {36--38}
+}
+
+@article{hovemeyer_finding_2004,
+	title = {Finding Bugs is Easy},
+	volume = {39},
+	issn = {0362-1340},
+	url = {http://doi.acm.org/10.1145/1052883.1052895},
+	doi = {10.1145/1052883.1052895},
+	abstract = {Many techniques have been developed over the years to automatically find bugs in software. Often, these techniques rely on formal methods and sophisticated program analysis. While these techniques are valuable, they can be difficult to apply, and they aren't always effective in finding real bugs.Bug patterns are code idioms that are often errors. We have implemented automatic detectors for a variety of bug patterns found in Java programs. In this paper, we describe how we have used bug pattern detectors to find serious bugs in several widely used Java applications and libraries. We have found that the effort required to implement a bug pattern detector tends to be low, and that even extremely simple detectors find bugs in real applications.From our experience applying bug pattern detectors to real programs, we have drawn several interesting conclusions. First, we have found that even well tested code written by experts contains a surprising number of obvious bugs. Second, Java (and similar languages) have many language features and {APIs} which are prone to misuse. Finally, that simple automatic techniques can be effective at countering the impact of both ordinary mistakes and misunderstood language features.},
+	number = {12},
+	urldate = {2014-10-09},
+	journal = {{SIGPLAN} Not.},
+	author = {Hovemeyer, David and Pugh, William},
+	month = dec,
+	year = {2004},
+	pages = {92--106}
+}
+
+@book{long_cert_2011,
+	edition = {1st},
+	series = {{SEI} {S}eries in {S}oftware {E}ngineering},
+	title = {The {CERT} {O}racle {S}ecure {C}oding {S}tandard for {J}ava},
+	isbn = {978-0-321-80395-5},
+	publisher = {Addison-Wesley Professional},
+	author = {Long, Fred and Mohindra, Dhruv and Seacord, Robert C. and Sutherland, Dean F. and Svoboda, David},
+	month = sep,
+	year = {2011}
+}
+
+@misc{_permissions_2014,
+	title = {Permissions in the {JDK}},
+	url = {http://docs.oracle.com/javase/7/docs/technotes/guides/security/permissions.html},
+	urldate = {2014-10-09},
+	journal = {Java {SE} Documentation},
+	year = {2014}
+}
+
+@inproceedings{pistoia_beyond_2007,
+	title = {Beyond {S}tack {I}nspection: {A} {U}nified {A}ccess-{C}ontrol and {I}nformation-{F}low {S}ecurity {M}odel},
+	shorttitle = {Beyond Stack Inspection},
+	doi = {10.1109/SP.2007.10},
+	abstract = {Modern component-based systems, such as Java and Microsoft .{NET} common language runtime ({CLR}), have adopted stack-based access control ({SBAC}). Its purpose is to use stack inspection to verify that all the code responsible for a security-sensitive action is sufficiently authorized to perform that action. Previous literature has shown that the security model enforced by {SBAC} is flawed in that stack inspection may allow unauthorized code no longer on the stack to influence the execution of security-sensitive code. A different approach, history-based access control ({HBAC}), is safe but may prevent authorized code from executing a security-sensitive operation if less trusted code was previously executed. In this paper, we formally introduce information-based access control ({IBAC}), a novel security model that verifies that all and only the code responsible for a security-sensitive operation is sufficiently authorized. Given an access-control policy a, we present a mechanism to extract from it an implicit integrity policy i, and we prove that {IBAC} enforces i. Furthermore, we discuss large-scale application code scenarios to which {IBAC} can be successfully applied.},
+	booktitle = {{IEEE} Symposium on Security and Privacy, 2007. {SP} '07},
+	author = {Pistoia, M. and Banerjee, A. and Naumann, D.A.},
+	month = may,
+	year = {2007},
+	keywords = {Access Control, authorisation, authorization, code verification, component-based system, data flow analysis, data integrity, history-based access control, information-flow security model, Information security, Inspection, Java, large-scale systems, Microsoft .{NET} common language runtime, object-oriented programming, Permission, program verification, Runtime, stack inspection, Testing, unified access-control},
+	pages = {149--163}
+}
+
+@techreport{security_explorations_2012,
+	type = {Technical Report},
+	title = {Security {V}ulnerabilities in {J}ava {SE}},
+	url = {http://www.security-explorations.com/materials/se-2012-01-report.pdf},
+	number = {{SE}-2012-01 Project},
+	institution = {Security Explorations},
+	year = {2012}
+}
+
+@misc{svoboda_anatomy_2014,
+	address = {San Fransisco, {CA} {USA}},
+	title = {Anatomy of {A}nother {J}ava {Z}ero-{D}ay {E}xploit},
+	url = {https://oracleus.activeevents.com/2014/connect/sessionDetail.ww?SESSION_ID=2120},
+	author = {Svoboda, David and Toda, Yozo},
+	month = sep,
+	year = {2014}
+}
+
+@misc{svoboda_anatomy_blog_2013,
+	title = {Anatomy of {J}ava {E}xploits},
+	url = {http://www.cert.org/blogs/certcc/post.cfm?EntryID=136},
+	urldate = {2014-10-09},
+	journal = {{CERT}/{CC} {B}log},
+	author = {Svoboda, David}
+}
+
 @inproceedings{QualitasCorpus:APSEC:2010,
   author = {Tempero, Ewan and Anslow, Craig and Dietrich, Jens and Han, Ted and Li, Jing and Lumpe, Markus and Melton, Hayden and Noble, James},
   title = {Qualitas Corpus: A Curated Collection of Java Code for Empirical Studies},
@@ -8,3 +166,32 @@
   doi = {http://dx.doi.org/10.1109/APSEC.2010.46}
 }
 
+@misc{_vulnerability_2012_0507,
+	title = {Vulnerability {S}ummary for {CVE}-2012-0507},
+	url = {http://web.nvd.nist.gulnerability Summary for CVE-2012-468ov/view/vuln/detail?vulnId=CVE-2012-0507},
+	urldate = {2014-10-09},
+	journal = {National {V}ulnerability {D}atabase},
+	month = jun,
+	year = {2012}
+}
+
+@misc{_vulnerability_2012_4681,
+	title = {Vulnerability {S}ummary for {CVE}-2012-4681},
+	url = {http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2012-4681},
+	urldate = {2014-10-09},
+	journal = {National {V}ulnerability {D}atabase},
+	month = oct,
+	year = {2013}
+}
+
+@inproceedings{zhao_type_2005,
+	title = {{T}ype annotations to improve stack-based access control},
+	doi = {10.1109/CSFW.2005.27},
+	abstract = {Java security architecture uses stack-based access control to protect security-sensitive resources. The architecture implements access control checks by inspecting the call stack to compute permission levels, which are used to decide whether to grant access to these resources. This implementation only considers the direct and indirect callers of sensitive methods that directly accesses the resources. However, it does not check the integrity of the variables used in the calls to these methods, nor does it help protect confidential values that might be returned by these calls. This paper proposes a type-based approach to strengthen stack-based access control. We use type annotations to track values originated from untrusted code such that these values will not be inputs to the sensitive methods when they are executed with high level of trust. We also use the annotations to protect confidential values from being accidentally revealed by trusted code. We give a static type system that checks these properties and augments existing dynamic stack-based checks. The hybrid approach is similar to so-called "history-based access control" without its run-time burden.},
+	booktitle = {Computer Security Foundations, 2005. {CSFW}-18 2005. 18th {IEEE} Workshop},
+	author = {Zhao, Tian and Boyland, J.},
+	month = jun,
+	year = {2005},
+	keywords = {Access Control, authorisation, Computer architecture, data encapsulation, history-based access control, Inspection, Java, Java security architecture, Permission, Programming profession, Protection, Runtime, Security, security-sensitive resources, stack-based access control, type annotations, Virtual machining},
+	pages = {197--210}
+}
