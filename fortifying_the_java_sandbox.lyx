@@ -203,9 +203,7 @@ To enforce the security policy, a security manager must be set (typically
  The security manager acts as the gateway to policy enforcement in the Java
  sandbox.
  Whenever Java code wants to ensure a caller has the correct permissions
- to execute protected code, the callee must query the security manager to
- ensure that the caller has the correct permissions to perform the protected
- operation.
+ to execute protected code, the callee must query the security manager.
  For example, if an application attempts to use a JRE class to write to
  a file (e.g java.io.FileOutputStream), the JRE class will ensure that the
  caller has permission to write to the file before performing the write.
@@ -267,11 +265,12 @@ key "_vulnerability_2012_0507"
 \end_inset
 
 ).
- In the case of a confused deputy the exploit uses a privileged class to
- elevate the payload's privilege or to null the security manager directly
- or it exploits a privileged class to access a different privileged class
- that contains a vulnerability that allows the same outcome (see CVE-2012-4681
- 
+ In the case of a confused deputy the exploit often attacks a privileged
+ class that is accessible by any class to obtain an instance of a vulnerable
+ privileged class that is only accessible to other privileged classes.
+ The restricted-access class is targeted because it contains a vulnerability
+ that can be leveraged to execute privileged code, typically to null the
+ security manager (see CVE-2012-4681 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_4681"
@@ -279,9 +278,10 @@ key "_vulnerability_2012_4681"
 \end_inset
 
 ).
-
-\series bold
- 
+ While it is possible for an accessible privileged class to contain a vulnerabil
+ity that will allow an attacker to null the manager more directly, these
+ classes are typically implemented more carefully to avoid these types of
+ issues.
 \end_layout
 
 \begin_layout Standard
@@ -333,8 +333,8 @@ defenseless
 \shape default
  security manager allows encapsulated classes to change the manager or the
  enforced policy.
- A defenseless manager does little to improve the security posture of a
- Java application.
+ A defenseless manager does little to improve the security posture of the
+ encapsulated Java application.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -360,7 +360,7 @@ key "security_explorations_2012"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Tabular
@@ -422,7 +422,7 @@ RuntimePermission(accessClassInPackage.sun)
 \begin_inset Text
 
 \begin_layout Plain Layout
-Access typically protected and powerful internal classes
+Access powerful restricted-access internal classes
 \end_layout
 
 \end_inset
@@ -482,7 +482,7 @@ FilePermission(ALL FILES, write | execute)
 \begin_inset Text
 
 \begin_layout Plain Layout
-Write to and execute any file
+Write to or execute any file
 \end_layout
 
 \end_inset
@@ -553,7 +553,7 @@ While Java exploits tend to follow one of several high-level patterns, the
  The security manager is the means by which applications interact with the
  Java sandbox, thus we undertook an empirical analysis consisting of static,
  dynamic, and manual inspections of the open source Java application landscape
- to investigate uses of the security manager.
+ to investigate benign uses of the security manager.
  Our empirical analysis aimed to validate the following hypotheses, roughly
  categorized by the strength of the mitigation that is possible if the hypothesi
 s is true:
@@ -577,7 +577,7 @@ Moderate Hypothesis:
 \series default
  
 \shape italic
-Benign applications do not weaken the security manager to allow previously
+Benign applications do not weaken the security manager by allowing previously
  disallowed operations.
 \series bold
 \shape default
@@ -617,8 +617,8 @@ SecurityManager
  We performed a similar process using the GitHub search feature configured
  to show source code, Java applications, and the most relevant results.
  At the time of our search, GitHub did not group results by project, thus
- we searched through the first 20 pages and found 17 projects that used
- the security manager in code to add to the dataset.
+ we searched through the first 20 pages and found 17 unique projects that
+ used the security manager to add to the dataset.
  While the page limit meant we only looked at a few hundred of the nearly
  100,000 results returned, we believe this procedure was sufficient to ensure
  our dataset is representative of how open source Java applications use
@@ -825,6 +825,10 @@ Embed related work in this section.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Conclusion
 \end_layout
 
 \begin_layout Standard
