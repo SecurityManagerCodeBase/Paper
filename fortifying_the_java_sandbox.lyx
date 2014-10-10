@@ -946,9 +946,9 @@ JVMTI is a native interface that is intended to be used to create analysis
 
 \begin_layout Standard
 Our agent was written in C++.
- x lines of code were required to enforce the privilege escalation rule
- while y lines of code were required for the SecurityManager rule when counted
- using the Linux tool 
+ 524 lines of code were required to enforce the privilege escalation rule
+ while 377 lines of code were required for the SecurityManager rule when
+ counted using the Linux tool 
 \family typewriter
 wc
 \family default
