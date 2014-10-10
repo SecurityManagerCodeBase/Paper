@@ -260,10 +260,14 @@ key "hardy_confused_1988"
 \begin_layout Standard
 In the case of type confusion a vulnerability is exploited to break type
  safety, thus allowing the attacker to craft an object that can perform
- operations as if it is an instantiation of a class of a different type.
- For example, attackers will craft objects that appear to be either (1)
- the System class to set the manager to null or (2) a privileged class loader
- to load a payload class with all permissions (see CVE-2012-0507 
+ operations as if it is an instantiation of a class of a different type
+ or as if it is an already existing object of a different type.
+ For example, attackers will craft objects that either (1) point to the
+ System class to cause any operation they perform to happen on the real
+ System class, thus allowing them to directly alter the field where the
+ security manager is stored or (2) act as if they have the same type as
+ a privileged class loader to load a payload class with all permissions
+ (see CVE-2012-0507 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_0507"
