@@ -28,6 +28,23 @@
 	file = {IEEE Xplore Abstract Record:/home/mmaass/.mozilla/firefox/4lnfai0n.default/zotero/storage/VHWJUIZS/articleDetails.html:text/html}
 }
 
+@inproceedings{cappos_retaining_2010,
+	address = {New York, {NY}, {USA}},
+	series = {{CCS} '10},
+	title = {Retaining Sandbox Containment Despite Bugs in Privileged Memory-safe Code},
+	isbn = {978-1-4503-0245-6},
+	url = {http://doi.acm.org/10.1145/1866307.1866332},
+	doi = {10.1145/1866307.1866332},
+	abstract = {Flaws in the standard libraries of secure sandboxes represent a major security threat to billions of devices worldwide. The standard libraries are hard to secure because they frequently need to perform low-level operations that are forbidden in untrusted application code. Existing designs have a single, large trusted computing base that contains security checks at the boundaries between trusted and untrusted code. Unfortunately, flaws in the standard library often allow an attacker to escape the security protections of the sandbox. In this work, we construct a Python-based sandbox that has a small, security-isolated kernel. Using a mechanism called a security layer, we migrate privileged functionality into memory-safe code on top of the sandbox kernel while retaining isolation. For example, significant portions of module import, file I/O, serialization, and network communication routines can be provided in security layers. By moving these routines out of the kernel, we prevent attackers from leveraging bugs in these routines to evade sandbox containment. We demonstrate the effectiveness of our approach by studying past bugs in Java's standard libraries and show that most of these bugs would likely be contained in our sandbox},
+	urldate = {2014-10-10},
+	booktitle = {Proceedings of the 17th {ACM} Conference on Computer and Communications Security},
+	publisher = {{ACM}},
+	author = {Cappos, Justin and Dadgar, Armon and Rasley, Jeff and Samuel, Justin and Beschastnikh, Ivan and Barsan, Cosmin and Krishnamurthy, Arvind and Anderson, Thomas},
+	year = {2010},
+	keywords = {containment, layering, sandbox},
+	pages = {212--223}
+}
+
 @article{d._s._wallach_understanding_1998,
 	title = {Understanding {J}ava {S}tack {I}nspection},
 	issn = {1081-6011},
@@ -98,6 +115,24 @@
 	pages = {92--106}
 }
 
+@inproceedings{li_quarantine:_2011,
+	address = {New York, {NY}, {USA}},
+	series = {{PPPJ} '11},
+	title = {Quarantine: {A} {F}ramework to {M}itigate {M}emory {E}rrors in {JNI} {A}pplications},
+	isbn = {978-1-4503-0935-6},
+	shorttitle = {Quarantine},
+	url = {http://doi.acm.org/10.1145/2093157.2093159},
+	doi = {10.1145/2093157.2093159},
+	abstract = {By using Java Native Interface ({JNI}), programmers can integrate Java programs with legacy applications or third-party libraries written in other languages (e.g., C, C++, and Pascal). However, the use of {JNI} can bypass the Java boundary checking and exception-handling mechanisms. Furthermore, its use can violate Java's type-safety feature because of the type-mismatches between native programs and Java programs. As a result, such integration can cause various security issues including heap errors that can be dangerous and difficult to detect. In this paper, we introduce Quarantine, a runtime system that can identify objects accessible by native methods and then migrate these objects to a quarantine area, which is used specifically to host this type of object. The goal of Quarantine is to create a runtime platform that allows programmers to apply existing heap protection techniques that have been designed for native languages but do not work well in the Java domain. We implemented Quarantine in Jikes {RVM} and evaluated its performance using the optimizing compiler. Our results using nine benchmark programs indicate that Quarantine, on average, incurs execution overhead of 14\% and 13\% when the heap is two and five times larger than the minimum heap requirement for an application, respectively.},
+	urldate = {2014-10-10},
+	booktitle = {Proceedings of the 9th International Conference on Principles and Practice of Programming in Java},
+	publisher = {{ACM}},
+	author = {Li, Du and Srisa-an, Witawas},
+	year = {2011},
+	keywords = {heap protection, Java, {JNI}, virtual machine},
+	pages = {1--10}
+}
+
 @book{long_cert_2011,
 	edition = {1st},
 	series = {{SEI} {S}eries in {S}oftware {E}ngineering},
@@ -137,6 +172,45 @@
 	number = {{SE}-2012-01 Project},
 	institution = {Security Explorations},
 	year = {2012}
+}
+
+@inproceedings{siefers_robusta:_2010,
+	address = {New York, {NY}, {USA}},
+	series = {{CCS} '10},
+	title = {Robusta: {T}aming the {N}ative {B}east of the {JVM}},
+	isbn = {978-1-4503-0245-6},
+	shorttitle = {Robusta},
+	url = {http://doi.acm.org/10.1145/1866307.1866331},
+	doi = {10.1145/1866307.1866331},
+	abstract = {Java applications often need to incorporate native-code components for efficiency and for reusing legacy code. However, it is well known that the use of native code defeats Java's security model. We describe the design and implementation of Robusta, a complete framework that provides safety and security to native code in Java applications. Starting from software-based fault isolation ({SFI}), Robusta isolates native code into a sandbox where dynamic linking/loading of libraries in supported and unsafe system modification and confidentiality violations are prevented. It also mediates native system calls according to a security policy by connecting to Java's security manager. Our prototype implementation of Robusta is based {onNative} Client and {OpenJDK}. Experiments in this prototype demonstrate Robusta is effective and efficient, with modest runtime overhead on a set of {JNI} benchmark programs. Robusta can be used to sandbox native libraries used in Java's system classes to prevent attackers from exploiting bugs in the libraries. It can also enable trustworthy execution of mobile Java programs with native libraries. The design of Robusta should also be applicable when other type-safe languages (e.g., C\#, Python) want to ensure safe interoperation with native libraries},
+	urldate = {2014-10-10},
+	booktitle = {Proceedings of the 17th {ACM} Conference on Computer and Communications Security},
+	publisher = {{ACM}},
+	author = {Siefers, Joseph and Tan, Gang and Morrisett, Greg},
+	year = {2010},
+	keywords = {{JNI}, {JVM}, Sandboxing, {SFI}},
+	pages = {201--211}
+}
+
+@incollection{sun_jvm-portable_2012,
+	series = {Lecture Notes in Computer Science},
+	title = {{JVM}-Portable Sandboxing of Java's Native Libraries},
+	copyright = {(c)2012 Springer-Verlag Berlin Heidelberg},
+	isbn = {978-3-642-33166-4, 978-3-642-33167-1},
+	url = {http://link.springer.com/chapter/10.1007/978-3-642-33167-1_48},
+	abstract = {Although Java provides strong support for safety and security, native libraries used in a Java application can open security holes. Previous work, Robusta, puts native libraries in a sandbox to protect the integrity and security of Java. However, Robusta’s implementation modifies the internals of {OpenJDK}, a particular implementation of a Java Virtual Machine ({JVM}). As such, it is not portable to other {JVM} implementations. This paper shows how to make the idea of sandboxing native libraries {JVM}-portable. We present a two-layer approach for sandboxing without modifying the internals of a {JVM}. We also discuss our experience of sandboxing Java’s core native libraries. Experiments show that our approach of {JVM}-portable sandboxing incurs modest performance overhead on {SPECjvm} 2008 benchmark programs.},
+	language = {en},
+	number = {7459},
+	urldate = {2014-10-10},
+	booktitle = {Computer Security - {ESORICS} 2012},
+	publisher = {Springer Berlin Heidelberg},
+	author = {Sun, Mengtao and Tan, Gang},
+	editor = {Foresti, Sara and Yung, Moti and Martinelli, Fabio},
+	month = jan,
+	year = {2012},
+	keywords = {Data Encryption, e-Commerce/e-business, Information Systems Applications (incl. Internet), Management of Computing and Information Systems, software engineering, Systems and Data Security},
+	pages = {842--858},
+	file = {Snapshot:/home/mmaass/.mozilla/firefox/4lnfai0n.default/zotero/storage/VNT5GXRP/978-3-642-33167-1_48.html:text/html}
 }
 
 @misc{svoboda_anatomy_2014,

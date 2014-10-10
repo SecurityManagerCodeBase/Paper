@@ -95,6 +95,12 @@ Related science:
 Related science probably makes sense to go right before the flag post paragraph.
 \end_layout
 
+\begin_layout Plain Layout
+This section should define JVMTI so that we can use it everywhere else but
+ don't explain much about what it is here -- shouldn't be hard to do (cite
+ the docs when doing it)
+\end_layout
+
 \end_inset
 
 
@@ -542,6 +548,13 @@ name "tab:defenseless-permissions"
 
 \begin_layout Section
 Methodology
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Methodology"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -787,6 +800,13 @@ Identify possible values for SecurityManager objects that reach a call site
 
 \begin_layout Section
 Research Questions and Results
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Research-Questions-and"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -805,6 +825,12 @@ Why do apps use the SM?
 What are the common mistakes made by apps using the SM?
 \end_layout
 
+\begin_layout Plain Layout
+This section should cover the rules too (or maybe mitigations should do
+ it up front?) -- call them privilege escalation and SecurityManager rules
+ or change the names for the rules used in Mitigations section
+\end_layout
+
 \end_inset
 
 
@@ -815,11 +841,145 @@ Mitigations
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
+In section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Methodology"
+
+\end_inset
+
+ we discussed (1) three hypotheses that would lead to Java exploit mitigations
+ if validated and (2) how we went about validating them.
+ In section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Research-Questions-and"
+
+\end_inset
+
+ we discussed additional research questions we answered while successfully
+ validating the strong hypothesis and the overall results of our empirical
+ analysis of the open source Java landscape, including two backwards-compatible
+ rules that can be enforced to stop current exploits.
+ In this section we discuss the implementation and evaluation of a tool
+ that implements the privilege escalation and SecurityManager rules.
+ We evaluated this tool in collaboration with a large aerospace company
+ that is currently working on deploying the tool to workstations that belong
+ to highly targeted employees.
+ 
+\end_layout
+
+\begin_layout Subsection
+Implementation Using JVMTI
+\end_layout
+
+\begin_layout Standard
+Prior work has made an effort to prevent exploits in the native libraries
+ used by language runtimes such as Java's 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-portable_2012"
+
+\end_inset
+
+, and the machine learning community has put some effort into detecting
+ malicious applets CITE_THEM.
+ We implemented a tool in JVMTI to pro-actively stop exploits written directly
+ in the Java programming language to exploit other Java code
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Our tool, Java Sandbox Fortifier, is open source and hosted on GitHub at
+ https://github.com/SecurityManagerCodeBase/JavaSandboxFortifier.
+ REVIEWERS: INSPECTING THIS GITHUB PROJECT MAY REVEAL THE AUTHORS' IDENTITIES.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+JVMTI is a native interface that is intended to be used to create analysis
+ tools for Java such as profilers, debugging, monitoring, and thread analysis
+ tools.
+ Tools that use JVMTI are called agents and are attached to a running Java
+ application at some configuration specific point in the application's lifecycle.
+ The interface allows an agent to set capabilities that enable the tool
+ to intercept events such as class and thread creation, field access and
+ modifications, breakpoints, and much more.
+ After acquiring the necessary capabilities, a JVMTI agent registers callbacks
+ for the events they want to receive.
+ JVMTI contains a rich API, hooks for instrumenting the bytecode of loaded
+ classes, and provides access to the JNI, all of which can be used to perform
+ nearly any operation on classes, threads, etc.
+ that a tool may want to perform at the time when an event occurs.
+ Our agent must intercept three events to enforce the privilege escalation
+ and SecurityManager rules.
+ Enforcement of these rules is discussed in detail in subsections below.
+\end_layout
+
+\begin_layout Standard
+Our agent was written in C++.
+ x lines of code were required to enforce the privilege escalation rule
+ while y lines of code were required for the SecurityManager rule when counted
+ using the Linux tool 
+\family typewriter
+wc
+\family default
+.
+ This code constitutes the attack surface for our tool because a malicious
+ class could potentially craft information such as class, field, or method
+ name to exploit an issue in the rule enforcement code when the information
+ is passed to the appropriate callback.
+ The risk here is greatly reduced both by the fact that there is little
+ attack surface to inspect and due to the previously cited work that can
+ be applied to our tool.
+ For example, the software-based fault isolation subset of Robusta 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "siefers_robusta:_2010"
+
+\end_inset
+
+ can be applied to our tool to isolate the effects of an exploit.
+ Using a security kernel for Java similar to Cappo's for Python 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cappos_retaining_2010"
+
+\end_inset
+
+, our tool could be isolated to its own security layer with only access
+ to the information it gets from JVMTI.
+ We did not attempt to apply these solutions because the required tools
+ and code are not publicly available, which would make it difficult if not
+ impossible for most people to use our tool.
+\end_layout
+
+\begin_layout Subsubsection*
+Enforcing the Privilege Escalation Rule
+\end_layout
+
+\begin_layout Subsubsection*
+Enforcing the SecurityManager Rule
+\end_layout
+
+\begin_layout Subsection
+Effectiveness in Stopping Exploits
+\end_layout
+
+\begin_layout Subsection
+Performance
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Embed related work in this section.
+Discuss the different deployment options to work around the slowdown
 \end_layout
 
 \end_inset
