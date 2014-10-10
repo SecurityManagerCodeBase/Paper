@@ -607,6 +607,26 @@ Benign applications do not change the security manager or the enforced policy
 \end_layout
 
 \begin_layout Standard
+If the weak hypothesis is true, we can monitor applications to ensure they
+ do not set the manager to null.
+ This would prevent exploits as they are currently written, but it would
+ be simple for attackers to shift to weakening the policies enforced by
+ the manager or to replace the current manager with one that never throws
+ a SecurityException.
+ Successful validation of the moderate hypothesis would be stronger because
+ it would prevent the manager and policy from being weakened, but the implementa
+tion of this mitigation would be potentially problematic because one would
+ have to determine when a permission can be changed without creating a security
+ vulnerability.
+ This is difficult because it requires context a tool may not have.
+ For example, if a permission to write to a file is replaced by a permission
+ to write to another file, how does a tool know if the policy is weaker
+ or not? The strongest mitigation is possible if the strong hypothesis is
+ true because it achieves a similar effect to the moderate mitigation while
+ being substantially easier to implement.
+\end_layout
+
+\begin_layout Standard
 We turned to the Qualitas Corpus (QC) 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -985,6 +1005,14 @@ Discuss the different deployment options to work around the slowdown
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Limitations
+\end_layout
+
+\begin_layout Standard
+How to write exploits now...
 \end_layout
 
 \begin_layout Section
