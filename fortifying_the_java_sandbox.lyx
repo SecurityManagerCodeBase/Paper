@@ -657,7 +657,7 @@ SecurityManager
  we searched through the first 20 pages and found 17 unique projects that
  used the security manager to add to the dataset.
  While the page limit meant we only looked at a few hundred of the nearly
- 100,000 results returned, we believe this procedure was sufficient to ensure
+ 100,000 files returned, we believe this procedure was sufficient to ensure
  our dataset is representative of how open source Java applications use
  the security manager.
 \end_layout
@@ -842,7 +842,7 @@ How commonly are SM's used?
 \end_layout
 
 \begin_layout Plain Layout
-Why do apps use the SM?
+Why do apps use the SM? - ZC: I like How better than Why
 \end_layout
 
 \begin_layout Plain Layout
@@ -858,6 +858,235 @@ This section should cover the rules too (or maybe mitigations should do
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Non-security uses of the Sandbox
+\end_layout
+
+\begin_layout Standard
+When investigating the applications in both of the datasets, the first surprisin
+g discovery was that applications used in the sandbox in ways that were
+ not designed to increase the security of the system.
+ Specifically, the sandbox was used to enforce architectural constraints
+ when interacting with other applications and to reduce development complexity
+ in web application development.
+\end_layout
+
+\begin_layout Subsubsection
+Enforcing Architecural Constraints 
+\end_layout
+
+\begin_layout Standard
+Java applications commonly call System.exit() (!!!!! not sure how to put
+ it in the correct font - come back to it !!!!!) if the application throws
+ a non-recoverable error condition.
+ However, this error handling method causes problems when applications work
+ together, specifically when an application calls another application which
+ will exit on an error.
+ The problem with this iteraction is that when the called application executes
+ the System.exit() line, the called application kills the calling application
+ as well.
+ The calling application is killed along with the called application because
+ the execution of System.exit() stops the virutal machine instance in which
+ both applications are running.
+\end_layout
+
+\begin_layout Standard
+In many cases, the ability for the called application to kill the calling
+ application is an unintended side-effect.
+ Thus the calling application needs to enforce the architectural constraint
+ that called applications can not terminate the exeuction of the calling
+ application.
+ To enforce this architectural constraint, Java applications that call other
+ applications set a SecurityManager that prevents System.exit() calls.
+ The new SecurityManager usually stops all calls to System.exit() wihile
+ the new SecurityManager is set and, if a SecurityManager was previously
+ set, the new SecurityManager defers all other security checks to the previously
+ set SecurityManager.
+ When the calling application determines that the called application has
+ finished, the calling application usually restores the previously set SecurityM
+anager if one exists.
+\end_layout
+
+\begin_layout Standard
+One example of an application preventing another application from calling
+ System.exit() is Eclipse in Qualitas which calls Ant.
+ When Ant reaches an unrecoverable error condition, Ant will call System.exit()
+ to terminate the compilation.
+ However, Eclipse wants to continue executing and report an error to the
+ user if Ant runs into a error condition.
+ 
+\end_layout
+
+\begin_layout Standard
+(!!!! Need to format this code later !!!!)
+\end_layout
+
+\begin_layout Standard
+691 System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThr
+ead()));
+\end_layout
+
+\begin_layout Standard
+...
+\end_layout
+
+\begin_layout Standard
+703 getCurrentProject().executeTargets(targets); 
+\backslash
+
+\backslash
+Note: Ant is executed on this line
+\end_layout
+
+\begin_layout Standard
+...
+\end_layout
+
+\begin_layout Standard
+721 finally {
+\end_layout
+
+\begin_layout Standard
+...
+\end_layout
+
+\begin_layout Standard
+725 if (System.getSecurityManager() instanceof AntSecurityManager) { 
+\end_layout
+
+\begin_layout Standard
+726 System.setSecurityManager(originalSM); 
+\end_layout
+
+\begin_layout Standard
+727}
+\end_layout
+
+\begin_layout Standard
+Shown in the code above, on line 691 Eclispe sets a SecurityManager to prevent
+ Ant from calling System.exit().
+ After performing some other checks, Ant is executed.
+ Then after handling other error conditions, the original SecurityManager
+ is restored.
+\end_layout
+
+\begin_layout Standard
+Another exmaple of enforcing the architectural constraint occurs in GJMan
+ in the GitHub data set.
+ The code references a blog page discribing this problem and the implemented
+ solution: http://www.jroller.com/ethdsy/entry/disabling_system_exit.
+ The code reads 
+\end_layout
+
+\begin_layout Standard
+9 public static void apply() { 
+\end_layout
+
+\begin_layout Standard
+10 final SecurityManager securityManager = new SecurityManager() { 
+\end_layout
+
+\begin_layout Standard
+11 public void checkPermission( Permission permission ) { 
+\end_layout
+
+\begin_layout Standard
+12 if( permission.getName().startsWith("exitVM") ) { 
+\end_layout
+
+\begin_layout Standard
+13 throw new Exception() ; 
+\end_layout
+
+\begin_layout Standard
+14 } 
+\end_layout
+
+\begin_layout Standard
+15 } 
+\end_layout
+
+\begin_layout Standard
+16 } ; 
+\end_layout
+
+\begin_layout Standard
+17 System.setSecurityManager( securityManager ) ; 
+\end_layout
+
+\begin_layout Standard
+18 }
+\end_layout
+
+\begin_layout Standard
+19 public static void unapply() { 
+\end_layout
+
+\begin_layout Standard
+20 System.setSecurityManager( null ) ; 
+\end_layout
+
+\begin_layout Standard
+21 }
+\end_layout
+
+\begin_layout Standard
+The code contains the allow method which creates a SecurityManager that
+ stops System.exit calls and the sets the created SecurityManager as the
+ Sandbox for the Java Virtual Machine.
+ The file also includes a method to remove the SecurityManager and removes
+ the Sandbox from the Java Virtual Machine.
+ While GJMan does not execute these lines explicilty, GJMan is written to
+ be a library for other applications, so this file is likely used in other
+ applications.
+ 
+\end_layout
+
+\begin_layout Standard
+In total, we found 3 applications using a variation of this technique: Eclipse,
+ GJMan, and AspectJ.
+ While this techinique is useful in applying architectural constraints,
+ and probably the best architectural solution available in Java at the moment,
+ this technique is likely to cause problems when applications desire the
+ sandbox to also enforce security constraints.
+  There are two reasons why this technique can create problems when enforcing
+ security.
+ The first reason is that the sandbox must be set in a state which it can
+ be dynamically removed, otherwise the calling application could never terminate.
+ By allowing the sandbox to be dynamically removed, the application must
+ be carefully written to avoid allowing malicious code to turn off the sandbox.
+\end_layout
+
+\begin_layout Standard
+(**** may need to move the next paragraph in the future ****)
+\end_layout
+
+\begin_layout Standard
+One example of the difficulty of creating a sandbox that can be turned on
+ and off dynamically was found in Freemind.
+ Freemind is a diagram drawing tool that allows users to execute Groovy
+ scripts on the current drawing.
+ The developers of Freemind implemented the sandbox so that it would turn
+ on before executing a user run script and would turn off after the script
+ finished executing.
+ The security goals of the Freemind sandbox was to stop malicious scripts
+ from creating files, executing programs on the machine, and creating network
+ sockets to establish connections with outside entities.
+ Unfortunately, in the version we analyzed (*** should put version somewhere
+ ***), these goals were not achieved.
+ By implementing the SecurityManager in the old SecurityManager style, explicitl
+y removing privileges, multiple dangerous permissions were left, such as
+ the ability to alter private variables with reflection.
+ This privilege made it trivial to remove the currently set SecurityManager
+ inside a Groovy script, thus turning off the sandbox, and allowing the
+ script to create files.
+ The authors submitted a sample exploit to the Freemind development group
+ and made recommendations on how to improve the security of the Freemind
+ sandbox.
+ (*** also should probably mention something about the SecurityManager indirecti
+on ***).
 \end_layout
 
 \begin_layout Section
