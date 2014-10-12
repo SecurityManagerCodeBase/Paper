@@ -1051,10 +1051,9 @@ In total, we found 3 applications using a variation of this technique: Eclipse,
  and probably the best architectural solution available in Java at the moment,
  this technique is likely to cause problems when applications desire the
  sandbox to also enforce security constraints.
-  There are two reasons why this technique can create problems when enforcing
- security.
- The first reason is that the sandbox must be set in a state which it can
- be dynamically removed, otherwise the calling application could never terminate.
+ The reason this technique creates problems when trying to enforce security
+ constraints is that the sandbox must be set in a state which it can be
+ dynamically removed, otherwise the calling application could never terminate.
  By allowing the sandbox to be dynamically removed, the application must
  be carefully written to avoid allowing malicious code to turn off the sandbox.
 \end_layout
@@ -1087,6 +1086,86 @@ y removing privileges, multiple dangerous permissions were left, such as
  sandbox.
  (*** also should probably mention something about the SecurityManager indirecti
 on ***).
+\end_layout
+
+\begin_layout Subsubsection
+Reducing Complexity In Web Application Development
+\end_layout
+
+\begin_layout Standard
+When Java web applications are run inside modern web browser, the application
+ is sandboxed to protect the machine which hosts the browser.
+ When the sandbox is set up, applictions have to work inside the restrictions
+ of the sandox, meaning that applications are only approved to use the permissio
+ns allowed in the standard web browser sandbox.
+ 
+\end_layout
+
+\begin_layout Standard
+To support applications which need to use permissions unavailable in the
+ standard web browser sandbox, web browsers allow Java web applications
+ to run without a sandbox after obtaining user approval.
+ Developers, aware that users can turn off the sandbox, can develop applications
+ in a way that require the sandbox to be explicitly turned off.
+ Specifically, these applications ensure that the sandbox is off at the
+ start of executing the web application.
+ If a default sandbox is set, this check will cause the applications to
+ crash with a SecurityException.
+ Thus, the only way to run the applications are to turn off the sandbox.
+\end_layout
+
+\begin_layout Standard
+In total we found two applications that were using this method: Eclipse
+ in Qualitas and Timelag in Github.
+ Since malicous applications are also known to turn off the sandbox, i.e.
+ null the SecurityManager, it is important to carefully distinquish between
+ a benign application which turns off the sandbox and a malicious application
+ which turns off the sandbox.
+ In the case where the application attempts to turn off the sandbox when
+ starting the application and the application does not attempt to ensure
+ the turn off attempt will succeed, it is determined that the application
+ is trying to check if a sandbox is set and, if so, stop the application.
+ On the other hand, applications which attempt to ensure that the sandbox
+ is turned off, even when one is set, are likely malicious.
+\end_layout
+
+\begin_layout Standard
+Eclipse contains the following code section in the file WebStartMain.java
+\end_layout
+
+\begin_layout Standard
+22 /** * The launcher to start eclipse using webstart.
+ To use this launcher, the client 
+\end_layout
+
+\begin_layout Standard
+23 * must accept to give all security permissions.
+\end_layout
+
+\begin_layout Standard
+...
+\end_layout
+
+\begin_layout Standard
+55 public static void main(String[] args) { 
+\end_layout
+
+\begin_layout Standard
+56 System.setSecurityManager(null); //TODO Hack so that when the classloader
+ loading the fwk is created we don't have funny permissions.
+ This should be revisited.
+ 
+\end_layout
+
+\begin_layout Standard
+The Eclipse comments show that the attempt to turn off the sandbox was done
+ to avoid the permission issues caused by the default sandbox for Java Web
+ Start.
+ Timelag also contains the System.setSecurityManager(null); line as the first
+ line of its main function in the file JTimelag.java but does not contain
+ any comments.
+ So the motivation behind turning off the sandbox at the beginning of execution
+ had to be infered.
 \end_layout
 
 \begin_layout Section
