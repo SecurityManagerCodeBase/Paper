@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass IEEEtran
+\begin_preamble
+\usepackage{fancyvrb}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -21,7 +24,7 @@
 
 \graphics default
 \default_output_format default
-\output_sync 0
+\output_sync 1
 \bibtex_command default
 \index_command default
 \paperfontsize default
@@ -211,7 +214,7 @@ To enforce the security policy, a security manager must be set (typically
  Whenever Java code wants to ensure a caller has the correct permissions
  to execute protected code, the callee must query the security manager.
  For example, if an application attempts to use a JRE class to write to
- a file (e.g java.io.FileOutputStream), the JRE class will ensure that the
+ a file (e.g Java.io.FileOutputStream), the JRE class will ensure that the
  caller has permission to write to the file before performing the write.
  When such a query is initiated, the security manager walks the stack frames
  for the current calling context to ensure every class in the context has
@@ -834,6 +837,24 @@ name "sec:Research-Questions-and"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+% ran our program transformations to remove the reported integer vulnerabilities
+ from 5 open source programs: The program transformations were manually
+ applied to remove the root cause if integer vulnerabilities (Section 
+\backslash
+ref{sssec:realprog}).
+ We then 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Comment
 status open
 
@@ -874,7 +895,7 @@ g discovery was that applications used in the sandbox in ways that were
 \end_layout
 
 \begin_layout Subsubsection
-Enforcing Architecural Constraints 
+Enforcing Architectural Constraints 
 \end_layout
 
 \begin_layout Standard
@@ -884,11 +905,11 @@ Java applications commonly call System.exit() (!!!!! not sure how to put
  However, this error handling method causes problems when applications work
  together, specifically when an application calls another application which
  will exit on an error.
- The problem with this iteraction is that when the called application executes
+ The problem with this interaction is that when the called application executes
  the System.exit() line, the called application kills the calling application
  as well.
  The calling application is killed along with the called application because
- the execution of System.exit() stops the virutal machine instance in which
+ the execution of System.exit() stops the virtual machine instance in which
  both applications are running.
 \end_layout
 
@@ -896,13 +917,13 @@ Java applications commonly call System.exit() (!!!!! not sure how to put
 In many cases, the ability for the called application to kill the calling
  application is an unintended side-effect.
  Thus the calling application needs to enforce the architectural constraint
- that called applications can not terminate the exeuction of the calling
+ that called applications can not terminate the execution of the calling
  application.
  To enforce this architectural constraint, Java applications that call other
  applications set a SecurityManager that prevents System.exit() calls.
- The new SecurityManager usually stops all calls to System.exit() wihile
- the new SecurityManager is set and, if a SecurityManager was previously
- set, the new SecurityManager defers all other security checks to the previously
+ The new SecurityManager usually stops all calls to System.exit() while the
+ new SecurityManager is set and, if a SecurityManager was previously set,
+ the new SecurityManager defers all other security checks to the previously
  set SecurityManager.
  When the calling application determines that the called application has
  finished, the calling application usually restores the previously set SecurityM
@@ -924,48 +945,202 @@ One example of an application preventing another application from calling
 \end_layout
 
 \begin_layout Standard
-691 System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThr
-ead()));
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{table}[h] 
 \end_layout
 
-\begin_layout Standard
-...
+\begin_layout Plain Layout
+
+
+\backslash
+begin{minipage}[b]{0.95
+\backslash
+linewidth} 
 \end_layout
 
-\begin_layout Standard
-703 getCurrentProject().executeTargets(targets); 
+\begin_layout Plain Layout
+
+
+\backslash
+setbox0=
+\backslash
+vbox{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=691,fontsize=
+\backslash
+scriptsize,framesep=2mm]
+\end_layout
+
+\begin_layout Plain Layout
+
+   System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThre
+ad()));
+\end_layout
+
+\begin_layout Plain Layout
+
+   ...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=703,fontsize=
+\backslash
+scriptsize,framesep=2mm]
+\end_layout
+
+\begin_layout Plain Layout
+
+   getCurrentProject().executeTargets(targets); 
 \backslash
 
 \backslash
 Note: Ant is executed on this line
 \end_layout
 
-\begin_layout Standard
-...
+\begin_layout Plain Layout
+
+   ...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=703,fontsize=
+\backslash
+scriptsize,framesep=2mm]
+\end_layout
+
+\begin_layout Plain Layout
+
+   finally {
+\end_layout
+
+\begin_layout Plain Layout
+
+   ...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=725,fontsize=
+\backslash
+scriptsize,framesep=2mm]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   if (System.getSecurityManager() instanceof AntSecurityManager) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+   System.setSecurityManager(originalSM); 
+\end_layout
+
+\begin_layout Plain Layout
+
+   }
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim} 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.1cm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fbox{
+\backslash
+box0} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{minipage} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{table}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-721 finally {
-\end_layout
-
-\begin_layout Standard
-...
-\end_layout
-
-\begin_layout Standard
-725 if (System.getSecurityManager() instanceof AntSecurityManager) { 
-\end_layout
-
-\begin_layout Standard
-726 System.setSecurityManager(originalSM); 
-\end_layout
-
-\begin_layout Standard
-727}
-\end_layout
-
-\begin_layout Standard
-Shown in the code above, on line 691 Eclispe sets a SecurityManager to prevent
+Shown in the code above, on line 691 Eclipse sets a SecurityManager to prevent
  Ant from calling System.exit().
  After performing some other checks, Ant is executed.
  Then after handling other error conditions, the original SecurityManager
@@ -973,63 +1148,102 @@ Shown in the code above, on line 691 Eclispe sets a SecurityManager to prevent
 \end_layout
 
 \begin_layout Standard
-Another exmaple of enforcing the architectural constraint occurs in GJMan
+Another example of enforcing the architectural constraint occurs in GJMan
  in the GitHub data set.
- The code references a blog page discribing this problem and the implemented
+ The code references a blog page describing this problem and the implemented
  solution: http://www.jroller.com/ethdsy/entry/disabling_system_exit.
  The code reads 
 \end_layout
 
 \begin_layout Standard
-9 public static void apply() { 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=703,frame=single,fonts
+ize=
+\backslash
+scriptsize,framesep=2mm,xrightmargin=0.1cm]
 \end_layout
 
-\begin_layout Standard
-10 final SecurityManager securityManager = new SecurityManager() { 
+\begin_layout Plain Layout
+
+   public static void apply() { 
 \end_layout
 
-\begin_layout Standard
-11 public void checkPermission( Permission permission ) { 
+\begin_layout Plain Layout
+
+     final SecurityManager securityManager = new SecurityManager() { 
 \end_layout
 
-\begin_layout Standard
-12 if( permission.getName().startsWith("exitVM") ) { 
+\begin_layout Plain Layout
+
+       public void checkPermission( Permission permission ) { 
 \end_layout
 
-\begin_layout Standard
-13 throw new Exception() ; 
+\begin_layout Plain Layout
+
+         if( permission.getName().startsWith("exitVM") ) { 
 \end_layout
 
-\begin_layout Standard
-14 } 
+\begin_layout Plain Layout
+
+           throw new Exception() ; 
 \end_layout
 
-\begin_layout Standard
-15 } 
+\begin_layout Plain Layout
+
+         } 
 \end_layout
 
-\begin_layout Standard
-16 } ; 
+\begin_layout Plain Layout
+
+       } 
 \end_layout
 
-\begin_layout Standard
-17 System.setSecurityManager( securityManager ) ; 
+\begin_layout Plain Layout
+
+     } ; 
 \end_layout
 
-\begin_layout Standard
-18 }
+\begin_layout Plain Layout
+
+   System.setSecurityManager( securityManager ) ; 
 \end_layout
 
-\begin_layout Standard
-19 public static void unapply() { 
+\begin_layout Plain Layout
+
+   }
 \end_layout
 
-\begin_layout Standard
-20 System.setSecurityManager( null ) ; 
+\begin_layout Plain Layout
+
+   public static void unapply() { 
 \end_layout
 
-\begin_layout Standard
-21 }
+\begin_layout Plain Layout
+
+     System.setSecurityManager( null ) ; 
+\end_layout
+
+\begin_layout Plain Layout
+
+   }
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1038,7 +1252,7 @@ The code contains the allow method which creates a SecurityManager that
  Sandbox for the Java Virtual Machine.
  The file also includes a method to remove the SecurityManager and removes
  the Sandbox from the Java Virtual Machine.
- While GJMan does not execute these lines explicilty, GJMan is written to
+ While GJMan does not execute these lines explicitly, GJMan is written to
  be a library for other applications, so this file is likely used in other
  applications.
  
@@ -1047,8 +1261,8 @@ The code contains the allow method which creates a SecurityManager that
 \begin_layout Standard
 In total, we found 3 applications using a variation of this technique: Eclipse,
  GJMan, and AspectJ.
- While this techinique is useful in applying architectural constraints,
- and probably the best architectural solution available in Java at the moment,
+ While this technique is useful in applying architectural constraints, and
+ probably the best architectural solution available in Java at the moment,
  this technique is likely to cause problems when applications desire the
  sandbox to also enforce security constraints.
  The reason this technique creates problems when trying to enforce security
@@ -1095,9 +1309,9 @@ Reducing Complexity In Web Application Development
 \begin_layout Standard
 When Java web applications are run inside modern web browser, the application
  is sandboxed to protect the machine which hosts the browser.
- When the sandbox is set up, applictions have to work inside the restrictions
- of the sandox, meaning that applications are only approved to use the permissio
-ns allowed in the standard web browser sandbox.
+ When the sandbox is set up, applications have to work inside the restrictions
+ of the sandbox, meaning that applications are only approved to use the
+ permissions allowed in the standard web browser sandbox.
  
 \end_layout
 
@@ -1117,8 +1331,8 @@ To support applications which need to use permissions unavailable in the
 \begin_layout Standard
 In total we found two applications that were using this method: Eclipse
  in Qualitas and Timelag in Github.
- Since malicous applications are also known to turn off the sandbox, i.e.
- null the SecurityManager, it is important to carefully distinquish between
+ Since malicious applications are also known to turn off the sandbox, i.e.
+ null the SecurityManager, it is important to carefully distinguish between
  a benign application which turns off the sandbox and a malicious application
  which turns off the sandbox.
  In the case where the application attempts to turn off the sandbox when
@@ -1134,27 +1348,158 @@ Eclipse contains the following code section in the file WebStartMain.java
 \end_layout
 
 \begin_layout Standard
-22 /** * The launcher to start eclipse using webstart.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{table}[h] 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{minipage}[b]{0.95
+\backslash
+linewidth} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+setbox0=
+\backslash
+vbox{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=22,fontsize=
+\backslash
+scriptsize,framesep=2mm]
+\end_layout
+
+\begin_layout Plain Layout
+
+   /** 
+\end_layout
+
+\begin_layout Plain Layout
+
+   * The launcher to start eclipse using webstart.
  To use this launcher, the client 
 \end_layout
 
-\begin_layout Standard
-23 * must accept to give all security permissions.
+\begin_layout Plain Layout
+
+   * must accept to give all security permissions.
 \end_layout
 
-\begin_layout Standard
-...
+\begin_layout Plain Layout
+
+   ...
 \end_layout
 
-\begin_layout Standard
-55 public static void main(String[] args) { 
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
 \end_layout
 
-\begin_layout Standard
-56 System.setSecurityManager(null); //TODO Hack so that when the classloader
- loading the fwk is created we don't have funny permissions.
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
+\backslash
+scriptsize,firstnumber=55,framesep=2mm,commandchars=
+\backslash
+
+\backslash
+
+\backslash
+{
+\backslash
+}]
+\end_layout
+
+\begin_layout Plain Layout
+
+   public static void main(String[] args) 
+\backslash
+{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+   System.setSecurityManager(null); 
+\backslash
+textbf{//TODO Hack so that when the classloader loading the fwk is created
+ we don't have funny permissions.
  This should be revisited.
- 
+ }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.1cm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fbox{
+\backslash
+box0} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{minipage} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{table}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1165,7 +1510,7 @@ The Eclipse comments show that the attempt to turn off the sandbox was done
  line of its main function in the file JTimelag.java but does not contain
  any comments.
  So the motivation behind turning off the sandbox at the beginning of execution
- had to be infered.
+ had to be inferred.
 \end_layout
 
 \begin_layout Section
