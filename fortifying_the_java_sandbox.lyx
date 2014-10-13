@@ -961,7 +961,6 @@ Java applications commonly call
 \family typewriter
 System.exit()
 \family default
- (!!!!! not sure how to put it in the correct font - come back to it !!!!!)
  if the application throws a non-recoverable error condition.
  However, this error handling method causes problems when applications work
  together, specifically when an application calls another application which
@@ -1019,10 +1018,6 @@ System.exit()
  However, Eclipse wants to continue executing and report an error to the
  user if Ant runs into a error condition.
  
-\end_layout
-
-\begin_layout Standard
-(!!!! Need to format this code later !!!!)
 \end_layout
 
 \begin_layout Standard
