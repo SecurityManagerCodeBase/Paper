@@ -1673,8 +1673,204 @@ key "cappos_retaining_2010"
  impossible for most people to use our tool.
 \end_layout
 
+\begin_layout Standard
+Our agent may be configured to run in enforce mode or in monitor mode.
+ In enforce mode a violation of either rule causes the agent to log the
+ offending behavior and terminate the JVM to which the agent is attached.
+ In monitor mode the agent simply logs the offending behavior but leaves
+ the JVM's execution of the application untouched.
+ In either case a popup is shown to the user to let them know why their
+ Java application was terminated assuming the agent has been configured
+ to show popups (this was made configurable to prevent popups on headless
+ servers).
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:A-popup-from"
+
+\end_inset
+
+ shows an example of a popup from when an exploit was caught breaking the
+ privilege escalation rule.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename rule_violation_popup.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A popup from our agent after it caught an exploit breaking the privilege
+ escalation rule.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:A-popup-from"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection*
 Enforcing the Privilege Escalation Rule
+\end_layout
+
+\begin_layout Standard
+To enforce the privilege escalation rule we must ensure that if a self-protectin
+g security manager has been set, classes do not load or cause the loading
+ of more privileged classes unless the privileged class is in a restricted-acces
+s package.
+ 
+\shape italic
+Restricted-access packages
+\shape default
+ are those that are public but that are not intended to be directly used
+ by typical Java applications because they are meant for internal JRE use
+ only.
+ These packages are listed in the 
+\family typewriter
+package.access
+\family default
+ property in the 
+\family typewriter
+java.security.Security
+\family default
+ class.
+ The only ways to directly access packages listed in this property are to
+ exploit a vulnerability in a class that can access them or to allow access
+ via the 
+\family typewriter
+accessClassInPackage
+\family default
+ permission, but allowing this permission for the protection domain that
+ encapsulates a Java application's classes would make the security manager
+ defenseless (see table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:defenseless-permissions"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+We must allow a class to indirectly load a class in a restricted-access
+ package because classes in these packages are often used by JRE classes
+ that an application is allowed to use.
+ For example, many of the classes in the 
+\family typewriter
+java.lang.reflect
+\family default
+ package are backed by classes in the 
+\family typewriter
+sun
+\family default
+ package, the latter of which is a restricted-access package that contains
+ the internal implementations for many Java features.
+\end_layout
+
+\begin_layout Standard
+Our agent registers for the 
+\family typewriter
+ClassPrepare
+\family default
+ event, which allows it to inspect a class after it is fully loaded but
+ just before any of its code is executed.
+ Assuming the loaded class is not in a restricted-access package, the agent
+ inspects the stack frame to determine which class caused the new class
+ to be loaded.
+ The agent must get the protection domains for both classes, but this can
+ not be done by calling the necessary Java methods
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+Class.getProtectionDomain()
+\end_layout
+
+\end_inset
+
+ via the JNI from the agent because the Java calls will be performed with
+ the same permissions as the application the agent is attached to.
+ Most applications where this operation is relevant do not have the necessary
+ permission to get a protection domain
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+RuntimePermission(
+\begin_inset Quotes eld
+\end_inset
+
+getProtectionDomain
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+ because it would allow a malicious class to probe the policy to determine
+ which, if any, malicious operations it can perform.
+ Due to the fact that JVMTI agents are loaded into the JRE as a shared-library,
+ we instead load libjvm.so (jvm.dll on Microsoft Windows) to call JVM functions
+ without security checks.
+ Our agent leverages this ability to call the 
+\family typewriter
+GetProtectionDomain
+\family default
+ JVM function to get the protection domains.
+ 
+\end_layout
+
+\begin_layout Standard
+With both protection domains the implementation of the agent as of the time
+ of this writing simply checks to see if the loaded class's protection domain
+ has 
+\family typewriter
+AllPermissions
+\family default
+ while the class that caused the loading doesn't.
+ If the latter is true, the privilege escalation rule has been violated.
+ This specific check was used because it is fast, simple, and all privileged
+ class allow 
+\family typewriter
+AllPermissions
+\family default
+ under known circumstances.
+ It would be easy to update this check to instead ensure that every permission
+ in the loaded class's protection domain is also in the other protection
+ domain to handle cases we are currently not aware of.
 \end_layout
 
 \begin_layout Subsubsection*
