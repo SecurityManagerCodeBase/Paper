@@ -899,18 +899,27 @@ Enforcing Architectural Constraints
 \end_layout
 
 \begin_layout Standard
-Java applications commonly call System.exit() (!!!!! not sure how to put
- it in the correct font - come back to it !!!!!) if the application throws
- a non-recoverable error condition.
+Java applications commonly call 
+\family typewriter
+System.exit()
+\family default
+ (!!!!! not sure how to put it in the correct font - come back to it !!!!!)
+ if the application throws a non-recoverable error condition.
  However, this error handling method causes problems when applications work
  together, specifically when an application calls another application which
  will exit on an error.
  The problem with this interaction is that when the called application executes
- the System.exit() line, the called application kills the calling application
- as well.
+ the 
+\family typewriter
+System.exit()
+\family default
+ line, the called application kills the calling application as well.
  The calling application is killed along with the called application because
- the execution of System.exit() stops the virtual machine instance in which
- both applications are running.
+ the execution of 
+\family typewriter
+System.exit()
+\family default
+ stops the virtual machine instance in which both applications are running.
 \end_layout
 
 \begin_layout Standard
@@ -920,10 +929,17 @@ In many cases, the ability for the called application to kill the calling
  that called applications can not terminate the execution of the calling
  application.
  To enforce this architectural constraint, Java applications that call other
- applications set a SecurityManager that prevents System.exit() calls.
- The new SecurityManager usually stops all calls to System.exit() while the
- new SecurityManager is set and, if a SecurityManager was previously set,
- the new SecurityManager defers all other security checks to the previously
+ applications set a SecurityManager that prevents 
+\family typewriter
+System.exit()
+\family default
+ calls.
+ The new SecurityManager usually stops all calls to 
+\family typewriter
+System.exit()
+\family default
+ while the new SecurityManager is set and, if a SecurityManager was previously
+ set, the new SecurityManager defers all other security checks to the previously
  set SecurityManager.
  When the calling application determines that the called application has
  finished, the calling application usually restores the previously set SecurityM
@@ -932,8 +948,15 @@ anager if one exists.
 
 \begin_layout Standard
 One example of an application preventing another application from calling
- System.exit() is Eclipse in Qualitas which calls Ant.
- When Ant reaches an unrecoverable error condition, Ant will call System.exit()
+ 
+\family typewriter
+System.exit()
+\family default
+ is Eclipse in Qualitas which calls Ant.
+ When Ant reaches an unrecoverable error condition, Ant will call 
+\family typewriter
+System.exit()
+\family default
  to terminate the compilation.
  However, Eclipse wants to continue executing and report an error to the
  user if Ant runs into a error condition.
@@ -1141,7 +1164,11 @@ end{table}
 
 \begin_layout Standard
 Shown in the code above, on line 691 Eclipse sets a SecurityManager to prevent
- Ant from calling System.exit().
+ Ant from calling 
+\family typewriter
+System.exit()
+\family default
+.
  After performing some other checks, Ant is executed.
  Then after handling other error conditions, the original SecurityManager
  is restored.
@@ -1506,9 +1533,12 @@ end{table}
 The Eclipse comments show that the attempt to turn off the sandbox was done
  to avoid the permission issues caused by the default sandbox for Java Web
  Start.
- Timelag also contains the System.setSecurityManager(null); line as the first
- line of its main function in the file JTimelag.java but does not contain
- any comments.
+ Timelag also contains the 
+\family typewriter
+System.setSecurityManager(null);
+\family default
+ line as the first line of its main function in the file JTimelag.java but
+ does not contain any comments.
  So the motivation behind turning off the sandbox at the beginning of execution
  had to be inferred.
 \end_layout
