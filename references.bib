@@ -45,6 +45,25 @@
 	pages = {212--223}
 }
 
+@inproceedings{cova_detection_2010,
+	address = {New York, {NY}, {USA}},
+	series = {{WWW} '10},
+	title = {Detection and {A}nalysis of {D}rive-by-download {A}ttacks and {M}alicious {JavaScript} {C}ode},
+	isbn = {978-1-60558-799-8},
+	url = {http://doi.acm.org/10.1145/1772690.1772720},
+	doi = {10.1145/1772690.1772720},
+	abstract = {{JavaScript} is a browser scripting language that allows developers to create sophisticated client-side interfaces for web applications. However, {JavaScript} code is also used to carry out attacks against the user's browser and its extensions. These attacks usually result in the download of additional malware that takes complete control of the victim's platform, and are, therefore, called "drive-by downloads." Unfortunately, the dynamic nature of the {JavaScript} language and its tight integration with the browser make it difficult to detect and block malicious {JavaScript} code. This paper presents a novel approach to the detection and analysis of malicious {JavaScript} code. Our approach combines anomaly detection with emulation to automatically identify malicious {JavaScript} code and to support its analysis. We developed a system that uses a number of features and machine-learning techniques to establish the characteristics of normal {JavaScript} code. Then, during detection, the system is able to identify anomalous {JavaScript} code by emulating its behavior and comparing it to the established profiles. In addition to identifying malicious code, the system is able to support the analysis of obfuscated code and to generate detection signatures for signature-based systems. The system has been made publicly available and has been used by thousands of analysts.},
+	urldate = {2014-10-13},
+	booktitle = {Proceedings of the 19th International Conference on World Wide Web},
+	publisher = {{ACM}},
+	author = {Cova, Marco and Kruegel, Christopher and Vigna, Giovanni},
+	year = {2010},
+	keywords = {Anomaly Detection, drive-by-download attacks, web client exploits},
+	pages = {281--290},
+	file = {ACM Full Text PDF:/home/mmaass/.mozilla/firefox/4lnfai0n.default/zotero/storage/BBFMGAWJ/Cova et al. - 2010 - Detection and Analysis of Drive-by-download Attack.pdf:application/pdf}
+}
+
+
 @article{d._s._wallach_understanding_1998,
 	title = {Understanding {J}ava {S}tack {I}nspection},
 	issn = {1081-6011},
@@ -66,6 +85,21 @@
 	pages = {246--255}
 }
 
+@inproceedings{ford_analyzing_2009,
+	address = {Washington, {DC}, {USA}},
+	series = {{ACSAC} '09},
+	title = {Analyzing and {D}etecting {M}alicious {F}lash {A}dvertisements},
+	isbn = {978-0-7695-3919-5},
+	url = {http://dx.doi.org/10.1109/ACSAC.2009.41},
+	doi = {10.1109/ACSAC.2009.41},
+	abstract = {The amount of dynamic content on the web has been steadily increasing. Scripting languages such as {JavaScript} and browser extensions such as Adobe's Flash have been instrumental in creating web-based interfaces that are similar to those of traditional applications. Dynamic content has also become popular in advertising, where Flash is used to create rich, interactive ads that are displayed on hundreds of millions of computers per day. Unfortunately, the success of Flash-based advertisements and applications attracted the attention of malware authors, who started to leverage Flash to deliver attacks through advertising networks. This paper presents a novel approach whose goal is to automate the analysis of Flash content to identify malicious behavior. We designed and implemented a tool based on the approach, and we tested it on a large corpus of real-world Flash advertisements. The results show that our tool is able to reliably detect malicious Flash ads with limited false positives. We made our tool available publicly and it is routinely used by thousands of users.},
+	urldate = {2014-10-13},
+	booktitle = {Proceedings of the 2009 Annual Computer Security Applications Conference},
+	publisher = {{IEEE} Computer Society},
+	author = {Ford, Sean and Cova, Marco and Kruegel, Christopher and Vigna, Giovanni},
+	year = {2009},
+	pages = {363--372}
+}
 
 @inproceedings{fournet_stack_2002,
 	address = {New York, {NY}, {USA}},
@@ -97,6 +131,22 @@
 	month = oct,
 	year = {1988},
 	pages = {36--38}
+}
+
+@article{helmer_anomalous_2001,
+	title = {Anomalous {I}ntrusion {D}etection {S}ystem for {H}ostile {J}ava {A}pplets},
+	volume = {55},
+	issn = {0164-1212},
+	url = {http://dx.doi.org/10.1016/S0164-1212(00)00076-5},
+	doi = {10.1016/S0164-1212(00)00076-5},
+	number = {3},
+	urldate = {2014-10-13},
+	journal = {J. Syst. Softw.},
+	author = {Helmer, Guy and Wong, Johnny and Madaka, Subhasri},
+	month = jan,
+	year = {2001},
+	keywords = {anomalous intrusion detection, applet, intrusion detection system, machine learning algorithm, misuse intrusion detection, {RIPPER}, system call sequence, vector},
+	pages = {273--286}
 }
 
 @article{hovemeyer_finding_2004,
@@ -163,6 +213,23 @@
 	year = {2007},
 	keywords = {Access Control, authorisation, authorization, code verification, component-based system, data flow analysis, data integrity, history-based access control, information-flow security model, Information security, Inspection, Java, large-scale systems, Microsoft .{NET} common language runtime, object-oriented programming, Permission, program verification, Runtime, stack inspection, Testing, unified access-control},
 	pages = {149--163}
+}
+
+@inproceedings{schlumberger_jarhead_2012,
+	address = {New York, {NY}, {USA}},
+	series = {{ACSAC} '12},
+	title = {Jarhead {A}nalysis and {D}etection of {M}alicious {J}ava {A}pplets},
+	isbn = {978-1-4503-1312-4},
+	url = {http://doi.acm.org/10.1145/2420950.2420988},
+	doi = {10.1145/2420950.2420988},
+	abstract = {Java applets have increasingly been used as a vector to deliver drive-by download attacks that bypass the sandboxing mechanisms of the browser's Java Virtual Machine and compromise the user's environment. Unfortunately, the research community has not given to this problem the attention it deserves, and, as a consequence, the state-of-the-art approaches to the detection of malicious Java applets are based either on simple signatures or on the use of honey-clients, which are both easily evaded. Therefore, we propose a novel approach to the detection of malicious Java applets based on static code analysis. Our approach extracts a number of features from Java applets, and then uses supervised machine learning to produce a classifier. We implemented our approach in a tool, called Jarhead, and we tested its effectiveness on a large, real-world dataset. The results of the evaluation show that, given a sufficiently large training dataset, this approach is able to reliably detect both known and previously-unseen real-world malicious applets.},
+	urldate = {2014-10-13},
+	booktitle = {Proceedings of the 28th Annual Computer Security Applications Conference},
+	publisher = {{ACM}},
+	author = {Schlumberger, Johannes and Kruegel, Christopher and Vigna, Giovanni},
+	year = {2012},
+	pages = {249--257},
+	file = {ACM Full Text PDF:/home/mmaass/.mozilla/firefox/4lnfai0n.default/zotero/storage/NTTUZBC9/Schlumberger et al. - 2012 - Jarhead Analysis and Detection of Malicious Java A.pdf:application/pdf}
 }
 
 @techreport{security_explorations_2012,

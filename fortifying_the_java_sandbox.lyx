@@ -1566,8 +1566,9 @@ reference "sec:Research-Questions-and"
 
  we discussed additional research questions we answered while successfully
  validating the strong hypothesis and the overall results of our empirical
- analysis of the open source Java landscape, including two backwards-compatible
- rules that can be enforced to stop current exploits.
+ analysis of the open source Java landscape.
+ The results included two backwards-compatible rules that can be enforced
+ to stop current exploits.
  In this section we discuss the implementation and evaluation of a tool
  that implements the privilege escalation and SecurityManager rules.
  We evaluated this tool in collaboration with a large aerospace company
@@ -1590,7 +1591,14 @@ key "cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-por
 \end_inset
 
 , and the machine learning community has put some effort into detecting
- malicious applets CITE_THEM.
+ malicious applets and drive-by-downloads using similar technologies 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_jarhead_2012"
+
+\end_inset
+
+.
  We implemented a tool in JVMTI to pro-actively stop exploits written directly
  in the Java programming language to exploit other Java code
 \begin_inset Foot
