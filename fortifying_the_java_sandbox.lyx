@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass IEEEtran
@@ -15,13 +15,13 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 1
@@ -32,15 +32,24 @@
 \use_hyperref false
 \papersize default
 \use_geometry false
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -123,7 +132,7 @@ reference "fig:Sandbox-high-level-summary"
 
 \end_inset
 
- summarizes components of the sandbox that are relevant to this work.
+ summarizes the components of the sandbox that are relevant to this work.
  Essentially, when a class loader loads a class from some location (e.g.,
  network, filesystem, etc.) the class is assigned a code source.
  The code source is used to indicate the origin of the code while it is
@@ -163,10 +172,36 @@ y) but we need something like this for this section.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: I wouldn't use CamelCase here, I would just seperate words with a space
+ (e.g.
+ Class Loader instead of ClassLoader), since these boxes are not all Java
+ classes.
+ Add SecurityManager to the bottom of this graph.
+ Arrow from Policy to SecurityManager should read 
+\begin_inset Quotes eld
+\end_inset
+
+Enforced by the ...
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -179,7 +214,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 A high-level summary of the Java sandbox as it pertains to this work.
@@ -237,7 +272,16 @@ key "banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_199
 \end_layout
 
 \begin_layout Standard
-Malicious drive-by-downloads using Java applets as the vector were widely
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: Show the example payload from your slides here.
+\end_layout
+
+\end_inset
+
+Malicious drive-by downloads using Java applets as the vector were widely
  reported between 2011 and 2013.
  While the security manager should prevent applets from performing operations
  that are useful to a malicious actor, vulnerabilities in the JRE were leveraged
@@ -263,8 +307,8 @@ key "hardy_confused_1988"
 \begin_layout Standard
 In the case of type confusion a vulnerability is exploited to break type
  safety, thus allowing the attacker to craft an object that can perform
- operations as if it is an instantiation of a class of a different type
- or as if it is an already existing object of a different type.
+ operations as if it is an instance of a class of a different type or as
+ if it is an already existing object of a different type.
  For example, attackers will craft objects that either (1) point to the
  System class to cause any operation they perform to happen on the real
  System class, thus allowing them to directly alter the field where the
@@ -278,7 +322,7 @@ key "_vulnerability_2012_0507"
 \end_inset
 
 ).
- In the case of a confused deputy the exploit often attacks a privileged
+ In the case of a confused deputy, the exploit often attacks a privileged
  class that is accessible by any class to obtain an instance of a vulnerable
  privileged class that is only accessible to other privileged classes.
  The restricted-access class is targeted because it contains a vulnerability
@@ -324,7 +368,7 @@ key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
 
  pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
  a total of six different secure coding rules and four guidelines.
- In the typical cases following just one or two of the broken rules and
+ In the typical case, following just one or two of the broken rules and
  guidelines would have prevented a serious exploit.
  In the rest of this paper we concern ourselves with ways to fortify the
  Java sandbox without breaking backwards compatibility and not with the
@@ -367,20 +411,34 @@ key "security_explorations_2012"
 \end_inset
 
 .
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: Give a definition of a descriptive definition of self-protecting and
+ defenseless security managers earlier.
+ Leave this operational defintion here.
+ 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
 <row>
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -529,7 +587,7 @@ Modify the application's permissions at will
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 A security manager enforcing a policy that contains any permission in this
@@ -756,7 +814,7 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Summary of checklist for manual reviews in the empirical analysis of security
@@ -778,8 +836,8 @@ name "tab:Summary-of-checklist"
 \begin_layout Plain Layout
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="1">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="left" valignment="top">
 <row>
 <cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
@@ -1711,7 +1769,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 A popup from our agent after it caught an exploit breaking the privilege
