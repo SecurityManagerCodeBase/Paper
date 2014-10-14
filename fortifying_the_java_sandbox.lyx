@@ -899,7 +899,7 @@ name "sec:Research-Questions-and"
 status open
 
 \begin_layout Plain Layout
-% ran our program transformations to remove the reported integer vulnerabilities
+% ran our transformations to remove the reported integer vulnerabilities
  from 5 open source programs: The program transformations were manually
  applied to remove the root cause if integer vulnerabilities (Section 
 \backslash
