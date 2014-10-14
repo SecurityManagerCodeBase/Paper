@@ -637,6 +637,17 @@ While Java exploits tend to follow one of several high-level patterns, the
 s is true:
 \series bold
 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Call these claims instead and put rationale for why it has the ranking it
+ does inline with the claim.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Newline newline
 \end_inset
 
@@ -2044,6 +2055,91 @@ AllPermissions
 
 \begin_layout Subsubsection*
 Enforcing the SecurityManager Rule
+\end_layout
+
+\begin_layout Standard
+The SecurityManager rule is enforced by registering 
+\family typewriter
+FieldModification
+\family default
+ and 
+\family typewriter
+FieldAccess
+\family default
+ events for the 
+\family typewriter
+security
+\family default
+ field of the 
+\family typewriter
+System
+\family default
+ class.
+ These events notify our agent every time the field is written to or read
+ by any Java code.
+ The agent stores a shadow copy of the application's most recent security
+ manager to have a trusted copy of the manager that can be used to check
+ for violations of this rule.
+ In a typical deployment, the agent is loaded by a JVM before the hosted
+ Java application's code has begun executing, but if a security manager
+ is set on the command line that runs the application, the initial security
+ manager would not be caught by the modification event because the write
+ happens before the agent is loaded.
+ To solve this problem, the shadow copy is first initialized by calling
+ 
+\family typewriter
+System.getSecurityManager()
+\family default
+ when the agent is loaded by a JVM.
+ After this point, the shadow copy is only updated by the modification event,
+ which receives the new manager as a parameter from the JVM.
+\end_layout
+
+\begin_layout Standard
+Modification events are used to detect any change to a self-protecting security
+ manager.
+ When the field is written, the agent checks the shadow copy of the manager.
+ Assuming the shadow copy is 
+\family typewriter
+null
+\family default
+, the agent knows the manager is being set for the first time and checks
+ to see if the new manager is self-protecting.
+ If the manager is self-protecting the agent simply updates the shadow copy,
+ otherwise the agent will also drop into monitor mode when enforce mode
+ is configured because the rules cannot be enforced for applications that
+ use defenseless managers.
+ Future modifications are logged as a violation of the rule and trigger
+ the operation relevant to the agents current mode as discussed above.
+\end_layout
+
+\begin_layout Standard
+Access events are used to detect type confusion attacks against the manager.
+ The modification event we register will not be triggered when the manager
+ is changed due to a type confusion attack.
+ When a type confusion attack is used to masquerade a malicious class as
+ the 
+\family typewriter
+System
+\family default
+ class, the malicious copy will have different internal JVM identifiers
+ for the field that stores the manager and the class itself even though
+ writing to the field in one class also updates it in the other class.
+ The modification and access events are registered for specific field and
+ class identifiers, thus the events are not triggered for operations on
+ the malicious version.
+ We leverage the mismatch this causes between the set security manager and
+ our shadow copy in the access event by checking to see if the manager that
+ was just read has the same internal JVM reference as our shadow copy.
+ When the two references do not match the manager has been changed as the
+ result of a malicious class masquerading as the 
+\family typewriter
+System
+\family default
+ class.
+ Type confusion attacks may also be used to masquerade a class as a privileged
+ class loader to elevate the privileges of a payload class that disables
+ the manager, but this scenario is detected by the modification event.
 \end_layout
 
 \begin_layout Subsection
