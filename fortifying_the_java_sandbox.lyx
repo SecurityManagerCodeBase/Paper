@@ -940,6 +940,95 @@ This section should cover the rules too (or maybe mitigations should do
 \end_layout
 
 \begin_layout Subsection
+How do applications interact with the SecurityManager?
+\end_layout
+
+\begin_layout Standard
+The first goal of our inspection of Java applications was to gain an understandi
+ng of how Java applications interacted with the SecurityManager.
+ To do so, applications were divided into categories based on how the applicatio
+n interacted with the SecurityManager.
+ The categories were: setting a SecurityManager and then changing the applicatio
+n's SecurityManager during execution, setting a SecurityManager and not
+ changing it during execution, interacting with a SecurityManager but never
+ setting one, and not interacting with a SecurityManager at all.
+ The first category, setting a SecurityManager and then chaning the SecurityMana
+ger during execution, means that the applications either sets a different
+ SecurityManager as the SecurityManager for the system, or the application
+ alters the current SecurityManager for the system.
+ Since this category was the most likely category to affect the validity
+ of the hypotheses, the applications in this category are further explained
+ in later sections of this paper.
+ The second category, setting a SecurityManager and not changing it during
+ execution, meant that for each execution path, there was at most one place
+ the application set a SecurityManager.
+ This category supported our hypotheses unless the SecurityManager was explicitl
+y set to null, which would mean an attempt to disable a SecurityManager
+ if one was set previously.
+ Only one application in this category (JTimelag), explicilty set the SecurityMa
+nager to null.
+ This situation is discussed futher in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Reducing-Web-Application-Complexity"
+
+\end_inset
+
+.
+ The third category, interacting with a SecurityManager but never setting
+ one, consists of applications which contained code indicating the application
+ was designed to work inside of a sandbox but never explicitly set up a
+ sandbox in the application.
+ The indicating code consists of adding extra permission checks if the applicati
+on was inside of a sandbox, (**may want to explain doPrivileged here**)
+ using doPrivileged calls to avoid checking the permissions of all classes
+ on the stack, or ensuring that sections of the application would work within
+ a sandbox using test cases.
+ This category was further subdivided into applications which altered execution
+ inside the main application (meaning extra permission check or calling
+ doPrivileged) and applications which only contined test cases that interacted
+ with the sandbox.
+ The only contained test cases category also includes one application, system-ru
+les, which was a utility for test cases.
+ The final category, not interacting with a SecurityManager at all, means
+ that the application either explicitly referenced the SecurityManager in
+ comments but not in the source code or the application defined a class
+ containing the name SecurityManger but the defined class did not extend
+ java.lang.SecurityManager in any way.
+\end_layout
+
+\begin_layout Standard
+After inspecting the 29 applications in the filtered Qualitas dataset, the
+ applications were classified based on how they interacted with the SecurityMana
+ger.
+ (## probably should make this a table ##) Five of the applications set
+ and then changed the SecurityManager as the program was running.
+ Six of the applications contained code that set a SecurityManager, but
+ did not change the SecurityManager after it was set.
+ Thirteen applications contianed code that indicated they were designed
+ to run inside a SecurityManager.
+ Of those thirteen applications, ten contained code in the application that
+ altered behavior when a SecurityManager was set.
+ Three of those thirteen applications only interacted with a SecurityManager
+ in test cases.
+ The remaining five applications in the filtered Qualitas dataset were false
+ positives.
+\end_layout
+
+\begin_layout Standard
+The GitHub dataset also contained similar results.
+ Three of the seventeen applications set and then changed the SecurityManager.
+ One application set a SecurityManager and then did not change the set SecurityM
+anager as the program was running.
+ Eight applications contained code that indicated they were designed to
+ work inside a sandbox if one was set.
+ Of those eight applications, three altered execution if a sandbox was set
+ while five of the eight applications only interacted with a sandbox in
+ test cases.
+ The other five applications were false positives.
+\end_layout
+
+\begin_layout Subsection
 Non-security uses of the Sandbox
 \end_layout
 
@@ -1383,6 +1472,12 @@ on ***).
 \end_layout
 
 \begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Reducing-Web-Application-Complexity"
+
+\end_inset
+
 Reducing Complexity In Web Application Development
 \end_layout
 
