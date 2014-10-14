@@ -1691,6 +1691,27 @@ System.setSecurityManager(null);
  had to be inferred.
 \end_layout
 
+\begin_layout Subsection
+Changing the SecurityManager for Security Purposes
+\end_layout
+
+\begin_layout Standard
+-talk about how applications provide the option to set and remove security
+ managers, also give an example
+\end_layout
+
+\begin_layout Standard
+- talk about how Ant restricts the applications for a small section
+\end_layout
+
+\begin_layout Standard
+- can talk about wildflySecurityManager
+\end_layout
+
+\begin_layout Standard
+- talk about batik and the demo where they set two SMs
+\end_layout
+
 \begin_layout Section
 Mitigations
 \end_layout
