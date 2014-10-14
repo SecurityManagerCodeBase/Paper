@@ -967,7 +967,7 @@ y set to null, which would mean an attempt to disable a SecurityManager
  if one was set previously.
  Only one application in this category (JTimelag), explicilty set the SecurityMa
 nager to null.
- This situation is discussed futher in 
+ This situation is discussed futher in the section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Reducing-Web-Application-Complexity"
