@@ -429,11 +429,12 @@ JSS: Give a definition of a descriptive definition of self-protecting and
 
 \begin_layout Standard
 \begin_inset Float table
-wide false
+wide true
 sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
 <features rotate="0" tabularvalignment="middle">
@@ -444,6 +445,8 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Permission
 \end_layout
 
@@ -453,6 +456,8 @@ Permission
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Risk
 \end_layout
 
@@ -464,7 +469,15 @@ Risk
 \begin_inset Text
 
 \begin_layout Plain Layout
-RuntimePermission(createClassLoader)
+RuntimePermission(
+\begin_inset Quotes eld
+\end_inset
+
+createClassLoader
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \end_inset
@@ -484,7 +497,15 @@ Load classes into any protection domain
 \begin_inset Text
 
 \begin_layout Plain Layout
-RuntimePermission(accessClassInPackage.sun)
+RuntimePermission(
+\begin_inset Quotes eld
+\end_inset
+
+accessClassInPackage.sun
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \end_inset
@@ -504,7 +525,15 @@ Access powerful restricted-access internal classes
 \begin_inset Text
 
 \begin_layout Plain Layout
-RuntimePermission(setSecurityManager)
+RuntimePermission(
+\begin_inset Quotes eld
+\end_inset
+
+setSecurityManager
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \end_inset
@@ -524,7 +553,15 @@ Change the application's current security manager
 \begin_inset Text
 
 \begin_layout Plain Layout
-ReflectPermission(suppressAccessChecks)
+ReflectPermission(
+\begin_inset Quotes eld
+\end_inset
+
+suppressAccessChecks
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \end_inset
@@ -544,7 +581,23 @@ Allow access to all class fields and methods as if they are public
 \begin_inset Text
 
 \begin_layout Plain Layout
-FilePermission(ALL FILES, write | execute)
+FilePermission(
+\begin_inset Quotes eld
+\end_inset
+
+<<ALL FILES>>
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+write, execute
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \end_inset
@@ -553,7 +606,7 @@ FilePermission(ALL FILES, write | execute)
 \begin_inset Text
 
 \begin_layout Plain Layout
-Write to or execute any file
+Write to or execute any file*
 \end_layout
 
 \end_inset
@@ -564,7 +617,15 @@ Write to or execute any file
 \begin_inset Text
 
 \begin_layout Plain Layout
-SecurityPermission(setPolicy)
+SecurityPermission(
+\begin_inset Quotes eld
+\end_inset
+
+setPolicy
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \end_inset
@@ -599,6 +660,11 @@ name "tab:defenseless-permissions"
 \end_inset
 
 
+\begin_inset Newline newline
+\end_inset
+
+*Any combination of write or execute in this permission ensures the manager
+ is defenseless.
 \end_layout
 
 \end_inset
