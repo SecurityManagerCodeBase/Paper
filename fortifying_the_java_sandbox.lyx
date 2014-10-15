@@ -161,7 +161,7 @@ key "_permissions_2014"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -658,9 +658,9 @@ While Java exploits tend to follow one of several high-level patterns, the
  Java sandbox, thus we undertook an empirical analysis consisting of static,
  dynamic, and manual inspections of the open source Java application landscape
  to investigate benign uses of the security manager.
- Our empirical analysis aimed to validate the following hypotheses, roughly
- categorized by the strength of the mitigation that is possible if the hypothesi
-s is true:
+ Our empirical analysis aimed to validate the following claims, roughly
+ categorized by the strength of the mitigation that is possible if the claim
+ is true:
 \series bold
 
 \begin_inset Note Comment
@@ -677,7 +677,7 @@ Call these claims instead and put rationale for why it has the ranking it
 \begin_inset Newline newline
 \end_inset
 
-Weak Hypothesis:
+Weak Claim:
 \series default
  
 \shape italic
@@ -688,7 +688,7 @@ Benign applications do not disable the security manager.
 \begin_inset Newline newline
 \end_inset
 
-Moderate Hypothesis:
+Moderate Claim:
 \series default
  
 \shape italic
@@ -700,7 +700,7 @@ Benign applications do not weaken the security manager by allowing previously
 \begin_inset Newline newline
 \end_inset
 
-Strong Hypothesis:
+Strong Claim:
 \series default
  
 \shape italic
@@ -827,7 +827,7 @@ reference "tab:Summary-of-checklist"
  that were known to exercise the security manager to ensure we didn't miss
  an important execution.
  Finally, the reviewer wrote a summary of how the application used the security
- manager with an emphasis on points that support or reject each hypotheses.
+ manager with an emphasis on points that support or reject each claim.
 \end_layout
 
 \begin_layout Standard
@@ -994,14 +994,14 @@ ger during execution, means that the applications either sets a different
  SecurityManager as the SecurityManager for the system, or the application
  alters the current SecurityManager for the system.
  Since this category was the most likely category to affect the validity
- of the hypotheses, the applications in this category are further explained
+ of the claims, the applications in this category are further explained
  in later sections of this paper.
  The second category, setting a SecurityManager and not changing it during
  execution, meant that for each execution path, there was at most one place
  the application set a SecurityManager.
- This category supported our hypotheses unless the SecurityManager was explicitl
-y set to null, which would mean an attempt to disable a SecurityManager
- if one was set previously.
+ This category supported our claims unless the SecurityManager was explicitly
+ set to null, which would mean an attempt to disable a SecurityManager if
+ one was set previously.
  Only one application in this category (JTimelag), explicilty set the SecurityMa
 nager to null.
  This situation is discussed futher in the section 
@@ -1761,7 +1761,7 @@ reference "sec:Methodology"
 
 \end_inset
 
- we discussed (1) three hypotheses that would lead to Java exploit mitigations
+ we discussed (1) three claims that would lead to Java exploit mitigations
  if validated and (2) how we went about validating them.
  In section 
 \begin_inset CommandInset ref
@@ -1771,8 +1771,8 @@ reference "sec:Research-Questions-and"
 \end_inset
 
  we discussed additional research questions we answered while successfully
- validating the strong hypothesis and the overall results of our empirical
- analysis of the open source Java landscape.
+ validating the strong claim and the overall results of our empirical analysis
+ of the open source Java landscape.
  The results included two backwards-compatible rules that can be enforced
  to stop current exploits.
  In this section we discuss the implementation and evaluation of a tool
