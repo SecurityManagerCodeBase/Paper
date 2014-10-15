@@ -723,7 +723,8 @@ Benign applications do not change the security manager or the enforced policy
 \shape default
 ? The strongest mitigation is possible if the strong claim is true because
  it achieves a similar effect to the moderate mitigation while being substantial
-ly easier to implement.
+ly easier to implement: easily implemented mitigations are more likely to
+ be implemented correctly.
 \end_layout
 
 \begin_layout Standard
