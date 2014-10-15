@@ -158,46 +158,6 @@ key "_permissions_2014"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-This probably not the exact graphic we want to use in this paper (too PowerPoint
-y) but we need something like this for this section.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: I wouldn't use CamelCase here, I would just seperate words with a space
- (e.g.
- Class Loader instead of ClassLoader), since these boxes are not all Java
- classes.
- Add SecurityManager to the bottom of this graph.
- Arrow from Policy to SecurityManager should read 
-\begin_inset Quotes eld
-\end_inset
-
-Enforced by the ...
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -206,7 +166,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset Graphics
 	filename sandbox_overview.png
-	scale 40
+	scale 20
 
 \end_inset
 
