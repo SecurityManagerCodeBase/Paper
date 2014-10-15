@@ -113,6 +113,10 @@ This section should define JVMTI so that we can use it everywhere else but
  the docs when doing it)
 \end_layout
 
+\begin_layout Plain Layout
+Needs to mention JVM to define acronym.
+\end_layout
+
 \end_inset
 
 
@@ -661,71 +665,65 @@ While Java exploits tend to follow one of several high-level patterns, the
  Our empirical analysis aimed to validate the following claims, roughly
  categorized by the strength of the mitigation that is possible if the claim
  is true:
-\series bold
-
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Call these claims instead and put rationale for why it has the ranking it
- does inline with the claim.
 \end_layout
 
-\end_inset
+\begin_layout Standard
 
-
-\begin_inset Newline newline
-\end_inset
-
+\series bold
 Weak Claim:
 \series default
  
 \shape italic
 Benign applications do not disable the security manager.
-\series bold
+
 \shape default
+ If this claim is true, we can monitor applications to ensure they do not
+ set the manager to null.
+ This would prevent exploits as they are currently written, but it would
+ be simple for attackers to shift to weakening the policies enforced by
+ the manager or to replace the current manager with one that never throws
+ a 
+\family typewriter
+SecurityException
+\family default
+.
+\end_layout
 
-\begin_inset Newline newline
-\end_inset
+\begin_layout Standard
 
+\series bold
 Moderate Claim:
 \series default
  
 \shape italic
 Benign applications do not weaken the security manager by allowing previously
  disallowed operations.
-\series bold
+
 \shape default
+ The moderate claim would lead to a stronger mitigation than the weak claims
+ because it would prevent the manager and policy from being weakened, but
+ the implementation of this mitigation would be potentially problematic
+ because one would have to determine when a permission can be changed without
+ creating a security vulnerability.
+ This is difficult because it requires context a tool may not have.
+ For example, if a permission to write to a file is replaced by a permission
+ to write to a different file, how does a tool know if the new policy is
+ weaker, stronger, or exactly as secure?
+\end_layout
 
-\begin_inset Newline newline
-\end_inset
+\begin_layout Standard
 
+\series bold
 Strong Claim:
 \series default
  
 \shape italic
 Benign applications do not change the security manager or the enforced policy
- in any way if a self-protecting security manager has been set.
-\end_layout
-
-\begin_layout Standard
-If the weak hypothesis is true, we can monitor applications to ensure they
- do not set the manager to null.
- This would prevent exploits as they are currently written, but it would
- be simple for attackers to shift to weakening the policies enforced by
- the manager or to replace the current manager with one that never throws
- a SecurityException.
- Successful validation of the moderate hypothesis would be stronger because
- it would prevent the manager and policy from being weakened, but the implementa
-tion of this mitigation would be potentially problematic because one would
- have to determine when a permission can be changed without creating a security
- vulnerability.
- This is difficult because it requires context a tool may not have.
- For example, if a permission to write to a file is replaced by a permission
- to write to another file, how does a tool know if the policy is weaker
- or not? The strongest mitigation is possible if the strong hypothesis is
- true because it achieves a similar effect to the moderate mitigation while
- being substantially easier to implement.
+ in any way if a self-protecting security manager has been set
+\shape default
+? The strongest mitigation is possible if the strong claim is true because
+ it achieves a similar effect to the moderate mitigation while being substantial
+ly easier to implement.
 \end_layout
 
 \begin_layout Standard
