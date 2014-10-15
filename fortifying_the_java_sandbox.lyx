@@ -659,15 +659,15 @@ name "sec:Methodology"
 \end_layout
 
 \begin_layout Standard
-While Java exploits tend to follow one of several high-level patterns, the
- individual vulnerabilities they exploit are diverse in their form and their
- location in the JRE.
+While Java exploits tend to follow only a few high-level operational patterns,
+ the individual vulnerabilities they exploit are diverse both in their form
+ and their location in the JRE.
  Given this complexity, we must understand how benign Java applications
  interact with the Java sandbox to design justifiable mitigations.
  The security manager is the means by which applications interact with the
  Java sandbox, thus we undertook an empirical analysis consisting of static,
  dynamic, and manual inspections of the open source Java application landscape
- to investigate benign uses of the security manager.
+ to investigate benign interactions with the security manager.
  Our empirical analysis aimed to validate the following claims, roughly
  categorized by the strength of the mitigation that is possible if the claim
  is true:
@@ -685,10 +685,9 @@ Benign applications do not disable the security manager.
 \shape default
  If this claim is true, we can monitor applications to ensure they do not
  set the manager to null.
- This would prevent exploits as they are currently written, but it would
- be simple for attackers to shift to weakening the policies enforced by
- the manager or to replace the current manager with one that never throws
- a 
+ This would prevent exploits that use current techniques, but attackers
+ would easily shift to either weakening the policies enforced by the manager
+ or replacing the current manager with one that never throws a 
 \family typewriter
 SecurityException
 \family default
@@ -702,11 +701,10 @@ Moderate Claim:
 \series default
  
 \shape italic
-Benign applications do not weaken the security manager by allowing previously
- disallowed operations.
+Benign applications do not weaken the security manager.
 
 \shape default
- The moderate claim would lead to a stronger mitigation than the weak claims
+ The moderate claim would lead to a stronger mitigation than the weak claim
  because it would prevent the manager and policy from being weakened, but
  the implementation of this mitigation would be potentially problematic
  because one would have to determine when a permission can be changed without
@@ -727,9 +725,9 @@ Strong Claim:
 Benign applications do not change the security manager or the enforced policy
  in any way if a self-protecting security manager has been set
 \shape default
-? The strongest mitigation is possible if the strong claim is true because
- it achieves a similar effect to the moderate mitigation while being substantial
-ly easier to implement: easily implemented mitigations are more likely to
+? The strongest mitigation is possible if this claim is true because it
+ achieves a similar effect to the moderate mitigation while being substantially
+ easier to implement: easily implemented mitigations are more likely to
  be implemented correctly.
 \end_layout
 
@@ -751,9 +749,9 @@ SecurityManager
  Assuming any instance of the keyword was found, we included the application
  in our dataset.
  This reduced the overall set of applications to inspect from 112 to 29.
- While this led to the inclusion of applications that had the keyword in
- comments or in unit tests that would not appear in production code, these
- applications were easily sorted out in later steps.
+ This led to the inclusion of applications that had the keyword in comments
+ or in unit tests that would not appear in production code, but these applicatio
+ns were easily sorted out in later steps.
  We performed a similar process using the GitHub search feature configured
  to show source code, Java applications, and the most relevant results.
  At the time of our search, GitHub did not group results by project, thus
@@ -775,12 +773,12 @@ key "hovemeyer_finding_2004"
 
 \end_inset
 
- that uses a dataflow analysis to determine what initialized security managers
+ that uses a dataflow analysis to determine which initialized security managers
  may be set as System security manager by calling 
 \family typewriter
 System.setSecurityManager
 \family default
-.
+().
  We created a dynamic analysis using JVMTI
 \begin_inset Foot
 status collapsed
@@ -796,9 +794,16 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/jvmti/
 \family typewriter
 security
 \family default
- field of Java's System class.
- The security field is a private and static field that stores the SecurityManage
-r object that will be used by all JRE classes when making security policy
+ field of Java's 
+\family typewriter
+System
+\family default
+ class.
+ The security field is a private and static field that stores the 
+\family typewriter
+SecurityManager
+\family default
+ object that will be used by all JRE classes when making security policy
  decisions for the running Java application.
  The watch printed out the class name, source file name, and line of code
  where any write to the security field took place.
@@ -810,8 +815,9 @@ null
 .
  After running both of these tools on each project we were armed with the
  information required to further narrow our manual inspection efforts: which
- applications change the security manager, where they make the change, and
- where SecurityManager objects are initialized.
+ applications change the security manager, where they make the change, which
+ changes are likely to invalidate a claim, and where SecurityManager objects
+ are initialized.
 \end_layout
 
 \begin_layout Standard
@@ -832,7 +838,7 @@ reference "tab:Summary-of-checklist"
  that were known to exercise the security manager to ensure we didn't miss
  an important execution.
  Finally, the reviewer wrote a summary of how the application used the security
- manager with an emphasis on points that support or reject each claim.
+ manager with an emphasis on points that validate or invalidate each claim.
 \end_layout
 
 \begin_layout Standard
