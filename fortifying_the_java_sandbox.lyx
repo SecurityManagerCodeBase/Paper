@@ -1778,7 +1778,7 @@ reference "sec:Research-Questions-and"
  that implements the privilege escalation and SecurityManager rules.
  We evaluated this tool in collaboration with a large aerospace company
  that is currently working on deploying the tool to workstations that belong
- to highly targeted employees.
+ to employees that are often the subject of targeted attacks.
  
 \end_layout
 
@@ -1796,7 +1796,8 @@ key "cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-por
 \end_inset
 
 , and the machine learning community has put some effort into detecting
- malicious applets and drive-by-downloads using similar technologies 
+ exploits delivered via drive-by-downloads using Java applets and similar
+ technologies 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_jarhead_2012"
@@ -1805,7 +1806,7 @@ key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_
 
 .
  We implemented a tool in JVMTI to pro-actively stop exploits written directly
- in the Java programming language to exploit other Java code
+ in the Java programming language to exploit vulnerable Java code
 \begin_inset Foot
 status collapsed
 
@@ -1818,12 +1819,14 @@ Our tool, Java Sandbox Fortifier, is open source and hosted on GitHub at
 \end_inset
 
 .
+ In particular, our tool focuses on fortifying the Java sandbox to reduce
+ the probability that the sandbox will be successfully bypassed in an attack.
 \end_layout
 
 \begin_layout Standard
-JVMTI is a native interface that is intended to be used to create analysis
- tools for Java such as profilers, debugging, monitoring, and thread analysis
- tools.
+JVMTI is a native interface used to access JVM operations that are intended
+ to be used to create analysis tools such as profilers, debuggers, monitors,
+ and thread analysers.
  Tools that use JVMTI are called agents and are attached to a running Java
  application at some configuration specific point in the application's lifecycle.
  The interface allows an agent to set capabilities that enable the tool
@@ -1831,12 +1834,24 @@ JVMTI is a native interface that is intended to be used to create analysis
  modifications, breakpoints, and much more.
  After acquiring the necessary capabilities, a JVMTI agent registers callbacks
  for the events they want to receive.
- JVMTI contains a rich API, hooks for instrumenting the bytecode of loaded
- classes, and provides access to the JNI, all of which can be used to perform
- nearly any operation on classes, threads, etc.
+ JVMTI provides a rich API, hooks for instrumenting the bytecode of loaded
+ classes, and access to the JNI, all of which can be used to perform nearly
+ any operation on classes, threads, etc.
  that a tool may want to perform at the time when an event occurs.
  Our agent must intercept three events to enforce the privilege escalation
- and SecurityManager rules.
+ and SecurityManager rules: 
+\family typewriter
+ClassPrepare
+\family default
+, 
+\family typewriter
+FieldAccess
+\family default
+, and 
+\family typewriter
+FieldModification
+\family default
+.
  Enforcement of these rules is discussed in detail in subsections below.
 \end_layout
 
@@ -1851,7 +1866,7 @@ wc
 .
  This code constitutes the attack surface for our tool because a malicious
  class could potentially craft information such as class, field, or method
- name to exploit an issue in the rule enforcement code when the information
+ names to exploit an issue in the rule enforcement code when the information
  is passed to the appropriate callback.
  The risk here is greatly reduced both by the fact that there is little
  attack surface to inspect and due to the previously cited work that can
@@ -1871,23 +1886,22 @@ key "cappos_retaining_2010"
 
 \end_inset
 
-, our tool could be isolated to its own security layer with only access
+, our tool could be isolated to its own security layer with access only
  to the information it gets from JVMTI.
  We did not attempt to apply these solutions because the required tools
- and code are not publicly available, which would make it difficult if not
- impossible for most people to use our tool.
+ and code are not publicly available, which would make it difficult, if
+ not impossible, for most people to adopt our tool.
 \end_layout
 
 \begin_layout Standard
-Our agent may be configured to run in enforce mode or in monitor mode.
+Our agent may be configured to run in enforce or monitor mode.
  In enforce mode a violation of either rule causes the agent to log the
  offending behavior and terminate the JVM to which the agent is attached.
- In monitor mode the agent simply logs the offending behavior but leaves
- the JVM's execution of the application untouched.
- In either case a popup is shown to the user to let them know why their
- Java application was terminated assuming the agent has been configured
- to show popups (this was made configurable to prevent popups on headless
- servers).
+ In monitor mode the agent logs the offending behavior but leaves the JVM's
+ execution of the application untouched.
+ In either case, a popup is shown to the user to let them know why their
+ Java application was terminated when the agent has been configured to show
+ popups (this was made configurable to prevent popups on headless servers).
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1895,8 +1909,8 @@ reference "fig:A-popup-from"
 
 \end_inset
 
- shows an example of a popup from when an exploit was caught breaking the
- privilege escalation rule.
+ shows an example of a popup displayed after an exploit was caught breaking
+ the privilege escalation rule.
 \end_layout
 
 \begin_layout Standard
