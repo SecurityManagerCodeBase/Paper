@@ -404,6 +404,31 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A security manager enforcing a policy that contains any permission in this
+ list is defenseless.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:defenseless-permissions"
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+*Any combination of write or execute in this permission ensures the manager
+ is defenseless.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
@@ -611,31 +636,6 @@ Modify the application's permissions at will
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-A security manager enforcing a policy that contains any permission in this
- list is defenseless.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:defenseless-permissions"
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-*Any combination of write or execute in this permission ensures the manager
- is defenseless.
-\end_layout
 
 \end_inset
 
@@ -2299,6 +2299,30 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A summary of CVE's we ran exploits for and how effective the agent was at
+ stopping them in the following conditions: (1) just the privilege escalation
+ rule enforced and (2) both rules enforced.
+ Blocked exploits were stopped by the agent before the malicious payload
+ could run, but fully executed exploits were able to complete their malicious
+ operations.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Exploit-experiment-summary"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="3">
@@ -2632,30 +2656,6 @@ Blocked
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-A summary of CVE's we ran exploits for and how effective the agent was at
- stopping them in the following conditions: (1) just the privilege escalation
- rule enforced and (2) both rules enforced.
- Blocked exploits were stopped by the agent before the malicious payload
- could run, but fully executed exploits were able to complete their malicious
- operations.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Exploit-experiment-summary"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
