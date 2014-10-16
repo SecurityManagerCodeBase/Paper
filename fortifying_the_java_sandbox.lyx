@@ -242,9 +242,27 @@ key "banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_199
 \end_inset
 
 .
- Typically a security manager is immediately set when a class is loaded
- using class loaders for sources that are nearly always untrusted such as
- applets.
+ 
+\end_layout
+
+\begin_layout Standard
+Typically a security manager is immediately set when a class is loaded using
+ class loaders for sources that are nearly always untrusted such as applets.
+ In the case of applets and applications that use the Java Network Launch
+ Protocol, the managers are self-protecting in the sense that they don't
+ let malicious code change how the sandbox operates or what it constrains.
+ It is possible for a manager to be defenseless, which can be useful when
+ the manager is being used for purposes that are not security related.
+ For example, a unit test may use the manager and dynamically change the
+ enforced policy to inject faults into the tested application.
+ We discuss this type of use case and others in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Research-Questions-and"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -261,25 +279,16 @@ null
  previously constrained classes to perform any operation that the JRE can
  perform.
  Figure 
-\begin_inset CommandInset label
-LatexCommand label
-name "Malicious-drive-by-downloads"
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:A-typical-exploit-payload"
 
 \end_inset
 
- shows a typical payload for an exploit that disables the security manager
- before performing its malicious operations.
- 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Explain exploit in sentence.
-\end_layout
-
-\end_inset
-
-These vulnerabilities tend to fall into one of two categories: those that
+ shows a typical payload.
+ An exploit will elevate this payload's privileges to allow it to disable
+ the security manager and perform its malicious operations.
+ These vulnerabilities tend to fall into one of two categories: those that
  exploit a type confusion vulnerability to set the security manager to 
 \family typewriter
 null
@@ -305,7 +314,7 @@ null
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -463,14 +472,20 @@ name "fig:A-typical-exploit-payload"
 \begin_layout Standard
 In the case of type confusion a vulnerability is exploited to break type
  safety, thus allowing the attacker to craft an object that can perform
- operations as if it is an instance of a class of a different type or as
- if it is an already existing object of a different type.
+ operations as if it is an instance of a class of a different type.
  For example, attackers will craft objects that either (1) point to the
- System class to cause any operation they perform to happen on the real
- System class, thus allowing them to directly alter the field where the
- security manager is stored or (2) act as if they have the same type as
- a privileged class loader to load a payload class with all permissions
- (see CVE-2012-0507 
+ 
+\family typewriter
+System
+\family default
+ class to cause any operation they perform to happen on the real 
+\family typewriter
+System
+\family default
+ class, thus allowing them to directly alter the field where the security
+ manager is stored or (2) act as if they have the same type as a privileged
+ class loader to load a payload class with all permissions (see CVE-2012-0507
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_0507"
@@ -482,8 +497,8 @@ key "_vulnerability_2012_0507"
  class that is accessible by any class to obtain an instance of a vulnerable
  privileged class that is only accessible to other privileged classes.
  The restricted-access class is targeted because it contains a vulnerability
- that can be leveraged to execute privileged code, typically to null the
- security manager (see CVE-2012-4681 
+ that can be leveraged to execute privileged code, typically to disable
+ the security manager (see CVE-2012-4681 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_4681"
@@ -492,7 +507,7 @@ key "_vulnerability_2012_4681"
 
 ).
  While it is possible for an accessible privileged class to contain a vulnerabil
-ity that will allow an attacker to null the manager more directly, these
+ity that will allow an attacker to disable the manager more directly, these
  classes are typically implemented more carefully to avoid these types of
  issues.
 \end_layout
@@ -558,7 +573,7 @@ reference "tab:defenseless-permissions"
  summarizes the set of permissions used to distinguish between self-protecting
  and defenseless security managers.
  A manager enforcing a policy that contains even one of the listed permissions
- is considered to be defenseless.
+ is defenseless.
  A subset of the permissions in this list were identified in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -568,19 +583,6 @@ key "security_explorations_2012"
 
 .
  
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: Give a definition of a descriptive definition of self-protecting and
- defenseless security managers earlier.
- Leave this operational defintion here.
- 
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
