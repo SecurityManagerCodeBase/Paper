@@ -133,8 +133,7 @@ Background
 \end_layout
 
 \begin_layout Standard
-The Java sandbox was designed to enable the safe execution of code from
- untrusted sources.
+The Java sandbox was designed to safely execute code from untrusted sources.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -147,9 +146,9 @@ reference "fig:Sandbox-high-level-summary"
  network, filesystem, etc.) the class is assigned a code source.
  The code source is used to indicate the origin of the code while it is
  loaded in the JRE and to associate the class with a protection domain.
- Protection domains segment classes into different groups that are assigned
- a security policy.
- Each domain imposes one policy on the classes it contains where a policy
+ Protection domains segment the classes in an application into different
+ groups that are assigned a security policy.
+ Each domain imposes one policy on the classes it contains, where a policy
  includes a set of permissions that grant the contained classes the ability
  to perform operations such as writing to the filesystem, accessing the
  network, using certain reflection features, etc.
@@ -219,15 +218,22 @@ To enforce the security policy, a security manager must be set (typically
  Whenever Java code wants to ensure a caller has the correct permissions
  to execute protected code, the callee must query the security manager.
  For example, if an application attempts to use a JRE class to write to
- a file (e.g Java.io.FileOutputStream), the JRE class will ensure that the
- caller has permission to write to the file before performing the write.
- When such a query is initiated, the security manager walks the stack frames
+ a file (e.g 
+\family typewriter
+java.io.FileOutputStream
+\family default
+), the JRE class will ensure that the caller has permission to write to
+ the file before performing the write.
+ When such a query is initiated, the security manager walks the stack frame
  for the current calling context to ensure every class in the context has
  the correct permissions or a privileged caller has marked the context as
  privileged.
  If the context is not marked as privileged and even one class in the stack
- frame does not have the correct permissions, the manager will throw a SecurityE
-xception.
+ frame does not have the correct permissions, the manager will throw a 
+\family typewriter
+SecurityException
+\family default
+.
  Stack-based access control is discussed in more detail in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -236,31 +242,48 @@ key "banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_199
 \end_inset
 
 .
- Typically a security manager is automatically set by the JRE when a class
- is loaded using class loaders for sources that are nearly always untrusted
- such as applets.
+ Typically a security manager is immediately set when a class is loaded
+ using class loaders for sources that are nearly always untrusted such as
+ applets.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: Show the example payload from your slides here.
-\end_layout
-
-\end_inset
-
 Malicious drive-by downloads using Java applets as the vector were widely
  reported between 2011 and 2013.
  While the security manager should prevent applets from performing operations
  that are useful to a malicious actor, vulnerabilities in the JRE were leveraged
- to set the manager to null.
+ to set the manager to 
+\family typewriter
+null
+\family default
+.
  The latter operation effectively disables the Java sandbox, thus allowing
  previously constrained classes to perform any operation that the JRE can
  perform.
- These vulnerabilities tend to fall into one of two categories: those that
- exploit a type confusion vulnerability to set the security manager to null
+ Figure 
+\begin_inset CommandInset label
+LatexCommand label
+name "Malicious-drive-by-downloads"
+
+\end_inset
+
+ shows a typical payload for an exploit that disables the security manager
+ before performing its malicious operations.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Explain exploit in sentence.
+\end_layout
+
+\end_inset
+
+These vulnerabilities tend to fall into one of two categories: those that
+ exploit a type confusion vulnerability to set the security manager to 
+\family typewriter
+null
+\family default
  and those that exploit a confused deputy vulnerability 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -268,10 +291,173 @@ key "hardy_confused_1988"
 
 \end_inset
 
- in a privileged JRE class to null the security manager.
+ in a privileged JRE class to 
+\family typewriter
+null
+\family default
+ the security manager.
 
 \series bold
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset listings
+lstparams "numbers=left,basicstyle={\tiny}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import java.lang.reflect.Method; 
+\end_layout
+
+\begin_layout Plain Layout
+
+import java.security.AccessController; 
+\end_layout
+
+\begin_layout Plain Layout
+
+import java.security.PrivilegedExceptionAction;   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public class Payload implements PrivilegedExceptionAction {         
+\end_layout
+
+\begin_layout Plain Layout
+
+    public Payload() {
+\end_layout
+
+\begin_layout Plain Layout
+
+        try {
+\end_layout
+
+\begin_layout Plain Layout
+
+            AccessController.doPrivileged(this);
+\end_layout
+
+\begin_layout Plain Layout
+
+        } catch(Exception exception) { }     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    public Object run() throws Exception {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // Disable sandbox
+\end_layout
+
+\begin_layout Plain Layout
+
+        Class cl = System.class; 
+\end_layout
+
+\begin_layout Plain Layout
+
+        Method m = cl.getMethod("setSecurityManager", 
+\end_layout
+
+\begin_layout Plain Layout
+
+            new Class[] { SecurityManager.class }); 
+\end_layout
+
+\begin_layout Plain Layout
+
+        m.invoke(null, new Object[1]);
+\end_layout
+
+\begin_layout Plain Layout
+
+        return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    public static void outSandbox() throws Exception {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // Do malicious operations
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A typical Java exploit payload from http://pastebin.com/QWU1rqjf.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:A-typical-exploit-payload"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
