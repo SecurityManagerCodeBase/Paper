@@ -1131,24 +1131,6 @@ name "sec:Research-Questions-and"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-% ran our transformations to remove the reported integer vulnerabilities
- from 5 open source programs: The program transformations were manually
- applied to remove the root cause if integer vulnerabilities (Section 
-\backslash
-ref{sssec:realprog}).
- We then 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Note Comment
 status open
 
@@ -1677,36 +1659,6 @@ In total, we found 3 applications using a variation of this technique: Eclipse,
  be carefully written to avoid allowing malicious code to turn off the sandbox.
 \end_layout
 
-\begin_layout Standard
-(**** may need to move the next paragraph in the future ****)
-\end_layout
-
-\begin_layout Standard
-One example of the difficulty of creating a sandbox that can be turned on
- and off dynamically was found in Freemind.
- Freemind is a diagram drawing tool that allows users to execute Groovy
- scripts on the current drawing.
- The developers of Freemind implemented the sandbox so that it would turn
- on before executing a user run script and would turn off after the script
- finished executing.
- The security goals of the Freemind sandbox was to stop malicious scripts
- from creating files, executing programs on the machine, and creating network
- sockets to establish connections with outside entities.
- Unfortunately, in the version we analyzed (*** should put version somewhere
- ***), these goals were not achieved.
- By implementing the SecurityManager in the old SecurityManager style, explicitl
-y removing privileges, multiple dangerous permissions were left, such as
- the ability to alter private variables with reflection.
- This privilege made it trivial to remove the currently set SecurityManager
- inside a Groovy script, thus turning off the sandbox, and allowing the
- script to create files.
- The authors submitted a sample exploit to the Freemind development group
- and made recommendations on how to improve the security of the Freemind
- sandbox.
- (*** also should probably mention something about the SecurityManager indirecti
-on ***).
-\end_layout
-
 \begin_layout Subsubsection
 \begin_inset CommandInset label
 LatexCommand label
@@ -1932,20 +1884,225 @@ Changing the SecurityManager for Security Purposes
 \end_layout
 
 \begin_layout Standard
--talk about how applications provide the option to set and remove security
- managers, also give an example
+In both datasets, we found applications that set a SecurityManager at one
+ point a program and then either explicitly change or allow the user to
+ change the currently set SecurityManager.
+ Three appications allow the user to set and change the currently set SecurityMa
+nager using provided methods (Batik, Eclipse, and Spring-modules) while
+ three applications attempted to explicitly set and change the SecurityManager
+ during execution (Ant, Freemind, and Netbeans (!! Not 100% sure about this
+ one from what Tianyuan wrote, will need to investigate it later!!)).
+ 
 \end_layout
 
 \begin_layout Standard
-- talk about how Ant restricts the applications for a small section
+For the applications that allowed the user to set and change the SecurityManager
+, it seems the applications are attempting to provide the flexibility of
+ the current Sandbox implementation in Java, with no strong security case
+ for implementing the SecurityManager interactions this way.
+ 
 \end_layout
 
 \begin_layout Standard
-- can talk about wildflySecurityManager
+For example, in Batik, the file ApplicationSecurityEnforcer contains the
+ code segment:
 \end_layout
 
 \begin_layout Standard
-- talk about batik and the demo where they set two SMs
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbersep=-10pt,frame=single,fontsize=
+\backslash
+scriptsize,framesep=2mm]
+\end_layout
+
+\begin_layout Plain Layout
+
+156 public void enforceSecurity(boolean enforce){   
+\end_layout
+
+\begin_layout Plain Layout
+
+157   SecurityManager sm = System.getSecurityManager();
+\end_layout
+
+\begin_layout Plain Layout
+
+158
+\end_layout
+
+\begin_layout Plain Layout
+
+159   if (sm != null && sm != lastSecurityManagerInstalled) {
+\end_layout
+
+\begin_layout Plain Layout
+
+160     ...
+\end_layout
+
+\begin_layout Plain Layout
+
+163     throw new SecurityException                 
+\end_layout
+
+\begin_layout Plain Layout
+
+164      (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
+\end_layout
+
+\begin_layout Plain Layout
+
+165   }                  
+\end_layout
+
+\begin_layout Plain Layout
+
+166   if (enforce) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+167     ...
+\end_layout
+
+\begin_layout Plain Layout
+
+173    installSecurityManager();         
+\end_layout
+
+\begin_layout Plain Layout
+
+174   } else {             
+\end_layout
+
+\begin_layout Plain Layout
+
+175     if (sm != null) {                 
+\end_layout
+
+\begin_layout Plain Layout
+
+176       System.setSecurityManager(null);
+\end_layout
+
+\begin_layout Plain Layout
+
+177       lastSecurityManagerInstalled = null;             
+\end_layout
+
+\begin_layout Plain Layout
+
+178      ...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This method was designed to allow users to add a SecurityManager to an applicati
+on that uses the Batik library.
+ The method first takes a boolean, then checks to make sure a Batik specific
+ SecurityManager is not set.
+ If a SecurityManager defined outside of Batik was not set, the application
+ either sets a Batik SecurityManager, which refreshes the policy for the
+ SecurityManager or sets the SecurityManager to null which turns off the
+ sandbox.
+ This methods use was demonstrated in some of the examples provided in the
+ application download from the Batik website.
+ Two of the downloads provide ways to set a SecurityManager at start up,
+ the squiggle browser demo and the rasterizer demo.
+ While the squiggle browser demo sets a SecurityManager and never changes
+ it, the rasterizer demo can be set to call enforceSecurity with a true
+ arguement the first time and a false argument the second time, cause the
+ application to set a SecurityManager and then remove it at the end of the
+ demo.
+ While this was an interesting occurance, there seemed to be no valid reason,
+ other than showing off the capabilties for the library, to turn the SecurityMan
+ager off at the end of the execution.
+\end_layout
+
+\begin_layout Standard
+Only in the case where an application can not be reset and the application
+ cannot predict future required permissions, which we believe to be rare,
+ applications would need the ability to dynmically refresh the sandbox.
+ In all other cases, the ability to dynamically adjust the SecurityManager
+ and the sandbox's policy is not required.
+ As long as the required permission can be predicted before the application
+ is running, class loaders with defined permission sets can assign the permissio
+n to any newly loaded Java classes, thus allowing applications to provide
+ permissions to the classes that require them.
+ (&& I don't like this section's wording - I should ask Michael for input
+ on how to word it correctly).
+\end_layout
+
+\begin_layout Standard
+As mentioned earlier, Ant, Freemind, and Netbeans explicitly set and then
+ change the current SecurityManager during runtime.
+ Ant wants to allow the user the capability to execute Java applications
+ during a build under a user specified set of permissions.
+ To provide this capability, Ant sets the SecurityManager before executing
+ the Java application and then removes the SecurityManager after the application
+ has finished executing.
+ Netbeans also takes a similar approach ( && need to check this &&).
+\end_layout
+
+\begin_layout Standard
+Freemind also tried to solve a similar problem, but demonstrates the difficulty
+ of currectly implementing this solution.
+ Freemind is a diagram drawing tool that allows users to execute Groovy
+ scripts on the current drawing.
+ The developers of Freemind implemented the sandbox so that it would turn
+ on before executing a user run script and would turn off after the script
+ finished executing.
+ The security goals of the Freemind sandbox was to stop malicious scripts
+ from creating files, executing programs on the machine, and creating network
+ sockets to establish connections with outside entities.
+ Unfortunately, in the version we analyzed (*** should put version somewhere
+ ***), these goals were not achieved.
+ By implementing the SecurityManager in the old SecurityManager style, explicitl
+y removing privileges, multiple dangerous permissions were left, such as
+ the ability to alter private variables with reflection.
+ This privilege made it trivial to remove the currently set SecurityManager
+ inside a Groovy script, thus turning off the sandbox, and allowing the
+ script to create files.
+ The authors submitted a sample exploit to the Freemind development group
+ and made recommendations on how to improve the security of the Freemind
+ sandbox.
+ (*** also should probably mention something about the SecurityManager indirecti
+on ***).
+\end_layout
+
+\begin_layout Standard
+As with the applications that allow setting setting and chaning the SecurityMana
+ger, we believe the applications which set and change the SecurityManager
+ explicitly can execute correctly using a static SecurityManager with class
+ loaders which limit the permissions of the restricted code sections.
+ 
+\end_layout
+
+\begin_layout Standard
+The one application that did not fall into either of these categories was
+ WildflySecurityManager.
+ The WildfiySecurityManager allows turning off the permission checks for
+ classes which have been granted the DO_UNCHECKED_PERMISSION.
+ However, this method of permission checks seems to be the same as assiging
+ the privileged classes the AllPermissions and then executing doPrivileged
+ on the privileged actions that the privileged class needs to do.
 \end_layout
 
 \begin_layout Section
