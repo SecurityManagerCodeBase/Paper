@@ -2105,6 +2105,82 @@ The one application that did not fall into either of these categories was
  on the privileged actions that the privileged class needs to do.
 \end_layout
 
+\begin_layout Subsection
+Rules
+\end_layout
+
+\begin_layout Standard
+Based on the result of our investigation, it was determined that we could
+ restrict applications in two ways to improve security, preventing applications
+ from loading privileged classes when the loading class did not have the
+ required itself and preventing changing the SecurityManager when a 
+\emph on
+self-protecting
+\emph default
+ SecurityManager is set.
+ These restrictions were classified as rules, the privilege escalation rule
+ and the SecurityManager rule.
+\end_layout
+
+\begin_layout Subsubsection
+Privilege Escalation Rule
+\end_layout
+
+\begin_layout Standard
+The privilege escalation rule states that a class may not load a more permissive
+ class if a SecurityManager is set for the application.
+ This means that the loading classes permissions has to be less restrictive
+ or the same level of restriction as the loaded class.
+ This rule is based around the fact that many exploits load a class with
+ more privileges than the calling class to break out of the sandbox.
+ 
+\end_layout
+
+\begin_layout Standard
+If all classes in the Java Virtual Machine (JVM) instance were loaded at
+ the start of an application, this rule would be without exceptions.
+ However, the JVM loads certain classes on demand, and some of the JVM classes
+ have the full privileges.
+ Thus the rule has to make an excpetion for these classes.
+ Specifically, the rule makes exceptions for classes returned by the call
+ 
+\family typewriter
+java.security.Security.getProperty(
+\begin_inset Quotes eld
+\end_inset
+
+package.access
+\begin_inset Quotes erd
+\end_inset
+
+);.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+SecurityManager Rule
+\end_layout
+
+\begin_layout Standard
+The SecurityManager Rule states that a SecurityManager cannot change if
+ a 
+\emph on
+self-protecting
+\emph default
+ SecurityManager has been set by the application.
+ By setting a 
+\emph on
+self-protecting 
+\emph default
+SecurityManager, the application is removing ability of changing or removing
+ the sandbox.
+ Thus, the rule is violated if something in the application causes a change
+ in the sandbox's setting, which is what many exploits try to ensure will
+ happen.
+ (&& probably should tie these to the hypotheses somehow but need to read
+ the paper to understand how to do that.&&)
+\end_layout
+
 \begin_layout Section
 Mitigations
 \end_layout
