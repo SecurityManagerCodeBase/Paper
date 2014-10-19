@@ -2662,6 +2662,22 @@ Explicitly mention the default configuration here! (e.g.
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: At the moment, I'm not happy enough with the performance results to
+ write this section.
+ I'll come back to it when I have better numbers.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Effectiveness at Fortifying the Sandbox
 \end_layout
@@ -3103,7 +3119,21 @@ Limitations
 \end_layout
 
 \begin_layout Standard
-How to write exploits now...
+Unfortunately, neither of these rules will able to stop 100% off all Java
+ exploits.
+ Both rules are unable to catch exploits which are able to escape the sandbox
+ without violating the constraints the rules impose.
+ While the privilege escalation rule is able to stop many of the most common
+ Java exploits (40% of tested exploits), the rule still does not catch a
+ significant portion of the exploits.
+ The SecurityManager rule is also not able to catch all exploits.
+ While the SecurityManager rule was able to catch all tested exploits, Java
+ makes it possible to write exploits that do not turn off the SecurityManager
+ but are still able to cause significant damage.
+ While the authors beleive the rules created in this study provide a substanial
+ improvement over the current sandbox implementation, the authors also believe
+ that future work will be able to build upon the results of this study to
+ create improved mitigation techiques.
 \end_layout
 
 \begin_layout Section
