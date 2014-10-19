@@ -154,21 +154,34 @@ Be clear right up front that we aren't trying to stop all Java exploits,
 \begin_layout Standard
 The security model of Java allows Java to provide security features that
  other languages do not provide.
- Specifically, Java allows an application to untrusted code by setting a
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: This is a weak beginning.
+ Begin wiht what distinguishes Java, not the mere fact that Java is different.
+ You need to quickly explain what is unique about the Java security model,
+ why/how it is threatened, and why the reader should care.
+ 
+\end_layout
+
+\end_inset
+
+Specifically, Java allows an application to untrusted code by setting a
  sandbox to restrict the behavior of the applications.
  The goal of the sandbox is to allow bengin code to execute and perform
  its intended behavior but prevent hostile code from compromising the system.
  While the sandbox is able to stop the behavior of many malicious applications,
  exploits have been found that allow code to break out of the sandbox and
  execute a malicous payload.
- Oracle attempts to remove sandbox vulnerabilities soon as the vulnerabilities
- are patched, by providing security updates to the Oracle Java Virtual Machine
- (JVM).
- Unfortunately, many exploits are not patched at at the rate security critical
- applications require (@@ as shown by some example @@).
+ Oracle attempts to remove sandbox vulnerabilities as soon as vulnerabilities
+ are identified, by patching the Oracle Java Virtual Machine (JVM).
+ Unfortunately, many exploits are patched too slowly for security critical
+ applications (@@ as shown by some example @@).
  Another problem with the sandbox is that Java exploits are still regularly
  discovered (@@ should also look up something to back this up @@).
- Both these factors imply a need for security additions other than regular
+ Both these factors imply a need for security mitigations beyond regular
  security updates.
 \end_layout
 
@@ -176,7 +189,26 @@ The security model of Java allows Java to provide security features that
 Based on the author's knowledge of how Java exploits worked, we believed
  that it would be possible to harden the existing foundation of the Java
  sandbox to reduce future exploits and provide a basis for future mitigations.
- The hardening would be acheived by enforcing restrictions of the sandbox,
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: Your expertise is not going to convince anyone! Explain 
+\begin_inset Quotes eld
+\end_inset
+
+how Java exploits work,
+\begin_inset Quotes erd
+\end_inset
+
+ cite relevant articles, etc.
+ 
+\end_layout
+
+\end_inset
+
+The hardening would be acheived by enforcing restrictions of the sandbox,
  such as preventing turning off the sandbox (**not sure how to word this
  sentence, come back later**).
  However, before these restrictions could be successfully implemented, it
@@ -191,14 +223,36 @@ Based on the author's knowledge of how Java exploits worked, we believed
 \begin_layout Standard
 In attempt to fill in this required knowledge, we set up an investigation
  to explore how Java applications use the sandbox.
- Choosing applications which were available for study, 29 applications from
- Qualitas were selected as well as 17 applications from GitHub.
+ Choosing
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: Who is choosing? How? This sentence needs to be rewritten.
+\end_layout
+
+\end_inset
+
+ applications which were available for study, 29 applications from Qualitas
+ were selected as well as 17 applications from GitHub.
  Specifically, the investigation focused on how Java applications interact
  with the SecurityManager because the SecurityManager is the interface in
  which applications interact with the sandbox.
  The study employed a Findbugs plugin for static analysis and a Java Virtual
- Machine Tool Interface (JVMTI) plugin for dynamic analysis to highlight
- interesting sandbox interactions.
+ Machine Tool Interface (JVMTI)
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Explain hwo you used Findbugs and JVMTI.
+ It's not enough to say you used them.
+ In fact, in the intro, it's far more important to explain what the static
+ and dynamic analysis accomplish then what technologies you used.
+\end_layout
+
+\end_inset
+
+ plugin for dynamic analysis to highlight interesting sandbox interactions.
  The applications were then manually inspected to analyze the important
  sandbox interactions.
  
@@ -399,7 +453,7 @@ null
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -674,7 +728,7 @@ key "security_explorations_2012"
 \begin_inset Float table
 wide true
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
