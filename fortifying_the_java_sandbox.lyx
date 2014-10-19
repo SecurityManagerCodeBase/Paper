@@ -76,6 +76,53 @@
 Fortifying the Java Sandbox
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{abstract}
+\end_layout
+
+\begin_layout Plain Layout
+
+The Java sandbox attempmts to allow code arbitrary code to execute in way
+ that that limits the permissions of the exeucting code, thus protecting
+ the system the code where the code is executng.
+  Unfortunately, exploits are continually being created that bypass the
+ security features of the sandbox.
+  The objective of this paper is to gain an understanding of how applications
+ interact with the sandbox and make an initial attempt to fortify the sandbox
+ against future exploits.
+  To achieve those results, we started with an investigation of how 46 open
+ source applications interact with the sandbox.
+  The outcome of this investigation supported the hypothesis that we can
+ could restrict behavior of an application to increase security.
+  Two initial fortification strategies were then created and verified with
+ 10 Java exploits from the past 2 years.
+  The effects of the fortification strategies were also performance tested
+ on the Dacapo Benchmarks to determine the strategies effects on running
+ applications.
+  The study reveals that a significant number of exploits can be stopped
+ by providing extra strength to the sandbox.
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{abstract}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
