@@ -3141,6 +3141,171 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
+The main findings of the study are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{enumerate}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item The majority of applications that use the sandbox do not change the
+ SecurityManager (19/29 in Qualitas and 9/17 in GitHub).
+  These applications either set a SecurityManager and never change it or
+ never set a SecurityManager but are designed to work inside a sandbox if
+ the application is ran inside a sandbox.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item A small portion of the applications  studied used the SecurityManager
+ for non security purposes (1/29 in Qualitas and 3/17 in GitHub).
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item  Correctly implementing a SecurityManager in an application is easily
+ done incorrectly, as shown by the vulnerable Freemind implementation and
+ multiple developers' comments.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{enumerate}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From the results of this study, we
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{enumerate}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item Determined two rules which could be used to strengthen the sandbox
+ in a majority of applications: the Privilege Escalation Rule and the SecurityMa
+nager Rule.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item Tested the two rules against 10 of the most popular past Java exploits
+ and were able to stop 40% of the exploits with the Privilege Escalation
+ Rule and 100% with the SecurityManager rule.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item Found that Privilege Escalation Rule could be implemented with low
+ overhead.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{enumerate}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With this study, we were able to take the first steps to understanding how
+ Java applications use the sandbox.
+ While these results are likely not inclusive of all Java applications,
+ we believe that the results will generalize to other Java applications.
+ We also believe that the study has found many important implications for
+ future work to build upon:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{enumerate}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item Extra security can be gained by restricting Java applications from
+ using rarely used features.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item Java applications need a way to enforce architectural constraints when
+ running other Java applications in a way that doesn't conflict with security-
+ such as the ability to prevent the called application from calling System.exit()
+ without setting the sandbox.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+item There is a need to help developers correctly implement the Java sandbox.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{enumerate}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "references"
