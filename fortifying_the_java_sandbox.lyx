@@ -129,7 +129,7 @@ Be clear right up front that we aren't trying to stop all Java exploits,
 \end_layout
 
 \begin_layout Standard
-The security model of Java allow Java to provide security features that
+The security model of Java allows Java to provide security features that
  other languages do not provide.
  Specifically, Java allows an application to untrusted code by setting a
  sandbox to restrict the behavior of the applications.
