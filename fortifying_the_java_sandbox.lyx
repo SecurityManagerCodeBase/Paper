@@ -76,19 +76,7 @@
 Fortifying the Java Sandbox
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{abstract}
-\end_layout
-
-\begin_layout Plain Layout
-
+\begin_layout Abstract
 The Java sandbox attempmts to allow arbitrary code to execute in way that
  that limits the permissions of the executing code, thus protecting the
  system where the code is executng.
@@ -109,18 +97,6 @@ The Java sandbox attempmts to allow arbitrary code to execute in way that
   The study reveals that a significant number of exploits can be stopped
  by providing extra strength to the sandbox.
    
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{abstract}
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
