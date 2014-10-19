@@ -128,6 +128,68 @@ Be clear right up front that we aren't trying to stop all Java exploits,
 
 \end_layout
 
+\begin_layout Standard
+The security model of Java allow Java to provide security features that
+ other languages do not provide.
+ Specifically, Java allows an application to untrusted code by setting a
+ sandbox to restrict the behavior of the applications.
+ The goal of the sandbox is to allow bengin code to execute and perform
+ its intended behavior but prevent hostile code from compromising the system.
+ While the sandbox is able to stop the behavior of many malicious applications,
+ exploits have been found that allow code to break out of the sandbox and
+ execute a malicous payload.
+ Oracle attempts to remove sandbox vulnerabilities soon as the vulnerabilities
+ are patched, by providing security updates to the Oracle Java Virtual Machine
+ (JVM).
+ Unfortunately, many exploits are not patched at at the rate security critical
+ applications require (@@ as shown by some example @@).
+ Another problem with the sandbox is that Java exploits are still regularly
+ discovered (@@ should also look up something to back this up @@).
+ Both these factors imply a need for security additions other than regular
+ security updates.
+\end_layout
+
+\begin_layout Standard
+Based on the author's knowledge of how Java exploits worked, we believed
+ that it would be possible to harden the existing foundation of the Java
+ sandbox to reduce future exploits and provide a basis for future mitigations.
+ The hardening would be acheived by enforcing restrictions of the sandbox,
+ such as preventing turning off the sandbox (**not sure how to word this
+ sentence, come back later**).
+ However, before these restrictions could be successfully implemented, it
+ was important to verify that these restictions would not break how applications
+ interact with the sandbox.
+ We started our investigation of how applications interact with the sandbox
+ by searching other published papers and came to find that the research
+ community lacked insight on how applications were using the sandbox.
+ 
+\end_layout
+
+\begin_layout Standard
+In attempt to fill in this required knowledge, we set up an investigation
+ to explore how Java applications use the sandbox.
+ Choosing applications which were available for study, 29 applications from
+ Qualitas were selected as well as 17 applications from GitHub.
+ Specifically, the investigation focused on how Java applications interact
+ with the SecurityManager because the SecurityManager is the interface in
+ which applications interact with the sandbox.
+ The study employed a Findbugs plugin for static analysis and a Java Virtual
+ Machine Tool Interface (JVMTI) plugin for dynamic analysis to highlight
+ interesting sandbox interactions.
+ The applications were then manually inspected to analyze the important
+ sandbox interactions.
+ 
+\end_layout
+
+\begin_layout Standard
+Based on the findings of this analysis we implemented two rules for hardening
+ the application: the Privilege Escalation Rule and the SecurityManager
+ Rule.
+ These hardenings were found to allow benign applications to execute while
+ stopping a significant portion of malicious exploits.
+ 
+\end_layout
+
 \begin_layout Section
 Background
 \end_layout
