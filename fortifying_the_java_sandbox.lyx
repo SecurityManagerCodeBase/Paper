@@ -237,7 +237,7 @@ Cite (http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6383153)
 
 \end_inset
 
- This alteration of the sandboc is usually by turning the sandbox off with
+ This alteration of the sandbox is usually by turning the sandbox off with
  a call to 
 \family typewriter
 System.setSecurityManager(null)
@@ -334,7 +334,7 @@ applications which were available for study,
 
 We set up an investigation of 29 applications from the Qualitas Corpus and
  17 applications from GitHub to gain an understanding how the applications
- interacted with sandbox.
+ interacted with the sandbox.
  Specifically, the investigation focused on how the applications interacted
  with the SecurityManager since the SecurityManager is the developer facing
  side of the sandbox.
@@ -529,24 +529,6 @@ name "fig:Sandbox-high-level-summary"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Something like: even if a policy is defined, the policy will not be enforced
- unless the sandbox is activated.
- The sandbox is actived by turned on by setting a security manager for the
- system.
- This security manager acts as the gateway between the sandbox and the rest
- of the application.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Even if a policy is defined, the policy will not be enforced unless the
  sandbox is activated.
  The sandbox is activated by setting the security manager for the system,.
@@ -605,8 +587,8 @@ Java provides flexibility when setting up a sandbox, allowing a sandbox
  A security manager can also be defenseless, meaning not self protecting.
  A defenseless manager does little to improve the security of the Java applicati
 on being sandboxed.
- In our study we have come to find that defenseless security managers have
- uses in certain applications 
+ However, in our study, we have come to find that defenseless security managers
+ have uses in certain applications 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Research-Questions-and"
@@ -614,33 +596,6 @@ reference "sec:Research-Questions-and"
 \end_inset
 
 .
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Finish fixing adding this last paragraph to the paragraph before it.
-\end_layout
-
-\end_inset
-
-For the purpose of fortifying the sandbox, we distinguish between self-protectin
-g and defenseless security managers.
- A 
-\shape italic
-self-protecting
-\shape default
- security manager enforces a policy that prevents encapsulated classes from
- changing the manager or the policy it enforces.
- In contrast, a 
-\shape italic
-defenseless
-\shape default
- security manager allows encapsulated classes to change the manager or the
- enforced policy.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -650,8 +605,8 @@ reference "tab:defenseless-permissions"
 
  summarizes the set of permissions used to distinguish between self-protecting
  and defenseless security managers.
- A manager enforcing a policy that contains even one of the listed permissions
- is defenseless.
+ A security manager enforcing a policy that contains even one of the listed
+ permissions is defenseless.
  A subset of the permissions in this list were identified in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -928,9 +883,10 @@ Malicious drive-by downloads using Java applets as the vector were widely
 null
 \family default
 .
- This operation disables the Java sandbox, allowing previously constrained
- classes to perform any operation that the JRE can perform, meaning the
- malicious applicaition can now execute the payload on the host system.
+ Setting the security manager to null disables the Java sandbox, allowing
+ previously constrained classes to perform any operation that the JRE can
+ perform, meaning the malicious applicaition can now execute the payload
+ on the host system.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1139,6 +1095,16 @@ name "fig:A-typical-exploit-payload"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: I think type confusion gets off topic.
+ I also think that the list of type confusion or privilege escalation misses
+ a couple of exploit types.
+\end_layout
+
+\begin_layout Plain Layout
 In the case of type confusion a vulnerability is exploited to break type
  safety, thus allowing the attacker to craft an object that can perform
  operations as if it is an instance of a class of a different type.
@@ -1162,7 +1128,11 @@ key "_vulnerability_2012_0507"
 \end_inset
 
 ).
- In the case of a confused deputy, the exploit often attacks a privileged
+\end_layout
+
+\end_inset
+
+In the case of a confused deputy, the exploit often attacks a privileged
  class that is accessible by any class to obtain an instance of a vulnerable
  privileged class that is only accessible to other privileged classes.
  The restricted-access class is targeted because it contains a vulnerability
