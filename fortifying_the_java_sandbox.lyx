@@ -152,8 +152,24 @@ Be clear right up front that we aren't trying to stop all Java exploits,
 \end_layout
 
 \begin_layout Standard
-The security model of Java allows Java to provide security features that
- other languages do not provide.
+A security goal of Java is to allow applications to safely execute untrusted
+ code in a sandbox so that the application and the host machine are protected
+ from malicious behavior.
+ Unfortunately, recent exploits have shown that this security goal has not
+ been achieved.
+ Instead of the sandbox completely protecting the application, security
+ researchers are constantly finding ways to exploit how the sandbox is implement
+ed.
+ Security Exporations, a company that research security vulnerabilities
+ in applications, found that the Java Virutal Machine (JVM) contained 19
+ weaknesses and developed 12 expoits to demonstrate these weaknesses in
+ a report on April 2nd 2012 (&& add a citiation of http://www.security-exploratio
+ns.com/en/SE-2012-01-press.html if you keep this sentence &&).
+ Hackers have also discovered zero-day exploits, with the exploit in August
+ 2012 and January 2013 making widespsread news and detailed in a CERT blog
+ post(cite: http://www.cert.org/blogs/certcc/post.cfm?EntryID=136 - also not
+ 100% happy with this sentence at the moment).If this trend continues, regular
+ updates will not be enough to ensure the integrity of Java applications.
  
 \begin_inset Note Comment
 status open
@@ -166,10 +182,28 @@ JSS: This is a weak beginning.
  
 \end_layout
 
-\end_inset
+\begin_layout Plain Layout
+ZC: Better now?
+\end_layout
 
-Specifically, Java allows an application to untrusted code by setting a
- sandbox to restrict the behavior of the applications.
+\begin_layout Plain Layout
+Old first intro paragraph - Specifically, Java allows an application to
+ untrusted code by setting a sandbox to restrict the behavior of the application
+s.
+ The goal of the sandbox is to allow bengin code to execute and perform
+ its intended behavior but prevent hostile code from compromising the system.
+ While the sandbox is able to stop the behavior of many malicious applications,
+ exploits have been found that allow code to break out of the sandbox and
+ execute a malicous payload.
+ Oracle attempts to remove sandbox vulnerabilities as soon as vulnerabilities
+ are identified, by patching the Oracle Java Virtual Machine (JVM).
+ Unfortunately, many exploits are patched too slowly for security critical
+ applications (@@ as shown by some example @@).
+ Another problem with the sandbox is that Java exploits are still regularly
+ discovered (@@ should also look up something to back this up @@).
+ Both these factors imply a need for security mitigations beyond regular
+ security updates.Specifically, Java allows an application to untrusted code
+ by setting a sandbox to restrict the behavior of the applications.
  The goal of the sandbox is to allow bengin code to execute and perform
  its intended behavior but prevent hostile code from compromising the system.
  While the sandbox is able to stop the behavior of many malicious applications,
@@ -185,11 +219,50 @@ Specifically, Java allows an application to untrusted code by setting a
  security updates.
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-Based on the author's knowledge of how Java exploits worked, we believed
- that it would be possible to harden the existing foundation of the Java
- sandbox to reduce future exploits and provide a basis for future mitigations.
+Past investigations of Java security exploits have shown Java malware commonly
+ alters the sandbox's settings.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Cite (http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6383153) 
+\end_layout
+
+\end_inset
+
+ This alteration of the sandboc is usually by turning the sandbox off with
+ a call to 
+\family typewriter
+System.setSecurityManager(null)
+\family default
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+cite (http://www.cert.org/blogs/certcc/post.cfm?EntryID=136),(http://www.fireeye.com/
+blog/technical/2013/06/get-set-null-java-security.html),(http://www.security-explo
+rations.com/materials/se-2012-01-report.pdf),(https://media.blackhat.com/bh-us-12/Br
+iefings/Oh/BH_US_12_Oh_Recent_Java_Exploitation_Trends_and_Malware_WP.pdf)
+\end_layout
+
+\end_inset
+
+, since the 
+\family typewriter
+SecurityManager
+\family default
+ is how the application interacts with the sandbox.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Comment
 status open
 
@@ -206,11 +279,19 @@ how Java exploits work,
  
 \end_layout
 
-\end_inset
+\begin_layout Plain Layout
+ZC: I couldn't decide if I should directly quote any of the articles or
+ not.
+ 
+\end_layout
 
-The hardening would be acheived by enforcing restrictions of the sandbox,
- such as preventing turning off the sandbox (**not sure how to word this
- sentence, come back later**).
+\begin_layout Plain Layout
+Old intro - Based on the author's knowledge of how Java exploits worked,
+ we believed that it would be possible to harden the existing foundation
+ of the Java sandbox to reduce future exploits and provide a basis for future
+ mitigations.The hardening would be acheived by enforcing restrictions of
+ the sandbox, such as preventing turning off the sandbox (**not sure how
+ to word this sentence, come back later**).
  However, before these restrictions could be successfully implemented, it
  was important to verify that these restictions would not break how applications
  interact with the sandbox.
@@ -220,7 +301,22 @@ The hardening would be acheived by enforcing restrictions of the sandbox,
  
 \end_layout
 
+\end_inset
+
+This knowledge leads to the question: can malicious applications be uniquely
+ deteced and stopped at runtime based on how they interact with the sandbox?
+ To answer this question, it is imporant to know how benign applications
+ interact with the sandbox, to avoid falsely halting an application that
+ the user wants to run.
+ After a thorough literature review, the authors were unable to find information
+ on how Java applications interact with the sandbox.
+\end_layout
+
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 In attempt to fill in this required knowledge, we set up an investigation
  to explore how Java applications use the sandbox.
  Choosing
@@ -233,37 +329,35 @@ JSS: Who is choosing? How? This sentence needs to be rewritten.
 
 \end_inset
 
- applications which were available for study, 29 applications from Qualitas
- were selected as well as 17 applications from GitHub.
- Specifically, the investigation focused on how Java applications interact
- with the SecurityManager because the SecurityManager is the interface in
- which applications interact with the sandbox.
- The study employed a Findbugs plugin for static analysis and a Java Virtual
- Machine Tool Interface (JVMTI)
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Explain hwo you used Findbugs and JVMTI.
- It's not enough to say you used them.
- In fact, in the intro, it's far more important to explain what the static
- and dynamic analysis accomplish then what technologies you used.
+ applications which were available for study,
 \end_layout
 
 \end_inset
 
- plugin for dynamic analysis to highlight interesting sandbox interactions.
- The applications were then manually inspected to analyze the important
+We set up an investigation of 29 applications from the Qualitas Corpus and
+ 17 applications from GitHub to gain an understanding how the applications
+ interacted with sandbox.
+ Specifically, the investigation focused on how the applications interacted
+ with the SecurityManager since the SecurityManager is the developer facing
+ side of the sandbox.
+ Applications were first analyzed statically with 2 tools: one that located
+ possible initializations of the sandbox and another that found possible
  sandbox interactions.
- 
+ The applications were then all manually inspected to analyze the output
+ of the static analysis tools in context and to understand important sandbox
+ interactions.
+ Finally, application runs were monitored to see how the sandbox changed
+ at runtime, verifing the results of the static analysis
 \end_layout
 
 \begin_layout Standard
-Based on the findings of this analysis we implemented two rules for hardening
- the application: the Privilege Escalation Rule and the SecurityManager
- Rule.
- These hardenings were found to allow benign applications to execute while
- stopping a significant portion of malicious exploits.
+Based on the findings of this analysis, two rules for fortifying the sandbox
+ were implemented: the Privilige Escalation rule, which prevents applications
+ from loading a class with less restrictions from a restricted class when
+ a sandbox is set, and the SecurityManager rule, which prevents changes
+ to the sandbox when a self-protecting Sandbox is set.
+ These fortifications were found to allow benign applications to execute
+ while stopping a significant portion of malicious exploits.
  
 \end_layout
 
