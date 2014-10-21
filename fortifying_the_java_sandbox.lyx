@@ -366,7 +366,21 @@ Background
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 The Java sandbox was designed to safely execute code from untrusted sources.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Java sandbox protects an application by assigning permissions to inidividual
+ classes and then enforcing the permissions through permissions checks.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -377,14 +391,43 @@ reference "fig:Sandbox-high-level-summary"
  summarizes the components of the sandbox that are relevant to this work.
  Essentially, when a class loader loads a class from some location (e.g.,
  network, filesystem, etc.) the class is assigned a code source.
- The code source is used to indicate the origin of the code while it is
- loaded in the JRE and to associate the class with a protection domain.
- Protection domains segment the classes in an application into different
- groups that are assigned a security policy.
- Each domain imposes one policy on the classes it contains, where a policy
- includes a set of permissions that grant the contained classes the ability
- to perform operations such as writing to the filesystem, accessing the
- network, using certain reflection features, etc.
+ The assigned code source is used to indicate the origin of the code 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ZC: 
+\begin_inset Quotes eld
+\end_inset
+
+while it is loaded in the JRE
+\begin_inset Quotes erd
+\end_inset
+
+ seems obvious to me.
+ we can add it back later if you think it is important
+\end_layout
+
+\end_inset
+
+ and to associate the class with a protection domain.
+ Protection domains segment the classes of an application into different
+ groups, where each group is assigned a unique permission set.
+ The permission sets contain permissions explicilty allowing actions with
+ possible security implications 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Each protection domain imposes one set of permissions on the classes it
+ contains, where a policy includes a set of permissions that grant the contained
+ classes the ability to perform operations
+\end_layout
+
+\end_inset
+
+ such as writing to the filesystem, accessing the network, using certain
+ reflection features, etc.
  (see a more complete list at 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -393,10 +436,54 @@ key "_permissions_2014"
 \end_inset
 
 ).
- Each JRE contains a default policy configuration that grants applications
+ The application defines how to assign clases to different protection domains,
+ as well as the specific permission set for each protection domain, based
+ on the permissions granted in the policy.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: The previous sentence is too long.
+ Fix later
+\end_layout
+
+\end_inset
+
+The policy specifies the permissable behavior for the application.
+ The sandbox restricts the behavior of the application to what is allowed
+ in the policy.
+ By default, applications which are executed from the local file system
+ are run without a sandbox.
+ Web applets, on the other hand, are set to run inside a sandbox by default,
+ preventing the applet from performing malicous operations to the determent
+ of the host system.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Each JRE contains a default policy configuration that grants applications
  from the local filesystem all permissions and applets from the web a strict
  set of permissions that prevent them from performing malicious operations
  on the host system.
+\end_layout
+
+\begin_layout Plain Layout
+To enforce the security policy, a security manager must be set (typically
+ by calling
+\family typewriter
+ System.setSecurityManager(new SecurityManger())
+\family default
+).
+ The security manager acts as the gateway to policy enforcement in the Java
+ sandbox.Whenever Java code wants to ensure a caller has the correct permissions
+ to execute protected code, the callee must query the security manager
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -440,29 +527,54 @@ name "fig:Sandbox-high-level-summary"
 \end_layout
 
 \begin_layout Standard
-To enforce the security policy, a security manager must be set (typically
- by calling
-\family typewriter
- System.setSecurityManager(new SecurityManger())
-\family default
-).
- The security manager acts as the gateway to policy enforcement in the Java
- sandbox.
- Whenever Java code wants to ensure a caller has the correct permissions
- to execute protected code, the callee must query the security manager.
- For example, if an application attempts to use a JRE class to write to
- a file (e.g 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Something like: even if a policy is defined, the policy will not be enforced
+ unless the sandbox is activated.
+ The sandbox is actived by turned on by setting a security manager for the
+ system.
+ This security manager acts as the gateway between the sandbox and the rest
+ of the application.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Even if a policy is defined, the policy will not be enforced unless the
+ sandbox is activated.
+ The sandbox is activated by setting the security manager for the system,.
+ This security manager acts as the gateway between the sandbox and the rest
+ of the application.
+ Whenever a class attempts to execute a method with security implications
+ inside a sandbox, the security manager handles the permission check.
+ For example, if an application attempts to write to a file (e.g 
 \family typewriter
 java.io.FileOutputStream
 \family default
-), the JRE class will ensure that the caller has permission to write to
- the file before performing the write.
- When such a query is initiated, the security manager walks the stack frame
- for the current calling context to ensure every class in the context has
- the correct permissions or a privileged caller has marked the context as
- privileged.
- If the context is not marked as privileged and even one class in the stack
- frame does not have the correct permissions, the manager will throw a 
+) inside a sandbox, the sandbox will ensure that this location inside the
+ application has permission to write a file.
+ The permission check is usually verified by the security manager checking
+ each class in the current stack frame to make sure each class has the required
+ permission.
+ The permission check usually checks all of the classes in the stack frame,
+ going from the class that attempted the write to the main class of the
+ application.
+ However, the stack walk can be stopped by a privileged class, when the
+ privileged class specifically wraps the executing section inside a 
+\family typewriter
+doPrivileged()
+\family default
+ call.
+ This allows for privileged code sections to perform actions with security
+ implications at the request of non-privileged code sections, once the request
+ has been properly verified.
+ If the permission check reaches a class in the stack frame that does not
+ have the correct permissions, the security manager will throw a 
 \family typewriter
 SecurityException
 \family default
@@ -479,12 +591,27 @@ key "banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_199
 \end_layout
 
 \begin_layout Standard
-Typically a security manager is immediately set when a class is loaded using
- class loaders for sources that are nearly always untrusted such as applets.
- In the case of applets and applications that use the Java Network Launch
- Protocol, the managers are self-protecting in the sense that they don't
- let malicious code change how the sandbox operates or what it constrains.
- It is possible for a manager to be defenseless, which can be useful when
+Java provides flexibility when setting up a sandbox, allowing a sandbox
+ to be set at any time during the execution of an application, or in many
+ cases, before an application is started.
+ In the default case for web applets and applications that use Java Network
+ Protocol, a self-protecting security manager is set before the applet is
+ loaded from the network.
+ The security manager, and thus the sandbox, is self-protecting in the sense
+ that the sandbox does not allow the application to change the settings
+ of the sandbox during execution.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ZC: Stopped here for the night.
+ Start here tomorrow.
+\end_layout
+
+\end_inset
+
+It is possible for a manager to be defenseless, which can be useful when
  the manager is being used for purposes that are not security related.
  For example, a unit test may use the manager and dynamically change the
  enforced policy to inject faults into the tested application.
