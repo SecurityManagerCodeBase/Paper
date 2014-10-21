@@ -320,16 +320,14 @@ status open
 In attempt to fill in this required knowledge, we set up an investigation
  to explore how Java applications use the sandbox.
  Choosing
-\begin_inset Note Comment
-status open
+\end_layout
 
 \begin_layout Plain Layout
 JSS: Who is choosing? How? This sentence needs to be rewritten.
 \end_layout
 
-\end_inset
-
- applications which were available for study,
+\begin_layout Plain Layout
+applications which were available for study, 
 \end_layout
 
 \end_inset
@@ -363,6 +361,10 @@ Based on the findings of this analysis, two rules for fortifying the sandbox
 
 \begin_layout Section
 Background
+\end_layout
+
+\begin_layout Subsection
+The Java Sandbox
 \end_layout
 
 \begin_layout Standard
@@ -600,22 +602,11 @@ Java provides flexibility when setting up a sandbox, allowing a sandbox
  The security manager, and thus the sandbox, is self-protecting in the sense
  that the sandbox does not allow the application to change the settings
  of the sandbox during execution.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-ZC: Stopped here for the night.
- Start here tomorrow.
-\end_layout
-
-\end_inset
-
-It is possible for a manager to be defenseless, which can be useful when
- the manager is being used for purposes that are not security related.
- For example, a unit test may use the manager and dynamically change the
- enforced policy to inject faults into the tested application.
- We discuss this type of use case and others in section 
+ A security manager can also be defenseless, meaning not self protecting.
+ A defenseless manager does little to improve the security of the Java applicati
+on being sandboxed.
+ In our study we have come to find that defenseless security managers have
+ uses in certain applications 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Research-Questions-and"
@@ -623,290 +614,19 @@ reference "sec:Research-Questions-and"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-Malicious drive-by downloads using Java applets as the vector were widely
- reported between 2011 and 2013.
- While the security manager should prevent applets from performing operations
- that are useful to a malicious actor, vulnerabilities in the JRE were leveraged
- to set the manager to 
-\family typewriter
-null
-\family default
-.
- The latter operation effectively disables the Java sandbox, thus allowing
- previously constrained classes to perform any operation that the JRE can
- perform.
- Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:A-typical-exploit-payload"
-
-\end_inset
-
- shows a typical payload.
- An exploit will elevate this payload's privileges to allow it to disable
- the security manager and perform its malicious operations.
- These vulnerabilities tend to fall into one of two categories: those that
- exploit a type confusion vulnerability to set the security manager to 
-\family typewriter
-null
-\family default
- and those that exploit a confused deputy vulnerability 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hardy_confused_1988"
-
-\end_inset
-
- in a privileged JRE class to 
-\family typewriter
-null
-\family default
- the security manager.
-
-\series bold
  
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-\align center
-\begin_inset listings
-lstparams "numbers=left,basicstyle={\tiny}"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-import java.lang.reflect.Method; 
-\end_layout
-
-\begin_layout Plain Layout
-
-import java.security.AccessController; 
-\end_layout
-
-\begin_layout Plain Layout
-
-import java.security.PrivilegedExceptionAction;   
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-public class Payload implements PrivilegedExceptionAction {         
-\end_layout
-
-\begin_layout Plain Layout
-
-    public Payload() {
-\end_layout
-
-\begin_layout Plain Layout
-
-        try {
-\end_layout
-
-\begin_layout Plain Layout
-
-            AccessController.doPrivileged(this);
-\end_layout
-
-\begin_layout Plain Layout
-
-        } catch(Exception exception) { }     
-\end_layout
-
-\begin_layout Plain Layout
-
-    }
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-    public Object run() throws Exception {
-\end_layout
-
-\begin_layout Plain Layout
-
-        // Disable sandbox
-\end_layout
-
-\begin_layout Plain Layout
-
-        Class cl = System.class; 
-\end_layout
-
-\begin_layout Plain Layout
-
-        Method m = cl.getMethod("setSecurityManager", 
-\end_layout
-
-\begin_layout Plain Layout
-
-            new Class[] { SecurityManager.class }); 
-\end_layout
-
-\begin_layout Plain Layout
-
-        m.invoke(null, new Object[1]);
-\end_layout
-
-\begin_layout Plain Layout
-
-        return null;
-\end_layout
-
-\begin_layout Plain Layout
-
-    }
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-    public static void outSandbox() throws Exception {
-\end_layout
-
-\begin_layout Plain Layout
-
-        // Do malicious operations
-\end_layout
-
-\begin_layout Plain Layout
-
-    }
-\end_layout
-
-\begin_layout Plain Layout
-
-}
+Finish fixing adding this last paragraph to the paragraph before it.
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-A typical Java exploit payload from http://pastebin.com/QWU1rqjf.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:A-typical-exploit-payload"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In the case of type confusion a vulnerability is exploited to break type
- safety, thus allowing the attacker to craft an object that can perform
- operations as if it is an instance of a class of a different type.
- For example, attackers will craft objects that either (1) point to the
- 
-\family typewriter
-System
-\family default
- class to cause any operation they perform to happen on the real 
-\family typewriter
-System
-\family default
- class, thus allowing them to directly alter the field where the security
- manager is stored or (2) act as if they have the same type as a privileged
- class loader to load a payload class with all permissions (see CVE-2012-0507
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "_vulnerability_2012_0507"
-
-\end_inset
-
-).
- In the case of a confused deputy, the exploit often attacks a privileged
- class that is accessible by any class to obtain an instance of a vulnerable
- privileged class that is only accessible to other privileged classes.
- The restricted-access class is targeted because it contains a vulnerability
- that can be leveraged to execute privileged code, typically to disable
- the security manager (see CVE-2012-4681 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "_vulnerability_2012_4681"
-
-\end_inset
-
-).
- While it is possible for an accessible privileged class to contain a vulnerabil
-ity that will allow an attacker to disable the manager more directly, these
- classes are typically implemented more carefully to avoid these types of
- issues.
-\end_layout
-
-\begin_layout Standard
-Many of the recent vulnerabilities would not have been introduced if the
- JRE was developed while strictly following 
-\begin_inset Quotes eld
-\end_inset
-
-The CERT Oracle Secure Coding Standard for Java
-\begin_inset Quotes erd
-\end_inset
-
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "long_cert_2011"
-
-\end_inset
-
-.
- For example, Svoboda 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
-
-\end_inset
-
- pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
- a total of six different secure coding rules and four guidelines.
- In the typical case, following just one or two of the broken rules and
- guidelines would have prevented a serious exploit.
- In the rest of this paper we concern ourselves with ways to fortify the
- Java sandbox without breaking backwards compatibility and not with the
- specifics of particular exploits.
-\end_layout
-
-\begin_layout Standard
 For the purpose of fortifying the sandbox, we distinguish between self-protectin
 g and defenseless security managers.
  A 
@@ -921,8 +641,6 @@ defenseless
 \shape default
  security manager allows encapsulated classes to change the manager or the
  enforced policy.
- A defenseless manager does little to improve the security posture of the
- encapsulated Java application.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1193,6 +911,308 @@ Modify the application's permissions at will
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Java Exploits 
+\end_layout
+
+\begin_layout Standard
+Malicious drive-by downloads using Java applets as the vector were widely
+ reported between 2011 and 2013 (&& probably should add a citiation here
+ &&).
+ While Java applets should prevent malicious applications from executing
+ their payload, vulnerabilities in the Java Runtime Enviroment (JRE) were
+ leveraged by exploits to set the secruity manager to 
+\family typewriter
+null
+\family default
+.
+ This operation disables the Java sandbox, allowing previously constrained
+ classes to perform any operation that the JRE can perform, meaning the
+ malicious applicaition can now execute the payload on the host system.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:A-typical-exploit-payload"
+
+\end_inset
+
+ shows a typical payload.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The vulnerabilities attacked by exploits tend to fall into one of two categories
+: those that exploit a type confusion vulnerability to set the security
+ manager to 
+\family typewriter
+null
+\family default
+ and those that exploit a confused deputy vulnerability 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hardy_confused_1988"
+
+\end_inset
+
+ in a privileged JRE class to 
+\family typewriter
+null
+\family default
+ the security manager.
+
+\series bold
+ 
+\series default
+An exploit will elevate this payload's privileges to allow it to disable
+ the security manager and perform its malicious operations.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset listings
+lstparams "numbers=left,basicstyle={\tiny}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import java.lang.reflect.Method; 
+\end_layout
+
+\begin_layout Plain Layout
+
+import java.security.AccessController; 
+\end_layout
+
+\begin_layout Plain Layout
+
+import java.security.PrivilegedExceptionAction;   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public class Payload implements PrivilegedExceptionAction {         
+\end_layout
+
+\begin_layout Plain Layout
+
+    public Payload() {
+\end_layout
+
+\begin_layout Plain Layout
+
+        try {
+\end_layout
+
+\begin_layout Plain Layout
+
+            AccessController.doPrivileged(this);
+\end_layout
+
+\begin_layout Plain Layout
+
+        } catch(Exception exception) { }     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    public Object run() throws Exception {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // Disable sandbox
+\end_layout
+
+\begin_layout Plain Layout
+
+        Class cl = System.class; 
+\end_layout
+
+\begin_layout Plain Layout
+
+        Method m = cl.getMethod("setSecurityManager", 
+\end_layout
+
+\begin_layout Plain Layout
+
+            new Class[] { SecurityManager.class }); 
+\end_layout
+
+\begin_layout Plain Layout
+
+        m.invoke(null, new Object[1]);
+\end_layout
+
+\begin_layout Plain Layout
+
+        return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    public static void outSandbox() throws Exception {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // Do malicious operations
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A typical Java exploit payload from http://pastebin.com/QWU1rqjf.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:A-typical-exploit-payload"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the case of type confusion a vulnerability is exploited to break type
+ safety, thus allowing the attacker to craft an object that can perform
+ operations as if it is an instance of a class of a different type.
+ For example, attackers will craft objects that either (1) point to the
+ 
+\family typewriter
+System
+\family default
+ class to cause any operation they perform to happen on the real 
+\family typewriter
+System
+\family default
+ class, thus allowing them to directly alter the field where the security
+ manager is stored or (2) act as if they have the same type as a privileged
+ class loader to load a payload class with all permissions (see CVE-2012-0507
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_vulnerability_2012_0507"
+
+\end_inset
+
+).
+ In the case of a confused deputy, the exploit often attacks a privileged
+ class that is accessible by any class to obtain an instance of a vulnerable
+ privileged class that is only accessible to other privileged classes.
+ The restricted-access class is targeted because it contains a vulnerability
+ that can be leveraged to execute privileged code, typically to disable
+ the security manager (see CVE-2012-4681 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_vulnerability_2012_4681"
+
+\end_inset
+
+).
+ While it is possible for an accessible privileged class to contain a vulnerabil
+ity that will allow an attacker to disable the manager more directly, these
+ classes are typically implemented more carefully to avoid these types of
+ issues.
+\end_layout
+
+\begin_layout Standard
+Many of the recent vulnerabilities would not have been introduced if the
+ JRE was developed while strictly following 
+\begin_inset Quotes eld
+\end_inset
+
+The CERT Oracle Secure Coding Standard for Java
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "long_cert_2011"
+
+\end_inset
+
+.
+ For example, Svoboda 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
+
+\end_inset
+
+ pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
+ a total of six different secure coding rules and four guidelines.
+ In the typical case, following just one or two of the broken rules and
+ guidelines would have prevented a serious exploit.
+ In the rest of this paper we concern ourselves with ways to fortify the
+ Java sandbox without breaking backwards compatibility and not with the
+ specifics of particular exploits.
 \end_layout
 
 \begin_layout Section
