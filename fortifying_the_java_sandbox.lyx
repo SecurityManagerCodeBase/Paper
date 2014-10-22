@@ -1132,23 +1132,34 @@ key "_vulnerability_2012_0507"
 
 \end_inset
 
-In the case of a confused deputy, the exploit often attacks a privileged
- class that is accessible by any class to obtain an instance of a vulnerable
- privileged class that is only accessible to other privileged classes.
- The restricted-access class is targeted because it contains a vulnerability
- that can be leveraged to execute privileged code, typically to disable
- the security manager (see CVE-2012-4681 
+A prominant subclass of Java exploits take advantage of a confused deputy
+ vulnerability 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hardy_confused_1988"
+
+\end_inset
+
+, which is a subset of privilege escalation.
+ In the case of a confused deputy exploit, the exploit convinces a privileged
+ class to return a reference to a class which performs privileged operations
+ without security checks, such as the classes in the sun package.
+ These privileged classes without security checks are isolated from a self-prote
+cting sandbox, and only callable by classes which have already performed
+ security checks.
+ However, when untrusted code is able to gain direct access to privileged
+ classes without security checks, actions with security effects can be executed
+ in a way that avoids the restrictions of the sandbox.
+ Once an exploit gains access to a privileged class without security checks,
+ the privileged class is usually used to remove the sandbox (see CVE-2012-4681
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_4681"
 
 \end_inset
 
-).
- While it is possible for an accessible privileged class to contain a vulnerabil
-ity that will allow an attacker to disable the manager more directly, these
- classes are typically implemented more carefully to avoid these types of
- issues.
+), allowing the exploit to execute its payload.
 \end_layout
 
 \begin_layout Standard
@@ -1197,15 +1208,31 @@ name "sec:Methodology"
 \end_layout
 
 \begin_layout Standard
-While Java exploits tend to follow only a few high-level operational patterns,
- the individual vulnerabilities they exploit are diverse both in their form
- and their location in the JRE.
- Given this complexity, we must understand how benign Java applications
- interact with the Java sandbox to design justifiable mitigations.
- The security manager is the means by which applications interact with the
- Java sandbox, thus we undertook an empirical analysis consisting of static,
- dynamic, and manual inspections of the open source Java application landscape
- to investigate benign interactions with the security manager.
+In security, the best mitigation strategy is not only patching individual
+ vulnerabilies once the vulnerabilites have been discovered, which in many
+ cases could mean reacting after significant damage has already occured.
+ Instead, a better approach to security is to be proactive, for example
+ classifying and catching a new exploit before it can do serious damage.
+ To successfully classify a new exploit, the key features which seperate
+ an exploit and a benign application must be determined.
+ Attempting to catch exploits by the specific vulnerability used would be
+ difficult, because this approach likely requires being aware of the vulnerabili
+ty before the exploit.
+ However, studies into Java exploits suggest that Java exploits interact
+ with the sandbox in a similar manner.
+ This knowledge leads one to question if exploits can be seperated from
+ benign applications using the way the applicaion interacts with the sandbox.
+ 
+\end_layout
+
+\begin_layout Standard
+In attempt to study how bengin applications interacted with the sandbox,
+ we investigated how applications interact with the security manger, since
+ the security manager is the part of the sandbox which handles how applications
+ interact with the sandbox.
+ To investigate how benign applications interact with the security manager,
+ we undertook an empirical analysis consisting of static, dynamic, and manual
+ inspections of the open source Java application landscape.
  Our empirical analysis aimed to validate the following claims, roughly
  categorized by the strength of the mitigation that is possible if the claim
  is true:
@@ -1214,18 +1241,22 @@ While Java exploits tend to follow only a few high-level operational patterns,
 \begin_layout Standard
 
 \series bold
-Weak Claim:
+Weakest Claim:
 \series default
  
 \shape italic
-Benign applications do not disable the security manager.
+Benign applications do not disable the sandbox.
 
 \shape default
- If this claim is true, we can monitor applications to ensure they do not
- set the manager to null.
- This would prevent exploits that use current techniques, but attackers
- would easily shift to either weakening the policies enforced by the manager
- or replacing the current manager with one that never throws a 
+ If this claim is shown to be true, exploits can be differentiated from
+ benign applications by number of attempts to turn off the sandbox.
+ A mitigation strategy using this claim would easily be able to classify
+ an unknown application.
+ However, exploits which weaken the sandbox but do not disable the sandbox,
+ would not be caught.
+ For example, attackers could bypass the mitigation strategy by either weakening
+ the policies enforced by the manager or replacing the current manager with
+ one that never throws a 
 \family typewriter
 SecurityException
 \family default
@@ -1235,22 +1266,26 @@ SecurityException
 \begin_layout Standard
 
 \series bold
-Moderate Claim:
+Weak Claim:
 \series default
  
-\shape italic
-Benign applications do not weaken the security manager.
-
-\shape default
- The moderate claim would lead to a stronger mitigation than the weak claim
- because it would prevent the manager and policy from being weakened, but
- the implementation of this mitigation would be potentially problematic
- because one would have to determine when a permission can be changed without
- creating a security vulnerability.
- This is difficult because it requires context a tool may not have.
+\emph on
+Benign applications do not weaken the sandbox
+\emph default
+.
+ The goal of this claim is to be able to classify benign applications and
+ exploits by the changes to the sandbox.
+ A mitigation using this claim would prevent weakening the sandbox during
+ runtime and thus catch both exploits which turn off the sandbox and exploits
+ which only weaken the sandbox.
+ However, an implementation of this mitigation would require differentiating
+ between changes which weaken the sandbox and changes which do not weaken
+ the sandbox.
+ Classifying changes to the sandbox is difficult because it requires context
+ specific information that a general mitigation strategy may not have.
  For example, if a permission to write to a file is replaced by a permission
- to write to a different file, how does a tool know if the new policy is
- weaker, stronger, or exactly as secure?
+ to write to a different file, is the sandbox weakened, strengthened, or
+ exactly as secure?
 \end_layout
 
 \begin_layout Standard
@@ -1260,17 +1295,41 @@ Strong Claim:
 \series default
  
 \shape italic
-Benign applications do not change the security manager or the enforced policy
- in any way if a self-protecting security manager has been set
+Benign applications do not change the sandbox if a self-protecting security
+ manager has been set
 \shape default
-? The strongest mitigation is possible if this claim is true because it
- achieves a similar effect to the moderate mitigation while being substantially
- easier to implement: easily implemented mitigations are more likely to
- be implemented correctly.
+.
+ This claim would allow seperating exploits from benign applications if
+ the sandbox is changed while the application is using the sandbox for security.
+ A mitigation strategy using this claim would allow clear differentiation
+ between benign applications and exploits, while also preventing exploits
+ from changing the sandbox in any way.
+ Implementing this claim requires determining if the secuity manager is
+ self-protecting, which can be easily acheived at any time.
 \end_layout
 
 \begin_layout Standard
-We turned to the Qualitas Corpus (QC) 
+
+\series bold
+Strongest Claim:
+\series default
+ 
+\shape italic
+Benign applications do not change the sandbox.
+
+\shape default
+ The goal of this claim is to be able to classify benign applications and
+ exploits using the seperator that only exploits change the sandbox during
+ execution.
+ If the study supports this claim, any attempted change to the security
+ manager could be used to determine an exploit attempt.
+ A mitigation strategy using this claim could clearly differentiate betwen
+ benign applications and exploits, while also preventing the sandbox from
+ changing in any way.
+\end_layout
+
+\begin_layout Standard
+Our emprical analysis used applications from the Qualitas Corpus (QC) 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "QualitasCorpus:APSEC:2010"
@@ -1278,27 +1337,48 @@ key "QualitasCorpus:APSEC:2010"
 \end_inset
 
  and GitHub to form a dataset of applications that use the security manager.
- To sort out relevant applications in QC we performed a simple grep of each
- application's source code to find the keyword 
+ To filter relevant applications out of the 112 applications in QC we performed
+ a simple grep of each application's source code to find the keyword 
 \shape italic
 SecurityManager
 \shape default
 .
  Assuming any instance of the keyword was found, we included the application
  in our dataset.
- This reduced the overall set of applications to inspect from 112 to 29.
- This led to the inclusion of applications that had the keyword in comments
- or in unit tests that would not appear in production code, but these applicatio
-ns were easily sorted out in later steps.
- We performed a similar process using the GitHub search feature configured
- to show source code, Java applications, and the most relevant results.
- At the time of our search, GitHub did not group results by project, thus
- we searched through the first 20 pages and found 17 unique projects that
- used the security manager to add to the dataset.
- While the page limit meant we only looked at a few hundred of the nearly
- 100,000 files returned, we believe this procedure was sufficient to ensure
- our dataset is representative of how open source Java applications use
- the security manager.
+ This filtering reduced the set of applications to inspect from 112 to 29.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ZC: not important in my opinion - This filtering method led to false positives,
+ such as applications that had the keyword in comments or in unit tests
+ that would not appear in production code, but these applications were easily
+ sorted out in later steps.
+ 
+\end_layout
+
+\end_inset
+
+We performed a similar process using the GitHub search feature configured
+ search through Java files for the keyword.
+ Initially, we extracted the top 6 applications which used the term SecurityMana
+ger, but upon initial inspection, we came to find this filtering method
+ was producing a high false postive rate, meaning that developers were using
+ the word SecurityManager in ways that were unrelated to java.lang.SecurityManager
+ (later in-depth inspection determined 4 out of the 6 were false postives).
+ We then refined our search to only include applications which included
+ the code to set up a sandbox.
+ Thus we extracted the top 7 applications which used the term System.setSecurityM
+anager().
+ To make sure we covered applications which disabled the security manager,
+ the top 7 applications where extracted which used the term System.setSecurityMan
+ager(null).
+ Upon inspecting the extracted results, 2 applications were already covered
+ in the Qualitas Corpus so they were removed from the dataset.
+ We also removed an application which was written in Ruby but contained
+ Java files leaving 17 applications in the Github dataset.
+ 
 \end_layout
 
 \begin_layout Standard
