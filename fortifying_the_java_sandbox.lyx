@@ -1377,27 +1377,31 @@ ager(null).
  Upon inspecting the extracted results, 2 applications were already covered
  in the Qualitas Corpus so they were removed from the dataset.
  We also removed an application which was written in Ruby but contained
- Java files leaving 17 applications in the Github dataset.
+ Java files for a final total of 17 applications in the Github dataset.
  
 \end_layout
 
 \begin_layout Standard
-We created static and dynamic analysis tools to further sort through the
- dataset before manually inspecting projects.
- Our static analysis is a plugin for FindBugs 
+We created static and dynamic analysis tools to assist the manual inspecton
+ of applications.
+ Our static analysis tool consisted of a plugin for FindBugs 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hovemeyer_finding_2004"
 
 \end_inset
 
- that uses a dataflow analysis to determine which initialized security managers
- may be set as System security manager by calling 
+, a tool used to statically analyze Java programs for code that matches
+ a given bug pattern.
+ Our plugin used the dataflow analysis in Findbugs to determine the lines
+ in the application where 
 \family typewriter
 System.setSecurityManager
 \family default
-().
- We created a dynamic analysis using JVMTI
+() was called, as well as the lines where the argument used in the setSecurityMa
+nager call was initialized.
+ We also created a dynamic analysis tool using the Java Virtual Machine
+ Tool Interface (JVMTI)
 \begin_inset Foot
 status collapsed
 
@@ -1408,7 +1412,10 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/jvmti/
 \end_inset
 
 .
- Our dynamic analysis set a modification watch on the 
+ JVMTI is desgined to allow tools to inspect the current state of Java applicati
+ons and allow tools to control the execution of the Java application.
+ JVTMI is commonly used for Java debugging and profiling tools.
+ Our dynamic analysis tool set a modification watch on the 
 \family typewriter
 security
 \family default
@@ -1416,31 +1423,92 @@ security
 \family typewriter
 System
 \family default
- class.
- The security field is a private and static field that stores the 
-\family typewriter
-SecurityManager
-\family default
- object that will be used by all JRE classes when making security policy
- decisions for the running Java application.
- The watch printed out the class name, source file name, and line of code
- where any write to the security field took place.
- The printed message contained a special notice if the security manager
- was being set to 
+ class, similar to the way debuggers watch a variable.
+ The security field of the System class was choosen because the security
+ feild is the variable which holds the current security manager object for
+ the application, and thus the current sandbox object.
+ The field watch printed out the class name, source file name, and line
+ of code where any change that effected the security field took place.
+ The printed message contained a special notice if the security field was
+ set to 
 \family typewriter
 null
 \family default
 .
- After running both of these tools on each project we were armed with the
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: Took this out, may add it back or something similar later - 
+\end_layout
+
+\begin_layout Plain Layout
+After running both of these tools on each project we were armed with the
  information required to further narrow our manual inspection efforts: which
  applications change the security manager, where they make the change, which
  changes are likely to invalidate a claim, and where SecurityManager objects
  are initialized.
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 We split the applications that used the security manager between two reviewers.
- The reviewers utilized a checklist to ensure that they consistently inspected
+ The reviewers both analysed applications in using the same steps, which
+ are listed below.
+\end_layout
+
+\begin_layout Enumerate
+The reviewer ran grep on all the Java files in the application to output
+ the lines which contain the word SecurityManager.
+\end_layout
+
+\begin_layout Enumerate
+If it was possible to quickly determine the application only used the SecurityMa
+nager in comments or in ways that were unrelated to java.lang.SecurityManager,
+ the reviwer labeled the application as a false postive.
+\end_layout
+
+\begin_layout Enumerate
+If the application was not a false positive and could be compiled, we ran
+ the Findbugs plugin on the application to highlight where the application
+ sets the security manager for the system (turns on the sandbox).
+\end_layout
+
+\begin_layout Enumerate
+The reviewer manually inspected the lines mentioned in the static analysis.
+ Starting with the line where the system security manager was set and tracing
+ the code to where the security manager was initialized.
+ 
+\end_layout
+
+\begin_layout Enumerate
+The reviewer then manually inspected all of the lines mentioned in the grep
+ results from step 1 to see how the application interacted with the sandbox.
+ 
+\end_layout
+
+\begin_layout Enumerate
+For applications that were not a false positive, could be compiled, and
+ effected the security manager during the execution of the application,
+ the reviewer monitored the applications with our dynamic analysis tool
+ while executing the applications in ways that effect the security manager.
+ This step verified the conclusions made from previous steps
+\end_layout
+
+\begin_layout Enumerate
+Finally, the reviewer summarized the interaction between the application
+ and the security manager with an emphasis on points that support or invalidate
+ each claim.
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+The reviewers utilized a checklist to ensure that they consistently inspected
  each application.
  Table 
 \begin_inset CommandInset ref
@@ -1450,13 +1518,15 @@ reference "tab:Summary-of-checklist"
 \end_inset
 
  provides a summary of the items on our checklist; the full list provides
- details on carrying out each step.
- After performing a manual inspection, the reviewer ran the dynamic analysis
- on the application again, but this time with an emphasis on running executions
- that were known to exercise the security manager to ensure we didn't miss
- an important execution.
- Finally, the reviewer wrote a summary of how the application used the security
- manager with an emphasis on points that validate or invalidate each claim.
+ details on carrying out each step.After performing a manual inspection,
+ the reviewer ran the dynamic analysis on the application again, but this
+ time with an emphasis on running executions that were known to exercise
+ the security manager to ensure we didn't miss an important execution.
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1468,12 +1538,7 @@ This table kind of sucks.
  Is there something better we can do?
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -1538,6 +1603,11 @@ Identify possible values for SecurityManager objects that reach a call site
 </cell>
 </row>
 </lyxtabular>
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
