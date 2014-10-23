@@ -1346,6 +1346,10 @@ SecurityManager
  Assuming any instance of the keyword was found, we included the application
  in our dataset.
  This filtering reduced the set of applications to inspect from 112 to 29.
+ The 29 applications were then inspected to make sure they were the latest
+ released version of the application.
+ If the application contained a newer release than the version already in
+ Qualitas, the application was updated to the latest released version.
  
 \begin_inset Note Note
 status open
@@ -1361,14 +1365,15 @@ ZC: not important in my opinion - This filtering method led to false positives,
 \end_inset
 
 We performed a similar process using the GitHub search feature configured
- search through Java files for the keyword.
+ search through Java files for the SecurityManager keyword.
  Initially, we extracted the top 6 applications which used the term SecurityMana
 ger, but upon initial inspection, we came to find this filtering method
  was producing a high false postive rate, meaning that developers were using
  the word SecurityManager in ways that were unrelated to java.lang.SecurityManager
- (later in-depth inspection determined 4 out of the 6 were false postives).
- We then refined our search to only include applications which included
- the code to set up a sandbox.
+ (later in-depth inspection determined 4 out of the 6 applications did not
+ use the java.lang.SecurityManager).
+ We then refined our search to only include applications which seemed to
+ set up a sandbox.
  Thus we extracted the top 7 applications which used the term System.setSecurityM
 anager().
  To make sure we covered applications which disabled the security manager,
@@ -1378,7 +1383,8 @@ ager(null).
  in the Qualitas Corpus so they were removed from the dataset.
  We also removed an application which was written in Ruby but contained
  Java files for a final total of 17 applications in the Github dataset.
- 
+ All applications that were downloaded from Github were downloaded as the
+ latest commits so the Github applications did not need to be updated.
 \end_layout
 
 \begin_layout Standard
@@ -1474,8 +1480,8 @@ nager in comments or in ways that were unrelated to java.lang.SecurityManager,
 \end_layout
 
 \begin_layout Enumerate
-If the application was not a false positive and could be compiled, we ran
- the Findbugs plugin on the application to highlight where the application
+If the application was not a false positive and could be compiled, the reviewer
+ ran the Findbugs plugin on the application to highlight where the application
  sets the security manager for the system (turns on the sandbox).
 \end_layout
 
@@ -1495,7 +1501,7 @@ The reviewer then manually inspected all of the lines mentioned in the grep
 \begin_layout Enumerate
 For applications that were not a false positive, could be compiled, and
  effected the security manager during the execution of the application,
- the reviewer monitored the applications with our dynamic analysis tool
+ the reviewer monitored the applications with the dynamic analysis tool
  while executing the applications in ways that effect the security manager.
  This step verified the conclusions made from previous steps
 \end_layout
@@ -1526,7 +1532,32 @@ reference "tab:Summary-of-checklist"
 
 \end_inset
 
- 
+
+\end_layout
+
+\begin_layout Standard
+As a way to ensure the analysis steps produced the expected results and
+ that both reviewers produced similar reviews for the same application,
+ the analysis started with both reviewers independently analyzed the same
+ 6 applications.
+ These independ provided feedback to the reviewers, allowing the reviewers
+ to focus on the same interactions in the application as well as notify
+ the reviewer if he was missing something imporant.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+I'm not happy with this preceding paragraph.
+ I think it sounds weird.
+ I can't think how to word it correctly so I'll come back to it later.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
