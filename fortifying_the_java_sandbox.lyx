@@ -89,9 +89,9 @@ The Java sandbox attempts to allow arbitrary code to execute in way that
  source applications interact with the sandbox.
   The outcome of this investigation supported the hypothesis that we can
  could restrict behavior of an application to increase security.
-  Two initial fortification strategies were then created and verified with
- 10 Java exploits from the past 2 years.
-  The effects of the fortification strategies were also performance tested
+  Two initial fortification strategies were then created and experimentally
+ validated with 10 Java exploits from the past 4 years.
+ The effects of the fortification strategies were also performance tested
  on the Dacapo Benchmarks to determine the strategies' effects on running
  applications.
   The study reveals that a significant number of exploits can be stopped
@@ -160,11 +160,11 @@ A security goal of Java is to allow applications to safely execute untrusted
  Instead of the sandbox completely protecting the application, security
  researchers are constantly finding ways to exploit how the sandbox is implement
 ed.
- Security Exporations, a company that research security vulnerabilities
- in applications, found that the Java Virutal Machine (JVM) contained 19
- weaknesses and developed 12 expoits to demonstrate these weaknesses in
- a report on April 2nd 2012 (&& add a citiation of http://www.security-exploratio
-ns.com/en/SE-2012-01-press.html if you keep this sentence &&).
+ Security Explorations, a company that research security vulnerabilities
+ in applications, found that the Java Virtual Machine (JVM) contained 19
+ weaknesses and developed 12 exploits to demonstrate these weaknesses in
+ a report on April 2nd 2012 (&& add a citation of http://www.security-exploration
+s.com/en/SE-2012-01-press.html if you keep this sentence &&).
  Hackers have also discovered zero-day exploits, with the exploit in August
  2012 and January 2013 making widespsread news and detailed in a CERT blog
  post(cite: http://www.cert.org/blogs/certcc/post.cfm?EntryID=136 - also not
@@ -176,7 +176,7 @@ status open
 
 \begin_layout Plain Layout
 JSS: This is a weak beginning.
- Begin wiht what distinguishes Java, not the mere fact that Java is different.
+ Begin wirh what distinguishes Java, not the mere fact that Java is different.
  You need to quickly explain what is unique about the Java security model,
  why/how it is threatened, and why the reader should care.
  
@@ -190,7 +190,7 @@ ZC: Better now?
 Old first intro paragraph - Specifically, Java allows an application to
  untrusted code by setting a sandbox to restrict the behavior of the application
 s.
- The goal of the sandbox is to allow bengin code to execute and perform
+ The goal of the sandbox is to allow benign code to execute and perform
  its intended behavior but prevent hostile code from compromising the system.
  While the sandbox is able to stop the behavior of many malicious applications,
  exploits have been found that allow code to break out of the sandbox and
@@ -293,8 +293,8 @@ Old intro - Based on the author's knowledge of how Java exploits worked,
  the sandbox, such as preventing turning off the sandbox (**not sure how
  to word this sentence, come back later**).
  However, before these restrictions could be successfully implemented, it
- was important to verify that these restictions would not break how applications
- interact with the sandbox.
+ was important to verify that these restrictions would not break how application
+s interact with the sandbox.
  We started our investigation of how applications interact with the sandbox
  by searching other published papers and came to find that the research
  community lacked insight on how applications were using the sandbox.
@@ -304,8 +304,8 @@ Old intro - Based on the author's knowledge of how Java exploits worked,
 \end_inset
 
 This knowledge leads to the question: can malicious applications be uniquely
- deteced and stopped at runtime based on how they interact with the sandbox?
- To answer this question, it is imporant to know how benign applications
+ detected and stopped at runtime based on how they interact with the sandbox?
+ To answer this question, it is important to know how benign applications
  interact with the sandbox, to avoid falsely halting an application that
  the user wants to run.
  After a thorough literature review, the authors were unable to find information
@@ -345,12 +345,12 @@ We set up an investigation of 29 applications from the Qualitas Corpus and
  of the static analysis tools in context and to understand important sandbox
  interactions.
  Finally, application runs were monitored to see how the sandbox changed
- at runtime, verifing the results of the static analysis
+ at runtime, verifying the results of the static analysis
 \end_layout
 
 \begin_layout Standard
 Based on the findings of this analysis, two rules for fortifying the sandbox
- were implemented: the Privilige Escalation rule, which prevents applications
+ were implemented: the Privilege Escalation rule, which prevents applications
  from loading a class with less restrictions from a restricted class when
  a sandbox is set, and the SecurityManager rule, which prevents changes
  to the sandbox when a self-protecting Sandbox is set.
@@ -381,7 +381,7 @@ The Java sandbox was designed to safely execute code from untrusted sources.
 \end_layout
 
 \begin_layout Standard
-The Java sandbox protects an application by assigning permissions to inidividual
+The Java sandbox protects an application by assigning permissions to individual
  classes and then enforcing the permissions through permissions checks.
  Figure 
 \begin_inset CommandInset ref
@@ -393,29 +393,11 @@ reference "fig:Sandbox-high-level-summary"
  summarizes the components of the sandbox that are relevant to this work.
  Essentially, when a class loader loads a class from some location (e.g.,
  network, filesystem, etc.) the class is assigned a code source.
- The assigned code source is used to indicate the origin of the code 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-ZC: 
-\begin_inset Quotes eld
-\end_inset
-
-while it is loaded in the JRE
-\begin_inset Quotes erd
-\end_inset
-
- seems obvious to me.
- we can add it back later if you think it is important
-\end_layout
-
-\end_inset
-
- and to associate the class with a protection domain.
+ The assigned code source is used to indicate the origin of the code and
+ to associate the class with a protection domain.
  Protection domains segment the classes of an application into different
  groups, where each group is assigned a unique permission set.
- The permission sets contain permissions explicilty allowing actions with
+ The permission sets contain permissions explicitly allowing actions with
  possible security implications 
 \begin_inset Note Note
 status open
@@ -438,7 +420,7 @@ key "_permissions_2014"
 \end_inset
 
 ).
- The application defines how to assign clases to different protection domains,
+ The application defines how to assign classes to different protection domains,
  as well as the specific permission set for each protection domain, based
  on the permissions granted in the policy.
  
@@ -452,13 +434,13 @@ ZC: The previous sentence is too long.
 
 \end_inset
 
-The policy specifies the permissable behavior for the application.
+The policy specifies the permissible behavior for the application.
  The sandbox restricts the behavior of the application to what is allowed
  in the policy.
  By default, applications which are executed from the local file system
  are run without a sandbox.
  Web applets, on the other hand, are set to run inside a sandbox by default,
- preventing the applet from performing malicous operations to the determent
+ preventing the applet from performing malicious operations to the determent
  of the host system.
  
 \begin_inset Note Note
@@ -874,10 +856,10 @@ Java Exploits
 
 \begin_layout Standard
 Malicious drive-by downloads using Java applets as the vector were widely
- reported between 2011 and 2013 (&& probably should add a citiation here
- &&).
+ reported between 2011 and 2013 (&& probably should add a citation here
+ &&: http://java-0day.com/).
  While Java applets should prevent malicious applications from executing
- their payload, vulnerabilities in the Java Runtime Enviroment (JRE) were
+ their payload, vulnerabilities in the Java Runtime Environment (JRE) were
  leveraged by exploits to set the secruity manager to 
 \family typewriter
 null
@@ -885,7 +867,7 @@ null
 .
  Setting the security manager to null disables the Java sandbox, allowing
  previously constrained classes to perform any operation that the JRE can
- perform, meaning the malicious applicaition can now execute the payload
+ perform, meaning the malicious application can now execute the payload
  on the host system.
  Figure 
 \begin_inset CommandInset ref
@@ -1132,7 +1114,7 @@ key "_vulnerability_2012_0507"
 
 \end_inset
 
-A prominant subclass of Java exploits take advantage of a confused deputy
+A prominent subclass of Java exploits take advantage of a confused deputy
  vulnerability 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1209,24 +1191,24 @@ name "sec:Methodology"
 
 \begin_layout Standard
 In security, the best mitigation strategy is not only patching individual
- vulnerabilies once the vulnerabilites have been discovered, which in many
- cases could mean reacting after significant damage has already occured.
+ vulnerabilities once the vulnerabilities have been discovered, which in
+ many cases could mean reacting after significant damage has already occurred.
  Instead, a better approach to security is to be proactive, for example
  classifying and catching a new exploit before it can do serious damage.
- To successfully classify a new exploit, the key features which seperate
+ To successfully classify a new exploit, the key features which separate
  an exploit and a benign application must be determined.
  Attempting to catch exploits by the specific vulnerability used would be
  difficult, because this approach likely requires being aware of the vulnerabili
 ty before the exploit.
  However, studies into Java exploits suggest that Java exploits interact
  with the sandbox in a similar manner.
- This knowledge leads one to question if exploits can be seperated from
- benign applications using the way the applicaion interacts with the sandbox.
+ This knowledge leads one to question if exploits can be separated from
+ benign applications using the way the application interacts with the sandbox.
  
 \end_layout
 
 \begin_layout Standard
-In attempt to study how bengin applications interacted with the sandbox,
+In attempt to study how benign applications interacted with the sandbox,
  we investigated how applications interact with the security manger, since
  the security manager is the part of the sandbox which handles how applications
  interact with the sandbox.
@@ -1299,13 +1281,13 @@ Benign applications do not change the sandbox if a self-protecting security
  manager has been set
 \shape default
 .
- This claim would allow seperating exploits from benign applications if
+ This claim would allow separating exploits from benign applications if
  the sandbox is changed while the application is using the sandbox for security.
  A mitigation strategy using this claim would allow clear differentiation
  between benign applications and exploits, while also preventing exploits
  from changing the sandbox in any way.
- Implementing this claim requires determining if the secuity manager is
- self-protecting, which can be easily acheived at any time.
+ Implementing this claim requires determining if the security manager is
+ self-protecting, which can be easily achieved at any time.
 \end_layout
 
 \begin_layout Standard
@@ -1319,17 +1301,17 @@ Benign applications do not change the sandbox.
 
 \shape default
  The goal of this claim is to be able to classify benign applications and
- exploits using the seperator that only exploits change the sandbox during
+ exploits using the separator that only exploits change the sandbox during
  execution.
  If the study supports this claim, any attempted change to the security
  manager could be used to determine an exploit attempt.
- A mitigation strategy using this claim could clearly differentiate betwen
+ A mitigation strategy using this claim could clearly differentiate between
  benign applications and exploits, while also preventing the sandbox from
  changing in any way.
 \end_layout
 
 \begin_layout Standard
-Our emprical analysis used applications from the Qualitas Corpus (QC) 
+Our empirical analysis used applications from the Qualitas Corpus (QC) 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "QualitasCorpus:APSEC:2010"
@@ -1346,27 +1328,14 @@ SecurityManager
  Assuming any instance of the keyword was found, we included the application
  in our dataset.
  This filtering reduced the set of applications to inspect from 112 to 29.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-ZC: not important in my opinion - This filtering method led to false positives,
- such as applications that had the keyword in comments or in unit tests
- that would not appear in production code, but these applications were easily
- sorted out in later steps.
- 
-\end_layout
-
-\end_inset
-
-We performed a similar process using the GitHub search feature configured
+ We performed a similar process using the GitHub search feature configured
  search through Java files for the keyword.
  Initially, we extracted the top 6 applications which used the term SecurityMana
 ger, but upon initial inspection, we came to find this filtering method
- was producing a high false postive rate, meaning that developers were using
- the word SecurityManager in ways that were unrelated to java.lang.SecurityManager
- (later in-depth inspection determined 4 out of the 6 were false postives).
+ was producing a high false positive rate, meaning that developers were
+ using the word SecurityManager in ways that were unrelated to java.lang.SecurityM
+anager (later in-depth inspection determined 4 out of the 6 were false positives
+).
  We then refined our search to only include applications which included
  the code to set up a sandbox.
  Thus we extracted the top 7 applications which used the term System.setSecurityM
@@ -1382,7 +1351,7 @@ ager(null).
 \end_layout
 
 \begin_layout Standard
-We created static and dynamic analysis tools to assist the manual inspecton
+We created static and dynamic analysis tools to assist the manual inspection
  of applications.
  Our static analysis tool consisted of a plugin for FindBugs 
 \begin_inset CommandInset citation
@@ -1412,7 +1381,7 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/jvmti/
 \end_inset
 
 .
- JVMTI is desgined to allow tools to inspect the current state of Java applicati
+ JVMTI is designed to allow tools to inspect the current state of Java applicati
 ons and allow tools to control the execution of the Java application.
  JVTMI is commonly used for Java debugging and profiling tools.
  Our dynamic analysis tool set a modification watch on the 
@@ -1424,8 +1393,8 @@ security
 System
 \family default
  class, similar to the way debuggers watch a variable.
- The security field of the System class was choosen because the security
- feild is the variable which holds the current security manager object for
+ The security field of the System class was chosen because the security
+ field is the variable which holds the current security manager object for
  the application, and thus the current sandbox object.
  The field watch printed out the class name, source file name, and line
  of code where any change that effected the security field took place.
@@ -1470,12 +1439,12 @@ The reviewer ran grep on all the Java files in the application to output
 \begin_layout Enumerate
 If it was possible to quickly determine the application only used the SecurityMa
 nager in comments or in ways that were unrelated to java.lang.SecurityManager,
- the reviwer labeled the application as a false postive.
+ the reviewer labeled the application as a false positive.
 \end_layout
 
 \begin_layout Enumerate
 If the application was not a false positive and could be compiled, we ran
- the Findbugs plugin on the application to highlight where the application
+ the FindBugs plugin on the application to highlight where the application
  sets the security manager for the system (turns on the sandbox).
 \end_layout
 
