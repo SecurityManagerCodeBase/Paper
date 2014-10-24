@@ -1449,7 +1449,7 @@ nager in comments or in ways that were unrelated to java.lang.SecurityManager,
 
 \begin_layout Enumerate
 If the application was not a false positive and could be compiled, the reviewer
- ran the Findbugs plugin on the application to highlight where the application
+ ran the FindBugs plugin on the application to highlight where the application
  sets the security manager for the system (turns on the sandbox).
 \end_layout
 
