@@ -1223,7 +1223,7 @@ In attempt to study how benign applications interacted with the sandbox,
 \begin_layout Standard
 
 \series bold
-Weakest Claim:
+Weak Claim:
 \series default
  
 \shape italic
@@ -1248,7 +1248,7 @@ SecurityException
 \begin_layout Standard
 
 \series bold
-Weak Claim:
+Moderate Claim:
 \series default
  
 \emph on
@@ -1293,7 +1293,7 @@ Benign applications do not change the sandbox if a self-protecting security
 \begin_layout Standard
 
 \series bold
-Strongest Claim:
+Ideal Claim:
 \series default
  
 \shape italic
@@ -1554,13 +1554,15 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "Table: Qualitas Dataset"
+
+\end_inset
+
 Qualitas Corpus Dataset
 \end_layout
 
@@ -2459,7 +2461,15 @@ XML Parsing Library
 \end_layout
 
 \begin_layout Standard
-Inte
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Table: Qualitas Dataset"
+
+\end_inset
+
+ contains the 29 applications which contain the keyword SecurityManager
+ out of the original 112 applications in the Qualitas Dataset.
+ 11 of the 29 applications are developed by the Apache Software Foundation.
 \end_layout
 
 \begin_layout Standard
@@ -2469,15 +2479,18 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
 GitHub Dataset
 \end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "Table: Github Dataset"
 
 \end_inset
 
@@ -3025,6 +3038,18 @@ Closure Library
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Table: Github Dataset"
+
+\end_inset
+
+ contains the 17 applications used in the GitHub Dataset.
+ refact4j is the only application without a discription because the comments
+ were in a language that the authors could not read.
+\end_layout
+
 \begin_layout Section
 Research Questions and Results
 \begin_inset CommandInset label
@@ -3104,10 +3129,9 @@ reference "sub:Reducing-Web-Application-Complexity"
  was designed to work inside of a sandbox but never explicitly set up a
  sandbox in the application.
  The indicating code consists of adding extra permission checks if the applicati
-on was inside of a sandbox, (**may want to explain doPrivileged here**)
- using doPrivileged calls to avoid checking the permissions of all classes
- on the stack, or ensuring that sections of the application would work within
- a sandbox using test cases.
+on was inside of a sandbox, using doPrivileged calls to avoid checking the
+ permissions of all classes on the stack, or ensuring that sections of the
+ application would work within a sandbox using test cases.
  This category was further subdivided into applications which altered execution
  inside the main application (meaning extra permission check or calling
  doPrivileged) and applications which only contined test cases that interacted
@@ -3153,7 +3177,93 @@ anager as the program was running.
 \end_layout
 
 \begin_layout Subsection
+Does the dataset support the claims?
+\end_layout
+
+\begin_layout Standard
+The study paid extra attention to whether the applications in the dataset
+ supported the four claims listed in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Methodology"
+
+\end_inset
+
+.
+ The claims were worded where one counter example would cause the claim
+ to be false.
+ The result of the investigation of the claims is expanded below.
+ (** reword this paragraph later**)
+\end_layout
+
+\begin_layout Standard
+The first claim listed was the weak claim: 
+\shape italic
+Benign applications do not disable the sandbox.
+ 
+\emph on
+The investigation determined that some benign applications do turn off the
+ sandbox.
+ Some benign applications in the dataset were found to turn off the sandbox.
+ The applications, which explicitly turned off the sandbox, usually turned
+ off the sandbox for non-security purposes, which are further explained
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Non-security-uses-of"
+
+\end_inset
+
+.
+ Although some turned off the sandbox to make updating the sandbox easier
+\end_layout
+
+\begin_layout Standard
+The second claim listed was the moderate claim: 
+\emph on
+Benign applications do not weaken the sandbox.
+ 
+\emph default
+This claim was not definitevely falsified if turning off the sandbox is
+ excluded from weakening.
+ However, multiple applications allowed dynamically changing the sandbox
+ and there was no restriction preventing users from weakening the sandbox
+ during execution.
+\end_layout
+
+\begin_layout Standard
+The third claim was the strong claim: 
+\shape italic
+Benign applications do not change the sandbox if a self-protecting security
+ manager has been set
+\shape default
+.
+ While applications did allow changing the sandbox, no application ensured
+ that the application could change the sandbox in all cases.
+ If a self-protecting sandbox is set for all applications in the datasetes,
+ all attempts to change the sandbox would be prevented by the self-protecting
+ sandbox.
+\end_layout
+
+\begin_layout Standard
+The fourth claim was the ideal claim:
+\shape italic
+Benign applications do not change the sandbox.
+ 
+\emph on
+This claim was shown to be false as multiple applications changed the sandbox,
+ both for security reasons and non-security reasons.
+\end_layout
+
+\begin_layout Subsection
 Non-security uses of the Sandbox
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Non-security-uses-of"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4011,7 +4121,7 @@ The one application that did not fall into either of these categories was
  on the privileged actions that the privileged class needs to do.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Rules
 \end_layout
 
@@ -4028,7 +4138,7 @@ self-protecting
  and the SecurityManager rule.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Privilege Escalation Rule
 \end_layout
 
@@ -4063,7 +4173,7 @@ package.access
  
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 SecurityManager Rule
 \end_layout
 
