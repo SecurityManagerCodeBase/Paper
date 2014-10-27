@@ -1436,7 +1436,7 @@ name "sec:Applications-Studied"
 
 \begin_layout Standard
 \begin_inset Float table
-wide false
+wide true
 sideways false
 status open
 
@@ -1459,6 +1459,7 @@ Qualitas Corpus Dataset
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="30" columns="3">
 <features rotate="0" tabularvalignment="middle">
@@ -2383,7 +2384,7 @@ reference "Table: Qualitas Dataset"
 
 \begin_layout Standard
 \begin_inset Float table
-wide false
+wide true
 sideways false
 status open
 
@@ -2407,6 +2408,7 @@ name "Table: Github Dataset"
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="18" columns="3">
 <features rotate="0" tabularvalignment="middle">
@@ -3128,13 +3130,9 @@ After inspecting the 29 applications in the filtered Qualitas dataset, the
 ger.
  
 \begin_inset Float table
-wide false
+wide true
 sideways false
 status open
-
-\begin_layout Plain Layout
-
-\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -3149,6 +3147,7 @@ Classification of Applications Interacting with the SecurityManager
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="4">
 <features rotate="0" tabularvalignment="middle">
@@ -3432,10 +3431,6 @@ Total
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -4678,9 +4673,10 @@ reference "fig:A-popup-from"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename rule_violation_popup.png
 	scale 50
@@ -4703,6 +4699,17 @@ name "fig:A-popup-from"
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: Fix this screenshot so the left side is not cut off and there is not
+ a black artifact in the top left corner.
 \end_layout
 
 \end_inset
@@ -5077,7 +5084,7 @@ reference "tab:Exploit-experiment-summary"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -5109,7 +5116,7 @@ name "tab:Exploit-experiment-summary"
 <lyxtabular version="3" rows="11" columns="3">
 <features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="3cm">
 <column alignment="center" valignment="top">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
