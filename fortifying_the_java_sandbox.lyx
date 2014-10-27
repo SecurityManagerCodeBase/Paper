@@ -159,44 +159,54 @@ ed.
  Security Explorations, a company that research security vulnerabilities
  in applications, found that the Java Virtual Machine (JVM) contained 19
  weaknesses and developed 12 exploits to demonstrate these weaknesses in
- a report on April 2nd 2012 (&& add a citation of http://www.security-exploration
-s.com/en/SE-2012-01-press.html if you keep this sentence &&).
+ a report on April 2nd 2012 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "security_explorations_2012"
+
+\end_inset
+
+.
  Hackers have also discovered zero-day exploits, with the exploit in August
  2012 and January 2013 making widespsread news and detailed in a CERT blog
- post(cite: http://www.cert.org/blogs/certcc/post.cfm?EntryID=136 - also not
- 100% happy with this sentence at the moment).If this trend continues, regular
- updates will not be enough to ensure the integrity of Java applications.
+ post 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "svoboda_anatomy_blog_2013"
+
+\end_inset
+
+(not 100% happy with this sentence at the moment).If this trend continues,
+ regular updates will not be enough to ensure the integrity of Java applications.
  
 \end_layout
 
 \begin_layout Standard
 Past investigations of Java security exploits have shown Java malware commonly
- alters the sandbox's settings.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Cite (http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6383153) 
-\end_layout
+ alters the sandbox's settings
+\begin_inset CommandInset citation
+LatexCommand cite
+key "garber_2012"
 
 \end_inset
 
- This alteration of the sandbox is usually by turning the sandbox off with
- a call to 
+.
+ This alteration of the sandbox is usually achieved by turning the sandbox
+ off with a call to 
 \family typewriter
 System.setSecurityManager(null)
 \family default
 
-\begin_inset Note Note
-status open
+\begin_inset CommandInset citation
+LatexCommand cite
+key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012"
 
-\begin_layout Plain Layout
-cite (http://www.cert.org/blogs/certcc/post.cfm?EntryID=136),(http://www.fireeye.com/
-blog/technical/2013/06/get-set-null-java-security.html),(http://www.security-explo
-rations.com/materials/se-2012-01-report.pdf),(https://media.blackhat.com/bh-us-12/Br
-iefings/Oh/BH_US_12_Oh_Recent_Java_Exploitation_Trends_and_Malware_WP.pdf)
-\end_layout
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "blackhat_2012"
 
 \end_inset
 
@@ -208,46 +218,6 @@ SecurityManager
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: Your expertise is not going to convince anyone! Explain 
-\begin_inset Quotes eld
-\end_inset
-
-how Java exploits work,
-\begin_inset Quotes erd
-\end_inset
-
- cite relevant articles, etc.
- 
-\end_layout
-
-\begin_layout Plain Layout
-ZC: I couldn't decide if I should directly quote any of the articles or
- not.
- 
-\end_layout
-
-\begin_layout Plain Layout
-Old intro - Based on the author's knowledge of how Java exploits worked,
- we believed that it would be possible to harden the existing foundation
- of the Java sandbox to reduce future exploits and provide a basis for future
- mitigations.The hardening would be acheived by enforcing restrictions of
- the sandbox, such as preventing turning off the sandbox (**not sure how
- to word this sentence, come back later**).
- However, before these restrictions could be successfully implemented, it
- was important to verify that these restrictions would not break how application
-s interact with the sandbox.
- We started our investigation of how applications interact with the sandbox
- by searching other published papers and came to find that the research
- community lacked insight on how applications were using the sandbox.
- 
-\end_layout
-
-\end_inset
-
 This knowledge leads to the question: can malicious applications be uniquely
  detected and stopped at runtime based on how they interact with the sandbox?
  To answer this question, it is important to know how benign applications
@@ -258,25 +228,6 @@ This knowledge leads to the question: can malicious applications be uniquely
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-In attempt to fill in this required knowledge, we set up an investigation
- to explore how Java applications use the sandbox.
- Choosing
-\end_layout
-
-\begin_layout Plain Layout
-JSS: Who is choosing? How? This sentence needs to be rewritten.
-\end_layout
-
-\begin_layout Plain Layout
-applications which were available for study, 
-\end_layout
-
-\end_inset
-
 We set up an investigation of 29 applications from the Qualitas Corpus and
  17 applications from GitHub to gain an understanding how the applications
  interacted with the sandbox.
@@ -1015,10 +966,12 @@ ZC: I think type confusion gets off topic.
  a couple of exploit types.
 \end_layout
 
-\begin_layout Plain Layout
-In the case of type confusion a vulnerability is exploited to break type
- safety, thus allowing the attacker to craft an object that can perform
- operations as if it is an instance of a class of a different type.
+\end_inset
+
+Some Java exploits use type confusion to bypass the sandbox.
+ A type confusion vulnerability is exploited by breaking type safety, thus
+ allowing the attacker to craft an object that can perform operations as
+ if it is an instance of a class of a different type.
  For example, attackers will craft objects that either (1) point to the
  
 \family typewriter
@@ -1041,8 +994,7 @@ key "_vulnerability_2012_0507"
 ).
 \end_layout
 
-\end_inset
-
+\begin_layout Standard
 A prominent subclass of Java exploits take advantage of a confused deputy
  vulnerability 
 \begin_inset CommandInset citation
@@ -1271,7 +1223,7 @@ reference "sec:Applications-Studied"
 \end_inset
 
  lists the versions of the applications used in the study.
- The We performed a similar process using the GitHub search feature configured
+ We performed a similar process using the GitHub search feature configured
  search through Java files for the SecurityManager keyword.
  Initially, we extracted the top 6 applications which used the term SecurityMana
 ger, but upon initial inspection, we came to find this filtering method
@@ -3011,7 +2963,7 @@ reference "Table: Github Dataset"
 \end_layout
 
 \begin_layout Section
-Research Questions and Results
+Results
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Research-Questions-and"
@@ -3137,7 +3089,7 @@ reference "sub:Reducing-Web-Application-Complexity"
 \end_inset
 
 .
- Other applications 
+ 
 \end_layout
 
 \begin_layout Standard
@@ -3150,12 +3102,16 @@ on was inside of a sandbox, using doPrivileged calls to avoid checking the
  permissions of all classes on the stack, or ensuring that sections of the
  application would work within a sandbox using test cases.
  This category was further subdivided into applications which altered execution
- inside the main application (meaning extra permission check or calling
+ inside the main application (meaning extra permission checks or calling
  doPrivileged) and applications which only contined test cases that interacted
  with the sandbox.
  The only contained test cases category also includes one application, system-ru
 les, which was a utility for test cases.
- The final category, not interacting with a SecurityManager at all, means
+ 
+\end_layout
+
+\begin_layout Standard
+The final category, not interacting with a SecurityManager at all, means
  that the application either explicitly referenced the SecurityManager in
  comments but not in the source code or the application defined a class
  containing the name SecurityManger but the defined class did not extend
@@ -4431,8 +4387,8 @@ As mentioned earlier, Ant, Freemind, and Netbeans explicitly set and then
 \end_layout
 
 \begin_layout Standard
-Freemind also tried to solve a similar problem, but demonstrates the difficulty
- of currectly implementing this solution.
+Freemind 0.9.0 also tried to solve a similar problem, but demonstrates the
+ difficulty of currectly implementing this solution.
  Freemind is a diagram drawing tool that allows users to execute Groovy
  scripts on the current drawing.
  The developers of Freemind implemented the sandbox so that it would turn
@@ -4441,8 +4397,7 @@ Freemind also tried to solve a similar problem, but demonstrates the difficulty
  The security goals of the Freemind sandbox was to stop malicious scripts
  from creating files, executing programs on the machine, and creating network
  sockets to establish connections with outside entities.
- Unfortunately, in the version we analyzed (*** should put version somewhere
- ***), these goals were not achieved.
+ Unfortunately, in the version we analyzed , these goals were not achieved.
  By implementing the SecurityManager in the old SecurityManager style, explicitl
 y removing privileges, multiple dangerous permissions were left, such as
  the ability to alter private variables with reflection.
@@ -4479,16 +4434,15 @@ Rules
 \end_layout
 
 \begin_layout Standard
-Based on the result of our investigation, it was determined that we could
- restrict applications in two ways to improve security, preventing applications
- from loading privileged classes when the loading class did not have the
- required itself and preventing changing the SecurityManager when a 
+Based on the investigation into the proposed claims, it was determined that
+ the sandbox could stregthened for applications that set 
 \emph on
-self-protecting
+a self-protecting
 \emph default
- SecurityManager is set.
- These restrictions were classified as rules, the privilege escalation rule
- and the SecurityManager rule.
+ security manager.
+ Using this knowledge two rules were created to protect applications, the
+ Privilege Escalation Rule and the Security Manager rule.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -4496,8 +4450,9 @@ Privilege Escalation Rule
 \end_layout
 
 \begin_layout Standard
-The privilege escalation rule states that a class may not load a more permissive
- class if a SecurityManager is set for the application.
+One way that exploits bypass the sandbox is by using the confused deputy
+ The privilege escalation rule states that a class may not load a more permissiv
+e class if a SecurityManager is set for the application.
  This means that the loading classes permissions has to be less restrictive
  or the same level of restriction as the loaded class.
  This rule is based around the fact that many exploits load a class with
@@ -4527,21 +4482,21 @@ package.access
 \end_layout
 
 \begin_layout Subsection
-SecurityManager Rule
+Security Manager Rule
 \end_layout
 
 \begin_layout Standard
-The SecurityManager Rule states that a SecurityManager cannot change if
+The Security Manager Rule states that a Security Manager cannot change if
  a 
 \emph on
 self-protecting
 \emph default
- SecurityManager has been set by the application.
+ Security Manager has been set by the application.
  By setting a 
 \emph on
 self-protecting 
 \emph default
-SecurityManager, the application is removing ability of changing or removing
+Security Manager, the application is removing ability of changing or removing
  the sandbox.
  Thus, the rule is violated if something in the application causes a change
  in the sandbox's setting, which is what many exploits try to ensure will
@@ -4621,8 +4576,8 @@ Our tool, Java Sandbox Fortifier, is open source and hosted on GitHub at
 \end_inset
 
 .
- In particular, our tool focuses on fortifying the Java sandbox to reduce
- the probability that the sandbox will be successfully bypassed in an attack.
+ In particular, our tool focuses on fortifying the Java sandbox by reducing
+ the methods that the sandbox can be successfully bypassed in an attack.
 \end_layout
 
 \begin_layout Standard
@@ -5086,7 +5041,17 @@ We ran the ten exploits in our set under the following conditions: without
  Running the privilege escalation rule alone is interesting because it provides
  some indication of how effective this rule is at stopping applet exploits
  in general, outside of simply fortifying the security manager.
- Overall, all ten of the exploits succeed against our JRE without the agent,
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Fix precedeing sentence one performance section is completed
+\end_layout
+
+\end_inset
+
+Overall, all ten of the exploits succeed against our JRE without the agent,
  four were stopped by the privilege escalation rule, and all ten were stopped
  when both rules were enforced.
  The exploits that were not stopped by the privilege escalation rule were
