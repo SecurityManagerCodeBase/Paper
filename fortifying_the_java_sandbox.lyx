@@ -1217,7 +1217,7 @@ SecurityManager
  This filtering reduced the set of applications to inspect from 112 to 29.
  The 29 applications were then inspected to make sure the application could
  be compiled.
- If the specific application version used in the Qualitas Courpus was difficult
+ If the specific application version used in the Qualitas Corpus was difficult
  to compile, the application was updated to a more recent version.
  
 \begin_inset CommandInset ref
@@ -1327,7 +1327,7 @@ After running both of these tools on each project we were armed with the
 
 \begin_layout Standard
 We split the applications that used the security manager between two reviewers.
- The reviewers both analysed applications in using the same steps, which
+ The reviewers both analyzed applications in using the same steps, which
  are listed below.
 \end_layout
 
