@@ -306,6 +306,26 @@ Related Work
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+MM: Don't have this separate section.
+ Your first sentence below makes it clear why you shouldn't have a section
+ for just related work and we already compare to related work where appropriate
+ (i.e.
+ if you do a separate section there is no way you're going to prevent it
+ from being pitiful).
+ I suggest merging the discussion of these three studies into the intro
+ as was originally noted above.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 There is little work on how Java applications use the Sandbox and the security
  manager.
 \end_layout
