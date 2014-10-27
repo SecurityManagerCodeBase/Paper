@@ -810,7 +810,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset listings
-lstparams "numbers=left,basicstyle={\tiny}"
+lstparams "language=Java,basicstyle={\tiny}"
 inline false
 status open
 
