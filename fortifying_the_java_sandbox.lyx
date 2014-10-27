@@ -1362,24 +1362,6 @@ null
 \family default
 .
  
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: Took this out, may add it back or something similar later - 
-\end_layout
-
-\begin_layout Plain Layout
-After running both of these tools on each project we were armed with the
- information required to further narrow our manual inspection efforts: which
- applications change the security manager, where they make the change, which
- changes are likely to invalidate a claim, and where SecurityManager objects
- are initialized.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1430,29 +1412,6 @@ For applications that were not a false positive, could be compiled, and
 Finally, the reviewer summarized the interaction between the application
  and the security manager with an emphasis on points that support or invalidate
  each claim.
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-The reviewers utilized a checklist to ensure that they consistently inspected
- each application.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Summary-of-checklist"
-
-\end_inset
-
- provides a summary of the items on our checklist; the full list provides
- details on carrying out each step.After performing a manual inspection,
- the reviewer ran the dynamic analysis on the application again, but this
- time with an emphasis on running executions that were known to exercise
- the security manager to ensure we didn't miss an important execution.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -3021,10 +2980,9 @@ reference "Table: Github Dataset"
 
 \end_inset
 
- contains the 17 applications used in the GitHub Dataset.
-While the Qualitas Corpus provides a strong basis for the study, the researchers
- wanted to collect a more diverse dataset (&& Josh said a better reason
- for this earlier.
+ contains the 17 applications used in the GitHub Dataset.While the Qualitas
+ Corpus provides a strong basis for the study, the researchers wanted to
+ collect a more diverse dataset (&& Josh said a better reason for this earlier.
  Ask him about it.
  &&).
  Thus, applications were also collected from GitHub, a code sharing site.
