@@ -77,25 +77,21 @@ Fortifying the Java Sandbox
 \end_layout
 
 \begin_layout Abstract
-The Java sandbox attempts to allow arbitrary code to execute in way that
- that limits the permissions of the executing code, thus protecting the
- system where the code is executing.
-  Unfortunately, exploits are continually being created that bypass the
- security features of the sandbox.
-  The objective of this paper is to gain an understanding of how applications
+The Java sandbox was designed to safely execute code from untrusted sources.
+ While the sandbox is an important part of Java application security, there
+ is little knowledge in the research community of how applications use the
+ sandbox in practice.
+ The objective of this paper is to gain an understanding of how applications
  interact with the sandbox and make an initial attempt to fortify the sandbox
  against future exploits.
-  To achieve those results, we started with an investigation of how 46 open
- source applications interact with the sandbox.
-  The outcome of this investigation supported the hypothesis that we can
- could restrict behavior of an application to increase security.
-  Two initial fortification strategies were then created and experimentally
- validated with 10 Java exploits from the past 4 years.
- The effects of the fortification strategies were also performance tested
- on the Dacapo Benchmarks to determine the strategies' effects on running
- applications.
-  The study reveals that a significant number of exploits can be stopped
- by providing extra strength to the sandbox.
+  To achieve the objective, we generated several claims about the nature
+ of benign interactions with the sandbox and investigated the claims through
+ a study of 46 open source applications.
+ Our results include two backwards compatible rules whose enforcement successful
+ly stops a set of 10 Java exploits that were actively used in the wild within
+ the last 4 years.
+ The study reveals that 40% or 100% of tested exploits can be stopped by
+ providing extra strength to the sandbox.
    
 \end_layout
 
@@ -171,57 +167,6 @@ s.com/en/SE-2012-01-press.html if you keep this sentence &&).
  100% happy with this sentence at the moment).If this trend continues, regular
  updates will not be enough to ensure the integrity of Java applications.
  
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: This is a weak beginning.
- Begin wirh what distinguishes Java, not the mere fact that Java is different.
- You need to quickly explain what is unique about the Java security model,
- why/how it is threatened, and why the reader should care.
- 
-\end_layout
-
-\begin_layout Plain Layout
-ZC: Better now?
-\end_layout
-
-\begin_layout Plain Layout
-Old first intro paragraph - Specifically, Java allows an application to
- untrusted code by setting a sandbox to restrict the behavior of the application
-s.
- The goal of the sandbox is to allow benign code to execute and perform
- its intended behavior but prevent hostile code from compromising the system.
- While the sandbox is able to stop the behavior of many malicious applications,
- exploits have been found that allow code to break out of the sandbox and
- execute a malicous payload.
- Oracle attempts to remove sandbox vulnerabilities as soon as vulnerabilities
- are identified, by patching the Oracle Java Virtual Machine (JVM).
- Unfortunately, many exploits are patched too slowly for security critical
- applications (@@ as shown by some example @@).
- Another problem with the sandbox is that Java exploits are still regularly
- discovered (@@ should also look up something to back this up @@).
- Both these factors imply a need for security mitigations beyond regular
- security updates.Specifically, Java allows an application to untrusted code
- by setting a sandbox to restrict the behavior of the applications.
- The goal of the sandbox is to allow bengin code to execute and perform
- its intended behavior but prevent hostile code from compromising the system.
- While the sandbox is able to stop the behavior of many malicious applications,
- exploits have been found that allow code to break out of the sandbox and
- execute a malicous payload.
- Oracle attempts to remove sandbox vulnerabilities as soon as vulnerabilities
- are identified, by patching the Oracle Java Virtual Machine (JVM).
- Unfortunately, many exploits are patched too slowly for security critical
- applications (@@ as shown by some example @@).
- Another problem with the sandbox is that Java exploits are still regularly
- discovered (@@ should also look up something to back this up @@).
- Both these factors imply a need for security mitigations beyond regular
- security updates.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -360,6 +305,27 @@ Based on the findings of this analysis, two rules for fortifying the sandbox
 \end_layout
 
 \begin_layout Section
+Related Work
+\end_layout
+
+\begin_layout Standard
+There is little work on how Java applications use the Sandbox and the security
+ manager.
+\end_layout
+
+\begin_layout Standard
+- list studies into Java exploits
+\end_layout
+
+\begin_layout Standard
+- list other emperical studies into sandboxes
+\end_layout
+
+\begin_layout Standard
+- list other Java emperical studies relating to security
+\end_layout
+
+\begin_layout Section
 Background
 \end_layout
 
@@ -398,20 +364,8 @@ reference "fig:Sandbox-high-level-summary"
  Protection domains segment the classes of an application into different
  groups, where each group is assigned a unique permission set.
  The permission sets contain permissions explicitly allowing actions with
- possible security implications 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Each protection domain imposes one set of permissions on the classes it
- contains, where a policy includes a set of permissions that grant the contained
- classes the ability to perform operations
-\end_layout
-
-\end_inset
-
- such as writing to the filesystem, accessing the network, using certain
- reflection features, etc.
+ possible security implications such as writing to the filesystem, accessing
+ the network, using certain reflection features, etc.
  (see a more complete list at 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -443,31 +397,6 @@ The policy specifies the permissible behavior for the application.
  preventing the applet from performing malicious operations to the determent
  of the host system.
  
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Each JRE contains a default policy configuration that grants applications
- from the local filesystem all permissions and applets from the web a strict
- set of permissions that prevent them from performing malicious operations
- on the host system.
-\end_layout
-
-\begin_layout Plain Layout
-To enforce the security policy, a security manager must be set (typically
- by calling
-\family typewriter
- System.setSecurityManager(new SecurityManger())
-\family default
-).
- The security manager acts as the gateway to policy enforcement in the Java
- sandbox.Whenever Java code wants to ensure a caller has the correct permissions
- to execute protected code, the callee must query the security manager
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -2463,14 +2392,36 @@ XML Parsing Library
 \end_layout
 
 \begin_layout Standard
+The Qualitas Corpus 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "QualitasCorpus:APSEC:2010"
+
+\end_inset
+
+ is a managed collection of open source Java applications, maintained for
+ being a dataset for emprical studies .
+ The goal of the Qualitas Corpus is to provide a standard set of well-known
+ Java applications that is available to all researchers and can provide
+ a basis for comparing results.
+ Emprical studies which use an available, standard set of applications increase
+ the chance that future researchers can reproduce the results of the study.
+ 
+\end_layout
+
+\begin_layout Standard
+The original 112 application list was taken from the 20130901 version of
+ the Qualitas Corpus.
+ Using the filtering methods in the Methodology section, the 112 applications
+ were reduced to 29 applications of interest.
+ Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "Table: Qualitas Dataset"
 
 \end_inset
 
- contains the 29 applications which contain the keyword SecurityManager
- out of the original 112 applications in the Qualitas Dataset.
+ contains the 29 applications used the Qualitas Dataset of this study.
  11 of the 29 applications are developed by the Apache Software Foundation.
 \end_layout
 
@@ -3041,6 +2992,13 @@ Closure Library
 \end_layout
 
 \begin_layout Standard
+While the Qualitas Corpus provides a strong basis for the study, the researchers
+ wanted to collect a more diverse dataset (&& Josh said a better reason
+ for this earlier.
+ Ask him about it.
+ &&).
+ Thus, applications were also collected from GitHub, a code sharing site.
+ Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "Table: Github Dataset"
@@ -3091,7 +3049,7 @@ This section should cover the rules too (or maybe mitigations should do
 \end_layout
 
 \begin_layout Subsection
-How do applications interact with the SecurityManager?
+Categorizing Security Manager Interactions
 \end_layout
 
 \begin_layout Standard
@@ -3103,21 +3061,74 @@ n interacted with the SecurityManager.
 n's SecurityManager during execution, setting a SecurityManager and not
  changing it during execution, interacting with a SecurityManager but never
  setting one, and not interacting with a SecurityManager at all.
- The first category, setting a SecurityManager and then chaning the SecurityMana
+ 
+\end_layout
+
+\begin_layout Standard
+The first category, setting a SecurityManager and then changing the SecurityMana
 ger during execution, means that the applications either sets a different
  SecurityManager as the SecurityManager for the system, or the application
  alters the current SecurityManager for the system.
  Since this category was the most likely category to affect the validity
  of the claims, the applications in this category are further explained
  in later sections of this paper.
- The second category, setting a SecurityManager and not changing it during
+ 
+\end_layout
+
+\begin_layout Standard
+The second category, setting a SecurityManager and not changing it during
  execution, meant that for each execution path, there was at most one place
- the application set a SecurityManager.
- This category supported our claims unless the SecurityManager was explicitly
- set to null, which would mean an attempt to disable a SecurityManager if
- one was set previously.
- Only one application in this category (JTimelag), explicilty set the SecurityMa
-nager to null.
+ the application set a security manager.
+ For example, most of the executable files of Weka do not set a security
+ manager.
+ However, if the execuatable method in RemoteEngine.java runs without a security
+ manage set for the JVM, the application sets a security manager.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=321,frame=single,fonts
+ize=
+\backslash
+scriptsize,framesep=2mm,xrightmargin=0.1cm]
+\end_layout
+
+\begin_layout Plain Layout
+
+   public static void main(String[] args) {     
+\end_layout
+
+\begin_layout Plain Layout
+
+   if (System.getSecurityManager() == null) {       
+\end_layout
+
+\begin_layout Plain Layout
+
+   System.setSecurityManager(new RMISecurityManager());     
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Only one application in this category (JTimelag), explicilty set the security
+ manager to null.
  This situation is discussed futher in the section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3126,7 +3137,11 @@ reference "sub:Reducing-Web-Application-Complexity"
 \end_inset
 
 .
- The third category, interacting with a SecurityManager but never setting
+ Other applications 
+\end_layout
+
+\begin_layout Standard
+The third category, interacting with a SecurityManager but never setting
  one, consists of applications which contained code indicating the application
  was designed to work inside of a sandbox but never explicitly set up a
  sandbox in the application.
@@ -3494,12 +3509,12 @@ anager as the program was running.
 \end_layout
 
 \begin_layout Subsection
-Does the dataset support the claims?
+Evaluation of the Claims
 \end_layout
 
 \begin_layout Standard
-The study paid extra attention to whether the applications in the dataset
- supported the four claims listed in 
+The study focused on whether the applications in the dataset supported the
+ four claims listed in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Methodology"
@@ -3507,10 +3522,8 @@ reference "sec:Methodology"
 \end_inset
 
 .
- The claims were worded where one counter example would cause the claim
- to be false.
- The result of the investigation of the claims is expanded below.
- (** reword this paragraph later**)
+ The way the claims were worded, one example that contradicted the claim
+ would invalidate the claim.
 \end_layout
 
 \begin_layout Standard
@@ -3607,9 +3620,9 @@ name "sub:Non-security-uses-of"
 \end_layout
 
 \begin_layout Standard
-When investigating the applications in both of the datasets, the first surprisin
-g discovery was that applications used the sandbox in ways that were not
- designed to increase the security of the system.
+When investigating the applications in both of the datasets, the investigators
+ discvoered applications used the sandbox in ways that were not designed
+ to increase the security of the system.
  Specifically, the sandbox was used to enforce architectural constraints
  when interacting with other applications and to reduce development complexity
  in web application development.
@@ -5475,7 +5488,7 @@ Limitations
 \end_layout
 
 \begin_layout Standard
-Neither of these rules will able to stop 100% off all Java exploits.
+Neither of these rules will able to stop 100% of all Java exploits.
  Both rules are unable to catch exploits which are able to escape the sandbox
  without violating the constraints the rules impose.
  While the privilege escalation rule is able to stop many of the most common
@@ -5517,9 +5530,13 @@ rs to test their analyses.
 \end_layout
 
 \begin_layout Standard
-External Validity: The applications in the study were limited to open source
- programs, specifically well known applications included in the Qualitas
- Corpus and publicly available applications available on GitHub.
+
+\series bold
+External Validity:
+\series default
+ The applications in the study were limited to open source programs, specificall
+y well known applications included in the Qualitas Corpus and publicly available
+ applications available on GitHub.
  It is possible that closed source applications interact with the security
  manager differently, although investigating this problem is left to future
  work.
@@ -5549,10 +5566,6 @@ While the majority of the study is easily replicatable, certain aspects
  This threat to validity was reduced by the two investigators cross checking
  how 6 applications were interpreted.
  We expect that with similar studies will reach similar conclusions.
-\end_layout
-
-\begin_layout Section
-Related Work
 \end_layout
 
 \begin_layout Section
