@@ -72,20 +72,50 @@
 
 \begin_body
 
-\begin_layout Title
-Fortifying the Java Sandbox
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+author{
+\backslash
+IEEEauthorblockN{Zack Coker, Michael Maass, Tianyuan Ding, and Joshua Sunshine}
+\backslash
+
+\backslash
+ 
+\backslash
+IEEEauthorblockA{School of Computer Science
+\backslash
+
+\backslash
+
 \end_layout
 
-\begin_layout Author
-Zack Coker, Michael Maass, Tianyuan Ding, and Joshua Sunshine
-\begin_inset Newline newline
+\begin_layout Plain Layout
+
+Carnegie Mellon Univeristy, Pittsburgh, PA
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Email: zfc@cs.cmu.edu, mmaass@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu}}
+\end_layout
+
 \end_inset
 
-zfc@cs.cmu.edu, mmaass@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu
-\begin_inset Newline newline
-\end_inset
 
-Carnegie Mellon University
+\end_layout
+
+\begin_layout Title
+Fortifying the Java Sandbox
 \end_layout
 
 \begin_layout Abstract
