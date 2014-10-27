@@ -1708,7 +1708,7 @@ Eclipse
 \begin_inset Text
 
 \begin_layout Plain Layout
-Integerated Development Enviroment
+Integrated Development Environment
 \end_layout
 
 \end_inset
@@ -2629,7 +2629,7 @@ IntelliJ IDEA Community Edition
 \begin_inset Text
 
 \begin_layout Plain Layout
-Integerated Development Enviroment
+Integrated Development Environment
 \end_layout
 
 \end_inset
@@ -2745,7 +2745,7 @@ oxygen-libcore
 \begin_inset Text
 
 \begin_layout Plain Layout
-Andriod Developement Library
+Android Development Library
 \end_layout
 
 \end_inset
@@ -2803,7 +2803,7 @@ Security-Manager
 \begin_inset Text
 
 \begin_layout Plain Layout
-Alternate SecurityManager
+Alternate Security Manager
 \end_layout
 
 \end_inset
@@ -3516,7 +3516,7 @@ reference "Table: Github Dataset"
 \end_inset
 
  contains the 17 applications used in the GitHub Dataset.
- refact4j is the only application without a discription because the comments
+ refact4j is the only application without a description because the comments
  were in a language that the authors could not read.
 \end_layout
 
@@ -3591,7 +3591,7 @@ The second category, setting a SecurityManager and not changing it during
  the application set a security manager.
  For example, most of the executable files of Weka do not set a security
  manager.
- However, if the execuatable method in RemoteEngine.java runs without a security
+ However, if the executable method in RemoteEngine.java runs without a security
  manage set for the JVM, the application sets a security manager.
 \end_layout
 
@@ -3637,9 +3637,9 @@ end{Verbatim}
 \end_layout
 
 \begin_layout Standard
-Only one application in this category (JTimelag), explicilty set the security
+Only one application in this category (JTimelag), explicitly set the security
  manager to null.
- This situation is discussed futher in the section 
+ This situation is discussed further in the section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Reducing-Web-Application-Complexity"
@@ -3661,7 +3661,7 @@ on was inside of a sandbox, using doPrivileged calls to avoid checking the
  application would work within a sandbox using test cases.
  This category was further subdivided into applications which altered execution
  inside the main application (meaning extra permission checks or calling
- doPrivileged) and applications which only contined test cases that interacted
+ doPrivileged) and applications which only contained test cases that interacted
  with the sandbox.
  The only contained test cases category also includes one application, system-ru
 les, which was a utility for test cases.
@@ -3672,7 +3672,7 @@ les, which was a utility for test cases.
 The final category, not interacting with a SecurityManager at all, means
  that the application either explicitly referenced the SecurityManager in
  comments but not in the source code or the application defined a class
- containing the name SecurityManger but the defined class did not extend
+ containing the name SecurityManager but the defined class did not extend
  java.lang.SecurityManager in any way.
 \end_layout
 
@@ -4706,7 +4706,7 @@ end{table}
 \begin_layout Standard
 This method was designed to allow users to add a SecurityManager to an applicati
 on that uses the Batik library.
- The method first takes a boolean, then checks to make sure a Batik specific
+ The method first takes a Boolean, then checks to make sure a Batik specific
  SecurityManager is not set.
  If a SecurityManager defined outside of Batik was not set, the application
  either sets a Batik SecurityManager, which refreshes the policy for the
