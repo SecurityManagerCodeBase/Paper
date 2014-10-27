@@ -6,6 +6,7 @@
 \begin_preamble
 \usepackage{fancyvrb}
 \end_preamble
+\options conference
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -86,7 +87,12 @@ IEEEauthorblockN{Zack Coker, Michael Maass, Tianyuan Ding, and Joshua Sunshine}
 \backslash
 
 \backslash
- 
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
 \backslash
 IEEEauthorblockA{School of Computer Science
 \backslash
@@ -136,9 +142,9 @@ The Java sandbox was designed to safely execute code from untrusted sources.
  The study reveals that an implementation of the privilege escalation rule
  can stop 40% while an implementation of the security manager rule can stop
  100% of tested exploits.
- The implementation of the privilege escaltion rule was found to slowdown
- the dacapo benchmarks by XX.XX% while the implementation of the security
- manager rule was found to slowdown the dacapo benchmarks by XX.XX%
+ The implementation of the privilege escalation rule was found to slowdown
+ the DaCapo benchmarks by XX.XX% while the implementation of the security
+ manager rule was found to slowdown the DaCapo benchmarks by XX.XX%
 \end_layout
 
 \begin_layout Section
@@ -214,7 +220,7 @@ key "security_explorations_2012"
 
 .
  Hackers have also discovered zero-day exploits, with the exploit in August
- 2012 and January 2013 making widespsread news and detailed in a CERT blog
+ 2012 and January 2013 making widespread news and detailed in a CERT blog
  post 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -335,11 +341,11 @@ There is little work on how Java applications use the Sandbox and the security
 \end_layout
 
 \begin_layout Standard
-- list other emperical studies into sandboxes
+- list other empirical studies into sandboxes
 \end_layout
 
 \begin_layout Standard
-- list other Java emperical studies relating to security
+- list other Java empirical studies relating to security
 \end_layout
 
 \begin_layout Section
@@ -806,7 +812,7 @@ Malicious drive-by downloads using Java applets as the vector were widely
  &&: http://java-0day.com/).
  While Java applets should prevent malicious applications from executing
  their payload, vulnerabilities in the Java Runtime Environment (JRE) were
- leveraged by exploits to set the secruity manager to 
+ leveraged by exploits to set the security manager to 
 \family typewriter
 null
 \family default
@@ -1465,9 +1471,9 @@ As a way to ensure the analysis steps produced the expected results and
  that both reviewers produced similar reviews for the same application,
  the analysis started with both reviewers independently analyzed the same
  6 applications.
- These independ provided feedback to the reviewers, allowing the reviewers
- to focus on the same interactions in the application as well as notify
- the reviewer if he was missing something imporant.
+ These provided feedback to the reviewers, allowing the reviewers to focus
+ on the same interactions in the application as well as notify the reviewer
+ if he was missing something important.
 \end_layout
 
 \begin_layout Standard
@@ -1725,7 +1731,7 @@ DrJava
 \begin_inset Text
 
 \begin_layout Plain Layout
-Lightweight Development Enviroment
+Lightweight Development Environment
 \end_layout
 
 \end_inset
@@ -2419,12 +2425,13 @@ key "QualitasCorpus:APSEC:2010"
 \end_inset
 
  is a managed collection of open source Java applications, maintained for
- being a dataset for emprical studies .
+ being a dataset for empirical studies .
  The goal of the Qualitas Corpus is to provide a standard set of well-known
  Java applications that is available to all researchers and can provide
  a basis for comparing results.
- Emprical studies which use an available, standard set of applications increase
- the chance that future researchers can reproduce the results of the study.
+ Empirical studies which use an available, standard set of applications
+ increase the chance that future researchers can reproduce the results of
+ the study.
  
 \end_layout
 
@@ -2645,7 +2652,7 @@ Gjman
 \begin_inset Text
 
 \begin_layout Plain Layout
-Developement Toolkit
+Development Toolkit
 \end_layout
 
 \end_inset
@@ -3026,7 +3033,7 @@ reference "Table: Github Dataset"
 \end_inset
 
  contains the 17 applications used in the GitHub Dataset.
- refact4j is the only application without a discription because the comments
+ refact4j is the only application without a description because the comments
  were in a language that the authors could not read.
 \end_layout
 
@@ -3101,7 +3108,7 @@ The second category, setting a SecurityManager and not changing it during
  the application set a security manager.
  For example, most of the executable files of Weka do not set a security
  manager.
- However, if the execuatable method in RemoteEngine.java runs without a security
+ However, if the executable method in RemoteEngine.java runs without a security
  manage set for the JVM, the application sets a security manager.
 \end_layout
 
@@ -3147,9 +3154,9 @@ end{Verbatim}
 \end_layout
 
 \begin_layout Standard
-Only one application in this category (JTimelag), explicilty set the security
+Only one application in this category (JTimelag), explicitly set the security
  manager to null.
- This situation is discussed futher in the section 
+ This situation is discussed further in the section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Reducing-Web-Application-Complexity"
@@ -3171,7 +3178,7 @@ on was inside of a sandbox, using doPrivileged calls to avoid checking the
  application would work within a sandbox using test cases.
  This category was further subdivided into applications which altered execution
  inside the main application (meaning extra permission checks or calling
- doPrivileged) and applications which only contined test cases that interacted
+ doPrivileged) and applications which only continued test cases that interacted
  with the sandbox.
  The only contained test cases category also includes one application, system-ru
 les, which was a utility for test cases.
@@ -3502,7 +3509,7 @@ Total
  program was running.
  Six of the applications contained code that set a SecurityManager, but
  did not change the SecurityManager after it was set.
- Thirteen applications contianed code that indicated they were designed
+ Thirteen applications contained code that indicated they were designed
  to run inside a SecurityManager.
  Of those thirteen applications, ten contained code in the application that
  altered behavior when a SecurityManager was set.
@@ -3578,7 +3585,7 @@ moderate claim
 Benign applications do not weaken the security manager.
  
 \emph default
-This claim was not definitevely falsified if turning off the security manager
+This claim was not definitively falsified if turning off the security manager
  is excluded from weakening.
  However, multiple applications provided methods for the user to dynamically
  change the security manager.
@@ -3598,14 +3605,14 @@ Benign applications do not change the security manager if a self-protecting
 \shape default
 .
  This claim was supported by both datasets.
- When false postives are excluded from the datasets, 19 out of 24 applications
- in the Qualitas dataset and 9 out of 12 aplications in the GitHub dataset
+ When false positives are excluded from the datasets, 19 out of 24 applications
+ in the Qualitas dataset and 9 out of 12 applications in the GitHub dataset
  did not change the security manager during execution.
  This likely implies that the applications did not want the security manager
  to change during runtime.
  In the applications that allowed changing the sandbox, no application ensured
  that the application could change the sandbox in all cases.
- If a self-protecting sandbox is set for all applications in the datasetes,
+ If a self-protecting sandbox is set for all applications in the datasets,
  all attempts to change the sandbox would be prevented by the self-protecting
  sandbox.
 \end_layout
@@ -3617,7 +3624,7 @@ ideal claim
 \series default
 :
 \shape italic
- Benign applications do not change the secruity manager.
+ Benign applications do not change the security manager.
  
 \emph on
 This claim was shown to be false as multiple applications changed the security
@@ -3638,7 +3645,7 @@ name "sub:Non-security-uses-of"
 
 \begin_layout Standard
 When investigating the applications in both of the datasets, the investigators
- discvoered applications used the sandbox in ways that were not designed
+ discovered applications used the sandbox in ways that were not designed
  to increase the security of the system.
  Specifically, the sandbox was used to enforce architectural constraints
  when interacting with other applications and to reduce development complexity
@@ -4273,8 +4280,8 @@ Changing the SecurityManager for Security Purposes
 In both datasets, we found applications that set a SecurityManager at one
  point a program and then either explicitly change or allow the user to
  change the currently set SecurityManager.
- Three appications allow the user to set and change the currently set SecurityMa
-nager using provided methods (Batik, Eclipse, and Spring-modules) while
+ Three applications allow the user to set and change the currently set SecurityM
+anager using provided methods (Batik, Eclipse, and Spring-modules) while
  three applications attempted to explicitly set and change the SecurityManager
  during execution (Ant, Freemind, and Netbeans (!! Not 100% sure about this
  one from what Tianyuan wrote, will need to investigate it later!!)).
@@ -4414,18 +4421,18 @@ on that uses the Batik library.
  the squiggle browser demo and the rasterizer demo.
  While the squiggle browser demo sets a SecurityManager and never changes
  it, the rasterizer demo can be set to call enforceSecurity with a true
- arguement the first time and a false argument the second time, cause the
+ argument the first time and a false argument the second time, cause the
  application to set a SecurityManager and then remove it at the end of the
  demo.
- While this was an interesting occurance, there seemed to be no valid reason,
- other than showing off the capabilties for the library, to turn the SecurityMan
-ager off at the end of the execution.
+ While this was an interesting occurrence, there seemed to be no valid reason,
+ other than showing off the capabilities for the library, to turn the SecurityMa
+nager off at the end of the execution.
 \end_layout
 
 \begin_layout Standard
 Only in the case where an application can not be reset and the application
  cannot predict future required permissions, which we believe to be rare,
- applications would need the ability to dynmically refresh the sandbox.
+ applications would need the ability to dynamically refresh the sandbox.
  In all other cases, the ability to dynamically adjust the SecurityManager
  and the sandbox's policy is not required.
  As long as the required permission can be predicted before the application
@@ -4449,7 +4456,7 @@ As mentioned earlier, Ant, Freemind, and Netbeans explicitly set and then
 
 \begin_layout Standard
 Freemind 0.9.0 also tried to solve a similar problem, but demonstrates the
- difficulty of currectly implementing this solution.
+ difficulty of correctly implementing this solution.
  Freemind is a diagram drawing tool that allows users to execute Groovy
  scripts on the current drawing.
  The developers of Freemind implemented the sandbox so that it would turn
@@ -4473,19 +4480,19 @@ on ***).
 \end_layout
 
 \begin_layout Standard
-As with the applications that allow setting setting and chaning the SecurityMana
-ger, we believe the applications which set and change the SecurityManager
- explicitly can execute correctly using a static SecurityManager with class
- loaders which limit the permissions of the restricted code sections.
+As with the applications that allow setting and chaining the SecurityManager,
+ we believe the applications which set and change the SecurityManager explicitly
+ can execute correctly using a static SecurityManager with class loaders
+ which limit the permissions of the restricted code sections.
  
 \end_layout
 
 \begin_layout Standard
 The one application that did not fall into either of these categories was
  WildflySecurityManager.
- The WildfiySecurityManager allows turning off the permission checks for
+ The WildflySecurityManager allows turning off the permission checks for
  classes which have been granted the DO_UNCHECKED_PERMISSION.
- However, this method of permission checks seems to be the same as assiging
+ However, this method of permission checks seems to be the same as assigning
  the privileged classes the AllPermissions and then executing doPrivileged
  on the privileged actions that the privileged class needs to do.
 \end_layout
@@ -4496,7 +4503,7 @@ Rules
 
 \begin_layout Standard
 Based on the investigation into the proposed claims, it was determined that
- the sandbox could stregthened for applications that set 
+ the sandbox could strengthened for applications that set 
 \emph on
 a self-protecting
 \emph default
@@ -4526,7 +4533,7 @@ If all classes in the Java Virtual Machine (JVM) instance were loaded at
  the start of an application, this rule would be without exceptions.
  However, the JVM loads certain classes on demand, and some of the JVM classes
  have the full privileges.
- Thus the rule has to make an excpetion for these classes.
+ Thus the rule has to make an exception for these classes.
  Specifically, the rule makes exceptions for classes returned by the call
  
 \family typewriter
@@ -4644,7 +4651,7 @@ Our tool, Java Sandbox Fortifier, is open source and hosted on GitHub at
 \begin_layout Standard
 JVMTI is a native interface used to access JVM operations that are intended
  to be used to create analysis tools such as profilers, debuggers, monitors,
- and thread analysers.
+ and thread analyzers.
  Tools that use JVMTI are called agents and are attached to a running Java
  application at some configuration specific point in the application's lifecycle.
  The interface allows an agent to set capabilities that enable the tool
@@ -5119,7 +5126,7 @@ We ran the ten exploits in our set under the following conditions: without
 status open
 
 \begin_layout Plain Layout
-Fix precedeing sentence one performance section is completed
+Fix preceding sentence one performance section is completed
 \end_layout
 
 \end_inset
@@ -5536,10 +5543,10 @@ Neither of these rules will able to stop 100% of all Java exploits.
  While the SecurityManager rule was able to catch all tested exploits, Java
  makes it possible to write exploits that do not turn off the SecurityManager
  but are still able to cause significant damage.
- While the authors beleive the rules created in this study provide a substanial
+ While the authors believe the rules created in this study provide a substantial
  improvement over the current sandbox implementation, the authors also believe
  that future work will be able to build upon the results of this study to
- create improved mitigation techiques.
+ create improved mitigation techniques.
 \end_layout
 
 \begin_layout Standard
@@ -5552,7 +5559,7 @@ Internal Validity
  although the reason behind complex interactions may be misdiagnosed.
  Also comments and source code could have been taken out of context, leading
  to incorrect conclusions.
- Finally using two different reviewers leads to the possiblity of different
+ Finally using two different reviewers leads to the possibility of different
  interpretations for the same data.
  Misdiagnosing complex interactions was reduced by using the FindBugs tool
  and the JVMTI tool to help with the analysis, providing a way for the researche
@@ -5560,7 +5567,7 @@ rs to test their analyses.
  The issue of interpreting comments and source code out of context was reduced
  by examining the whole file but can not be completely reduced without extra
  data sources, such as developer interviews.
- Reducing the possibilty of misinterpteting these sections of the program
+ Reducing the possibility of misinterpreting these sections of the program
  is left to future work.
  The issue of using two different researchers reaching different conclusions
  was reduced by comparing the 6 different independent analyses when testing
@@ -5579,8 +5586,8 @@ y well known applications included in the Qualitas Corpus and publicly available
  manager differently, although investigating this problem is left to future
  work.
  Another possible problem for the study is that 11 out of 46 applications
- where created by the Apache Sotware Foundation.
- This problem was reduced by filtering a larger set of applications intially
+ where created by the Apache Software Foundation.
+ This problem was reduced by filtering a larger set of applications initially
  for the Qualitas Corpus, showing that in a diverse set of 112 Java applications
 , 83 were determined to not interact with the security manager at all from
  the initial filtering process.
@@ -5592,11 +5599,11 @@ y well known applications included in the Qualitas Corpus and publicly available
 \series bold
 Reliability: 
 \series default
-While the majority of the study is easily replicatable, certain aspects
- of the studies results change over time.
+While the majority of the study is easily replicable, certain aspects of
+ the studies results change over time.
  Github search results are constantly changing and so using GitHub to generate
  a new dataset using our method would likely generate a different dataset.
- Another problem is that applications on GitHub can become inaccessable.
+ Another problem is that applications on GitHub can become inaccessible.
  Ever the course of the study, 2 applications either became private repositories
  or were removed from Github (FileManagerFtpHttpServer and Visor).
  It is also possible that different researchers reach different conclusions
