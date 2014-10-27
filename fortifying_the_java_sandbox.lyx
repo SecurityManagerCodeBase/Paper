@@ -87,12 +87,16 @@ The Java sandbox was designed to safely execute code from untrusted sources.
   To achieve the objective, we generated several claims about the nature
  of benign interactions with the sandbox and investigated the claims through
  a study of 46 open source applications.
- Our results include two backwards compatible rules whose enforcement successful
-ly stops a set of 10 Java exploits that were actively used in the wild within
- the last 4 years.
- The study reveals that 40% or 100% of tested exploits can be stopped by
- providing extra strength to the sandbox.
-   
+ Our results include two backwards compatible rules, the privilege escalation
+ rule and the security manager rule, whose enforcement successfully stops
+ a set of 10 Java exploits that were actively used in the wild within the
+ last 4 years.
+ The study reveals that an implementation of the privilege escalation rule
+ can stop 40% while an implementation of the security manager rule can stop
+ 100% of tested exploits.
+ The implementation of the privilege escaltion rule was found to slowdown
+ the dacapo benchmarks by XX.XX% while the implementation of the security
+ manager rule was found to slowdown the dacapo benchmarks by XX.XX%
 \end_layout
 
 \begin_layout Section
