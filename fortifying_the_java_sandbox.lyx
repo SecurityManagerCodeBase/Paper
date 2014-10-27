@@ -76,6 +76,18 @@
 Fortifying the Java Sandbox
 \end_layout
 
+\begin_layout Author
+Zack Coker, Michael Maass, Tianyuan Ding, and Joshua Sunshine
+\begin_inset Newline newline
+\end_inset
+
+zfc@cs.cmu.edu, mmaass@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu
+\begin_inset Newline newline
+\end_inset
+
+Carnegie Mellon University
+\end_layout
+
 \begin_layout Abstract
 The Java sandbox was designed to safely execute code from untrusted sources.
  While the sandbox is an important part of Java application security, there
