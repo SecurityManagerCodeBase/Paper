@@ -961,17 +961,6 @@ name "fig:A-typical-exploit-payload"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: I think type confusion gets off topic.
- I also think that the list of type confusion or privilege escalation misses
- a couple of exploit types.
-\end_layout
-
-\end_inset
-
 Some Java exploits use type confusion to bypass the sandbox.
  A type confusion vulnerability is exploited by breaking type safety, thus
  allowing the attacker to craft an object that can perform operations as
@@ -2948,193 +2937,10 @@ Closure Library
 \end_layout
 
 \begin_layout Standard
-While the Qualitas Corpus provides a strong basis for the study, the researchers
- wanted to collect a more diverse dataset (&& Josh said a better reason
- for this earlier.
- Ask him about it.
- &&).
- Thus, applications were also collected from GitHub, a code sharing site.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "Table: Github Dataset"
-
-\end_inset
-
- contains the 17 applications used in the GitHub Dataset.
- refact4j is the only application without a discription because the comments
- were in a language that the authors could not read.
-\end_layout
-
-\begin_layout Section
-Results
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Research-Questions-and"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-How commonly are SM's used?
-\end_layout
-
-\begin_layout Plain Layout
-Why do apps use the SM? - ZC: I like How better than Why
-\end_layout
-
-\begin_layout Plain Layout
-What are the common mistakes made by apps using the SM?
-\end_layout
-
-\begin_layout Plain Layout
-This section should cover the rules too (or maybe mitigations should do
- it up front?) -- call them privilege escalation and SecurityManager rules
- or change the names for the rules used in Mitigations section.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Categorizing Security Manager Interactions
-\end_layout
-
-\begin_layout Standard
-The first goal of our inspection of Java applications was to gain an understandi
-ng of how Java applications interacted with the SecurityManager.
- To do so, applications were divided into categories based on how the applicatio
-n interacted with the SecurityManager.
- The categories were: setting a SecurityManager and then changing the applicatio
-n's SecurityManager during execution, setting a SecurityManager and not
- changing it during execution, interacting with a SecurityManager but never
- setting one, and not interacting with a SecurityManager at all.
- 
-\end_layout
-
-\begin_layout Standard
-The first category, setting a SecurityManager and then changing the SecurityMana
-ger during execution, means that the applications either sets a different
- SecurityManager as the SecurityManager for the system, or the application
- alters the current SecurityManager for the system.
- Since this category was the most likely category to affect the validity
- of the claims, the applications in this category are further explained
- in later sections of this paper.
- 
-\end_layout
-
-\begin_layout Standard
-The second category, setting a SecurityManager and not changing it during
- execution, meant that for each execution path, there was at most one place
- the application set a security manager.
- For example, most of the executable files of Weka do not set a security
- manager.
- However, if the execuatable method in RemoteEngine.java runs without a security
- manage set for the JVM, the application sets a security manager.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=321,frame=single,fonts
-ize=
-\backslash
-scriptsize,framesep=2mm,xrightmargin=0.1cm]
-\end_layout
-
-\begin_layout Plain Layout
-
-   public static void main(String[] args) {     
-\end_layout
-
-\begin_layout Plain Layout
-
-   if (System.getSecurityManager() == null) {       
-\end_layout
-
-\begin_layout Plain Layout
-
-   System.setSecurityManager(new RMISecurityManager());     
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Only one application in this category (JTimelag), explicilty set the security
- manager to null.
- This situation is discussed futher in the section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Reducing-Web-Application-Complexity"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-The third category, interacting with a SecurityManager but never setting
- one, consists of applications which contained code indicating the application
- was designed to work inside of a sandbox but never explicitly set up a
- sandbox in the application.
- The indicating code consists of adding extra permission checks if the applicati
-on was inside of a sandbox, using doPrivileged calls to avoid checking the
- permissions of all classes on the stack, or ensuring that sections of the
- application would work within a sandbox using test cases.
- This category was further subdivided into applications which altered execution
- inside the main application (meaning extra permission checks or calling
- doPrivileged) and applications which only contined test cases that interacted
- with the sandbox.
- The only contained test cases category also includes one application, system-ru
-les, which was a utility for test cases.
- 
-\end_layout
-
-\begin_layout Standard
-The final category, not interacting with a SecurityManager at all, means
- that the application either explicitly referenced the SecurityManager in
- comments but not in the source code or the application defined a class
- containing the name SecurityManger but the defined class did not extend
- java.lang.SecurityManager in any way.
-\end_layout
-
-\begin_layout Standard
-After inspecting the 29 applications in the filtered Qualitas dataset, the
- applications were classified based on how they interacted with the SecurityMana
-ger.
- 
 \begin_inset Float table
 wide false
 sideways false
 status open
-
-\begin_layout Plain Layout
-
-\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -3435,12 +3241,222 @@ Total
 
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Table 4 isn't for this section but putting it here to put all of the big
+ tables on one page
 \end_layout
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+While the Qualitas Corpus provides a strong basis for the study, the researchers
+ wanted to collect a more diverse dataset (&& Josh said a better reason
+ for this earlier.
+ Ask him about it.
+ &&).
+ Thus, applications were also collected from GitHub, a code sharing site.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Table: Github Dataset"
+
+\end_inset
+
+ contains the 17 applications used in the GitHub Dataset.
+ refact4j is the only application without a discription because the comments
+ were in a language that the authors could not read.
+\end_layout
+
+\begin_layout Section
+Results
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Research-Questions-and"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+How commonly are SM's used?
+\end_layout
+
+\begin_layout Plain Layout
+Why do apps use the SM? - ZC: I like How better than Why
+\end_layout
+
+\begin_layout Plain Layout
+What are the common mistakes made by apps using the SM?
+\end_layout
+
+\begin_layout Plain Layout
+This section should cover the rules too (or maybe mitigations should do
+ it up front?) -- call them privilege escalation and SecurityManager rules
+ or change the names for the rules used in Mitigations section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Categorizing Security Manager Interactions
+\end_layout
+
+\begin_layout Standard
+The first goal of our inspection of Java applications was to gain an understandi
+ng of how Java applications interacted with the SecurityManager.
+ To do so, applications were divided into categories based on how the applicatio
+n interacted with the SecurityManager.
+ The categories were: setting a SecurityManager and then changing the applicatio
+n's SecurityManager during execution, setting a SecurityManager and not
+ changing it during execution, interacting with a SecurityManager but never
+ setting one, and not interacting with a SecurityManager at all.
+ 
+\end_layout
+
+\begin_layout Standard
+The first category, setting a SecurityManager and then changing the SecurityMana
+ger during execution, means that the applications either sets a different
+ SecurityManager as the SecurityManager for the system, or the application
+ alters the current SecurityManager for the system.
+ Since this category was the most likely category to affect the validity
+ of the claims, the applications in this category are further explained
+ in later sections of this paper.
+ 
+\end_layout
+
+\begin_layout Standard
+The second category, setting a SecurityManager and not changing it during
+ execution, meant that for each execution path, there was at most one place
+ the application set a security manager.
+ For example, most of the executable files of Weka do not set a security
+ manager.
+ However, if the execuatable method in RemoteEngine.java runs without a security
+ manage set for the JVM, the application sets a security manager.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=321,frame=single,fonts
+ize=
+\backslash
+scriptsize,framesep=2mm,xrightmargin=0.1cm]
+\end_layout
+
+\begin_layout Plain Layout
+
+   public static void main(String[] args) {     
+\end_layout
+
+\begin_layout Plain Layout
+
+   if (System.getSecurityManager() == null) {       
+\end_layout
+
+\begin_layout Plain Layout
+
+   System.setSecurityManager(new RMISecurityManager());     
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Only one application in this category (JTimelag), explicilty set the security
+ manager to null.
+ This situation is discussed futher in the section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Reducing-Web-Application-Complexity"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The third category, interacting with a SecurityManager but never setting
+ one, consists of applications which contained code indicating the application
+ was designed to work inside of a sandbox but never explicitly set up a
+ sandbox in the application.
+ The indicating code consists of adding extra permission checks if the applicati
+on was inside of a sandbox, using doPrivileged calls to avoid checking the
+ permissions of all classes on the stack, or ensuring that sections of the
+ application would work within a sandbox using test cases.
+ This category was further subdivided into applications which altered execution
+ inside the main application (meaning extra permission checks or calling
+ doPrivileged) and applications which only contined test cases that interacted
+ with the sandbox.
+ The only contained test cases category also includes one application, system-ru
+les, which was a utility for test cases.
+ 
+\end_layout
+
+\begin_layout Standard
+The final category, not interacting with a SecurityManager at all, means
+ that the application either explicitly referenced the SecurityManager in
+ comments but not in the source code or the application defined a class
+ containing the name SecurityManger but the defined class did not extend
+ java.lang.SecurityManager in any way.
+\end_layout
+
+\begin_layout Standard
+After inspecting the 29 applications in the filtered Qualitas dataset, the
+ applications were classified based on how they interacted with the SecurityMana
+ger.
  Five of the applications set and then changed the SecurityManager as the
  program was running.
  Six of the applications contained code that set a SecurityManager, but
@@ -3654,6 +3670,37 @@ System.exit()
  However, Eclipse wants to continue executing and report an error to the
  user if Ant runs into a error condition.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+asda
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4245,89 +4292,58 @@ status open
 
 
 \backslash
-begin{Verbatim}[numbersep=-10pt,frame=single,fontsize=
+begin{table}[h] 
+\end_layout
+
+\begin_layout Plain Layout
+
+
 \backslash
-scriptsize,framesep=2mm]
+begin{minipage}[b]{0.95
+\backslash
+linewidth} 
 \end_layout
 
 \begin_layout Plain Layout
 
-156 public void enforceSecurity(boolean enforce){   
+
+\backslash
+setbox0=
+\backslash
+vbox{%
 \end_layout
 
 \begin_layout Plain Layout
 
-157   SecurityManager sm = System.getSecurityManager();
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
+\backslash
+scriptsize,framesep=2mm, firstnumber=156]
 \end_layout
 
 \begin_layout Plain Layout
 
-158
+   public void enforceSecurity(boolean enforce){ 
 \end_layout
 
 \begin_layout Plain Layout
 
-159   if (sm != null && sm != lastSecurityManagerInstalled) {
+   SecurityManager sm = System.getSecurityManager();
 \end_layout
 
 \begin_layout Plain Layout
 
-160     ...
 \end_layout
 
 \begin_layout Plain Layout
 
-163     throw new SecurityException                 
+     if (sm != null && sm != lastSecurityManagerInstalled) {
 \end_layout
 
 \begin_layout Plain Layout
 
-164      (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
-\end_layout
-
-\begin_layout Plain Layout
-
-165   }                  
-\end_layout
-
-\begin_layout Plain Layout
-
-166   if (enforce) { 
-\end_layout
-
-\begin_layout Plain Layout
-
-167     ...
-\end_layout
-
-\begin_layout Plain Layout
-
-173    installSecurityManager();         
-\end_layout
-
-\begin_layout Plain Layout
-
-174   } else {             
-\end_layout
-
-\begin_layout Plain Layout
-
-175     if (sm != null) {                 
-\end_layout
-
-\begin_layout Plain Layout
-
-176       System.setSecurityManager(null);
-\end_layout
-
-\begin_layout Plain Layout
-
-177       lastSecurityManagerInstalled = null;             
-\end_layout
-
-\begin_layout Plain Layout
-
-178      ...
+     ...
 \end_layout
 
 \begin_layout Plain Layout
@@ -4335,6 +4351,128 @@ scriptsize,framesep=2mm]
 
 \backslash
 end{Verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
+\backslash
+scriptsize,framesep=2mm, firstnumber=163]
+\end_layout
+
+\begin_layout Plain Layout
+
+     throw new SecurityException                 
+\end_layout
+
+\begin_layout Plain Layout
+
+      (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
+\end_layout
+
+\begin_layout Plain Layout
+
+   }                  
+\end_layout
+
+\begin_layout Plain Layout
+
+   if (enforce) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+     ...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
+\backslash
+scriptsize,framesep=2mm, firstnumber=173]
+\end_layout
+
+\begin_layout Plain Layout
+
+    installSecurityManager();         
+\end_layout
+
+\begin_layout Plain Layout
+
+   } else {             
+\end_layout
+
+\begin_layout Plain Layout
+
+     if (sm != null) {                 
+\end_layout
+
+\begin_layout Plain Layout
+
+       System.setSecurityManager(null);
+\end_layout
+
+\begin_layout Plain Layout
+
+       lastSecurityManagerInstalled = null;             
+\end_layout
+
+\begin_layout Plain Layout
+
+      ...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.1cm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fbox{
+\backslash
+box0} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{minipage} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{table}
 \end_layout
 
 \end_inset
