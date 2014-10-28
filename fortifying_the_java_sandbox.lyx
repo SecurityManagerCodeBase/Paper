@@ -3725,20 +3725,16 @@ vbox{%
 
 
 \backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=691,bas
-icstyle={
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=691,basicstyle={
 \backslash
 scriptsize},framesep=2mm]
 \end_layout
 
 \begin_layout Plain Layout
 
-    System.setSecurityManager(new AntSecurityManager(
-\end_layout
-
-\begin_layout Plain Layout
-
-        originalSM, Thread.currentThread()));
+    System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThr
+ead()));
 \end_layout
 
 \begin_layout Plain Layout
@@ -3757,24 +3753,19 @@ end{lstlisting}
 
 
 \backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=703,bas
-icstyle={
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=703,basicstyle={
 \backslash
-scriptsize},framesep=2mm]
+scriptsize},framesep=2mm] 
 \end_layout
 
 \begin_layout Plain Layout
 
-    
+    getCurrentProject().executeTargets(targets); 
 \backslash
 
 \backslash
 Note: Ant is executed on this line
-\end_layout
-
-\begin_layout Plain Layout
-
-    getCurrentProject().executeTargets(targets);
 \end_layout
 
 \begin_layout Plain Layout
@@ -3828,24 +3819,16 @@ end{lstlisting}
 
 
 \backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=725,bas
-icstyle={
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=725,basicstyle={
 \backslash
 scriptsize},framesep=2mm]
 \end_layout
 
 \begin_layout Plain Layout
 
-\end_layout
-
-\begin_layout Plain Layout
-
-        if (System.getSecurityManager() instanceof 
-\end_layout
-
-\begin_layout Plain Layout
-
-                AntSecurityManager) { 
+        if (System.getSecurityManager() instanceof AntSecurityManager) {
+ 
 \end_layout
 
 \begin_layout Plain Layout
@@ -3927,7 +3910,7 @@ Another example of enforcing the architectural constraint occurs in GJMan
 
 \begin_layout Standard
 \begin_inset listings
-lstparams "language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
 inline false
 status open
 
@@ -3938,42 +3921,18 @@ status open
 
 \begin_layout Plain Layout
 
-        final SecurityManager securityManager = 
+        final SecurityManager securityManager = new SecurityManager() {
+ 
 \end_layout
 
 \begin_layout Plain Layout
 
-                new SecurityManager() 
+            public void checkPermission(Permission permission) { 
 \end_layout
 
 \begin_layout Plain Layout
 
-        { 
-\end_layout
-
-\begin_layout Plain Layout
-
-            public void checkPermission(
-\end_layout
-
-\begin_layout Plain Layout
-
-                    Permission permission) 
-\end_layout
-
-\begin_layout Plain Layout
-
-            { 
-\end_layout
-
-\begin_layout Plain Layout
-
-                if(permission.getName().startsWith("exitVM"))
-\end_layout
-
-\begin_layout Plain Layout
-
-                { 
+                if(permission.getName().startsWith("exitVM")) { 
 \end_layout
 
 \begin_layout Plain Layout
@@ -4136,8 +4095,8 @@ vbox{%
 
 
 \backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=22,basi
-cstyle={
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=22,basicstyle={
 \backslash
 scriptsize},framesep=2mm]
 \end_layout
@@ -4150,17 +4109,12 @@ scriptsize},framesep=2mm]
 \begin_layout Plain Layout
 
     * The launcher to start eclipse using webstart.
- To use 
+ To use this launcher, the client 
 \end_layout
 
 \begin_layout Plain Layout
 
-    * this launcher, the client must accept to give all 
-\end_layout
-
-\begin_layout Plain Layout
-
-    * security permissions.
+    * must accept to give all security permissions.
 \end_layout
 
 \begin_layout Plain Layout
@@ -4353,12 +4307,7 @@ scriptsize},framesep=2mm, firstnumber=156]
 
 \begin_layout Plain Layout
 
-    if (sm != null && sm != lastSecurityManagerInstalled) 
-\end_layout
-
-\begin_layout Plain Layout
-
-    {
+    if (sm != null && sm != lastSecurityManagerInstalled){
 \end_layout
 
 \begin_layout Plain Layout
@@ -4377,24 +4326,20 @@ end{lstlisting}
 
 
 \backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,basicstyle={
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,basicsty
+le={
 \backslash
 scriptsize},framesep=2mm, firstnumber=163]
 \end_layout
 
 \begin_layout Plain Layout
 
-        throw new SecurityException(
+        throw new SecurityException
 \end_layout
 
 \begin_layout Plain Layout
 
-           Messages.getString(
-\end_layout
-
-\begin_layout Plain Layout
-
-              EXCEPTION_ALIEN_SECURITY_MANAGER));   
+            (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
 \end_layout
 
 \begin_layout Plain Layout
