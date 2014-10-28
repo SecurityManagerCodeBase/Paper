@@ -112,7 +112,11 @@ Carnegie Mellon Univeristy, Pittsburgh, PA
 
 \begin_layout Plain Layout
 
-Email: zfc@cs.cmu.edu, mmaass@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu}}
+
+\backslash
+{zfc, mmass
+\backslash
+}@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu}}
 \end_layout
 
 \end_inset
