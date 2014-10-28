@@ -3380,39 +3380,29 @@ The second category, setting a SecurityManager and not changing it during
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+inline false
 status open
 
 \begin_layout Plain Layout
 
-
-\backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=321,frame=single,fonts
-ize=
-\backslash
-scriptsize,framesep=2mm,xrightmargin=0.1cm]
+    public static void main(String[] args) {     
 \end_layout
 
 \begin_layout Plain Layout
 
-   public static void main(String[] args) {     
+        if (System.getSecurityManager() == null) {       
 \end_layout
 
 \begin_layout Plain Layout
 
-   if (System.getSecurityManager() == null) {       
+            System.setSecurityManager(
 \end_layout
 
 \begin_layout Plain Layout
 
-   System.setSecurityManager(new RMISecurityManager());     
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
+                new RMISecurityManager());   
 \end_layout
 
 \end_inset
@@ -3926,89 +3916,75 @@ Another example of enforcing the architectural constraint occurs in GJMan
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\tiny},firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+inline false
 status open
 
 \begin_layout Plain Layout
 
-
-\backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=703,frame=single,fonts
-ize=
-\backslash
-scriptsize,framesep=2mm,xrightmargin=0.1cm]
+    public static void apply() { 
 \end_layout
 
 \begin_layout Plain Layout
 
-   public static void apply() { 
+        final SecurityManager securityManager = new SecurityManager() {
+ 
 \end_layout
 
 \begin_layout Plain Layout
 
-     final SecurityManager securityManager = new SecurityManager() { 
+            public void checkPermission( Permission permission ) { 
 \end_layout
 
 \begin_layout Plain Layout
 
-       public void checkPermission( Permission permission ) { 
+                if( permission.getName().startsWith("exitVM") ) { 
 \end_layout
 
 \begin_layout Plain Layout
 
-         if( permission.getName().startsWith("exitVM") ) { 
+                    throw new Exception() ; 
 \end_layout
 
 \begin_layout Plain Layout
 
-           throw new Exception() ; 
+                } 
 \end_layout
 
 \begin_layout Plain Layout
 
-         } 
+           } 
 \end_layout
 
 \begin_layout Plain Layout
 
-       } 
+        }; 
 \end_layout
 
 \begin_layout Plain Layout
 
-     } ; 
+       System.setSecurityManager( securityManager ) ; 
 \end_layout
 
 \begin_layout Plain Layout
 
-   System.setSecurityManager( securityManager ) ; 
+    }
 \end_layout
 
 \begin_layout Plain Layout
 
-   }
+    public static void unapply() { 
 \end_layout
 
 \begin_layout Plain Layout
 
-   public static void unapply() { 
+        System.setSecurityManager( null ) ; 
 \end_layout
 
 \begin_layout Plain Layout
 
-     System.setSecurityManager( null ) ; 
-\end_layout
-
-\begin_layout Plain Layout
-
-   }
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
+    }
 \end_layout
 
 \end_inset
@@ -5162,14 +5138,32 @@ Since the Dacapo Benchmarks did not set a security manager during any of
  work in all cases, instead of when a security manager is set.
  This created problems for Eclipse, Tradebeans, and Tradesoap where the
  Privilege Escalation Rule prevented the benchmark from running.
- 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
+\begin_inset Float table
 wide true
 sideways false
 status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Performance Test Results.
+ 
+\begin_inset Newline newline
+\end_inset
+
+*These applications could not be run with the configuration of JSF used
+ for performance testing, but were included to provide data about their
+ performance with and without the JIT.
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Tabular
@@ -5475,7 +5469,7 @@ Batik
 \begin_inset Text
 
 \begin_layout Plain Layout
-Eclipse
+Eclipse*
 \end_layout
 
 \end_inset
@@ -6303,7 +6297,7 @@ Tomcat
 \begin_inset Text
 
 \begin_layout Plain Layout
-Tradebeans
+Tradebeans*
 \end_layout
 
 \end_inset
@@ -6395,7 +6389,7 @@ N/A
 \begin_inset Text
 
 \begin_layout Plain Layout
-Tradesoap
+Tradesoap*
 \end_layout
 
 \end_inset
@@ -6670,22 +6664,6 @@ Average (mean)
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Performance Test Results
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
