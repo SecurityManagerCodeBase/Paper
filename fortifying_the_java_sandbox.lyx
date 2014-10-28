@@ -228,8 +228,9 @@ key "svoboda_anatomy_blog_2013"
 
 \end_inset
 
-(not 100% happy with this sentence at the moment).If this trend continues,
- regular updates will not be enough to ensure the integrity of Java applications.
+(not 100% happy with this sentence at the moment).
+ If this trend continues, regular updates will not be enough to ensure the
+ integrity of Java applications.
  
 \end_layout
 
@@ -307,10 +308,6 @@ Based on the findings of this analysis, two rules for fortifying the sandbox
  
 \end_layout
 
-\begin_layout Section
-Related Work
-\end_layout
-
 \begin_layout Standard
 \begin_inset Note Comment
 status open
@@ -332,20 +329,37 @@ MM: Don't have this separate section.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Related Work
+\end_layout
+
+\begin_layout Plain Layout
+ZC: Maybe add this later
+\end_layout
+
+\begin_layout Plain Layout
 There is little work on how Java applications use the Sandbox and the security
  manager.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 - list studies into Java exploits
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 - list other empirical studies into sandboxes
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 - list other Java empirical studies relating to security
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -830,43 +844,6 @@ reference "fig:A-typical-exploit-payload"
 
  shows a typical payload.
  
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-The vulnerabilities attacked by exploits tend to fall into one of two categories
-: those that exploit a type confusion vulnerability to set the security
- manager to 
-\family typewriter
-null
-\family default
- and those that exploit a confused deputy vulnerability 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hardy_confused_1988"
-
-\end_inset
-
- in a privileged JRE class to 
-\family typewriter
-null
-\family default
- the security manager.
-
-\series bold
- 
-\series default
-An exploit will elevate this payload's privileges to allow it to disable
- the security manager and perform its malicious operations.
- 
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -2967,198 +2944,6 @@ Closure Library
 \end_layout
 
 \begin_layout Standard
-While the Qualitas Corpus provides a strong basis for the study, the researchers
- wanted to collect a more diverse dataset (&& Josh said a better reason
- for this earlier.
- Ask him about it.
- &&).
- Thus, applications were also collected from GitHub, a code sharing site.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "Table: Github Dataset"
-
-\end_inset
-
- contains the 17 applications used in the GitHub Dataset.While the Qualitas
- Corpus provides a strong basis for the study, the researchers wanted to
- collect a more diverse dataset (&& Josh said a better reason for this earlier.
- Ask him about it.
- &&).
- Thus, applications were also collected from GitHub, a code sharing site.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "Table: Github Dataset"
-
-\end_inset
-
- contains the 17 applications used in the GitHub Dataset.
- refact4j is the only application without a description because the comments
- were in a language that the authors could not read.
-\end_layout
-
-\begin_layout Section
-Results
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Research-Questions-and"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-How commonly are SM's used?
-\end_layout
-
-\begin_layout Plain Layout
-Why do apps use the SM? - ZC: I like How better than Why
-\end_layout
-
-\begin_layout Plain Layout
-What are the common mistakes made by apps using the SM?
-\end_layout
-
-\begin_layout Plain Layout
-This section should cover the rules too (or maybe mitigations should do
- it up front?) -- call them privilege escalation and SecurityManager rules
- or change the names for the rules used in Mitigations section.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Categorizing Security Manager Interactions
-\end_layout
-
-\begin_layout Standard
-The first goal of our inspection of Java applications was to gain an understandi
-ng of how Java applications interacted with the SecurityManager.
- To do so, applications were divided into categories based on how the applicatio
-n interacted with the SecurityManager.
- The categories were: setting a SecurityManager and then changing the applicatio
-n's SecurityManager during execution, setting a SecurityManager and not
- changing it during execution, interacting with a SecurityManager but never
- setting one, and not interacting with a SecurityManager at all.
- 
-\end_layout
-
-\begin_layout Standard
-The first category, setting a SecurityManager and then changing the SecurityMana
-ger during execution, means that the applications either sets a different
- SecurityManager as the SecurityManager for the system, or the application
- alters the current SecurityManager for the system.
- Since this category was the most likely category to affect the validity
- of the claims, the applications in this category are further explained
- in later sections of this paper.
- 
-\end_layout
-
-\begin_layout Standard
-The second category, setting a SecurityManager and not changing it during
- execution, meant that for each execution path, there was at most one place
- the application set a security manager.
- For example, most of the executable files of Weka do not set a security
- manager.
- However, if the executable method in RemoteEngine.java runs without a security
- manage set for the JVM, the application sets a security manager.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=321,frame=single,fonts
-ize=
-\backslash
-scriptsize,framesep=2mm,xrightmargin=0.1cm]
-\end_layout
-
-\begin_layout Plain Layout
-
-   public static void main(String[] args) {     
-\end_layout
-
-\begin_layout Plain Layout
-
-   if (System.getSecurityManager() == null) {       
-\end_layout
-
-\begin_layout Plain Layout
-
-   System.setSecurityManager(new RMISecurityManager());     
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Only one application in this category (JTimelag), explicitly set the security
- manager to null.
- This situation is discussed further in the section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Reducing-Web-Application-Complexity"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-The third category, interacting with a SecurityManager but never setting
- one, consists of applications which contained code indicating the application
- was designed to work inside of a sandbox but never explicitly set up a
- sandbox in the application.
- The indicating code consists of adding extra permission checks if the applicati
-on was inside of a sandbox, using doPrivileged calls to avoid checking the
- permissions of all classes on the stack, or ensuring that sections of the
- application would work within a sandbox using test cases.
- This category was further subdivided into applications which altered execution
- inside the main application (meaning extra permission checks or calling
- doPrivileged) and applications which only continued test cases that interacted
- with the sandbox.
- The only contained test cases category also includes one application, system-ru
-les, which was a utility for test cases.
- 
-\end_layout
-
-\begin_layout Standard
-The final category, not interacting with a SecurityManager at all, means
- that the application either explicitly referenced the SecurityManager in
- comments but not in the source code or the application defined a class
- containing the name SecurityManger but the defined class did not extend
- java.lang.SecurityManager in any way.
-\end_layout
-
-\begin_layout Standard
-After inspecting the 29 applications in the filtered Qualitas dataset, the
- applications were classified based on how they interacted with the SecurityMana
-ger.
- 
 \begin_inset Float table
 wide true
 sideways false
@@ -3484,27 +3269,22 @@ Table 4 isn't for this section but putting it here to put all of the big
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage newpage
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage clearpage
-\end_inset
-
-
-\begin_inset Newpage pagebreak
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 While the Qualitas Corpus provides a strong basis for the study, the researchers
  wanted to collect a more diverse dataset (&& Josh said a better reason
  for this earlier.
+ Ask him about it.
+ &&).
+ Thus, applications were also collected from GitHub, a code sharing site.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Table: Github Dataset"
+
+\end_inset
+
+ contains the 17 applications used in the GitHub Dataset.While the Qualitas
+ Corpus provides a strong basis for the study, the researchers wanted to
+ collect a more diverse dataset (&& Josh said a better reason for this earlier.
  Ask him about it.
  &&).
  Thus, applications were also collected from GitHub, a code sharing site.
@@ -5342,7 +5122,1692 @@ System
 \end_layout
 
 \begin_layout Subsection
-Performance
+Overhead
+\end_layout
+
+\begin_layout Standard
+Overhead is an important metric of security tools.
+ Specifically for these rule implementations, the important metrics which
+ need to be investigated are performance overhead, memory overhead, and
+ user overhead.
+ 
+\end_layout
+
+\begin_layout Standard
+Performance overhead was tested using version 9.12 of the Dacapo Benchmark
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DaCapo:paper"
+
+\end_inset
+
+, a standard set of Java applications with non-trivial memory loads.
+ The applications in the benchmark are Avrora, Batik, Eclipse, Fop, H2,
+ Jython, Luindex, Lusearch, Pmd, Sunflow, Tomcat, TradeBeans, TradeSoap,
+ and Xalan.
+ Performance was measured by running the provided section of the application
+ 5 times and the the mean of the runtimes was computed.
+ All performance tests were ran on an 8 Intel i7 core HP Envy M4 laptop
+ with 8 GBs of RAM.
+\end_layout
+
+\begin_layout Standard
+Since the Dacapo Benchmarks did not set a security manager during any of
+ the benchmark runs, the benchmarks had to be tested with the tool set to
+ work in all cases, instead of when a security manager is set.
+ This created problems for Eclipse, Tradebeans, and Tradesoap where the
+ Privilege Escalation Rule prevented the benchmark from running.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="16" columns="10">
+<features rotate="90" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="2.5cm">
+<column alignment="center" valignment="top" width="2.5cm">
+<column alignment="center" valignment="top" width="2.5cm">
+<column alignment="center" valignment="top" width="2.5cm">
+<column alignment="center" valignment="top" width="2.5cm">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.
+ No Tool (msec)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.
+ Privilege Escalation 
+\end_layout
+
+\begin_layout Plain Layout
+Rule (msec)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.
+ Both Rules (msec)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.
+ No Tool and Interpreted (msec)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5.
+ Both Rules and Interpreted (msec)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2/1 (%)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3/1 (%)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4/1 (%)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5/1 (%)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Avrora
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6803.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6865.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+109890.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+57044.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+103356.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+100.91
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1615.28
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+838.49
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1519.23
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Batik
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2704.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1902.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20280.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+21268.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20022.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+70.35
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+749.90
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+786.44
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1472.42
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Eclipse
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+21859.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+492084.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2251.14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Fop
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1379.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1866.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+21360.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17306.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20316.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+135.27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1548.06
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1254.25
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1472.42
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+H2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7196.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6423
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+420293.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+258068.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+408695
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+89.26
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5840.50
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3586.18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5679.32
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Jython
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5975.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3937.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+309448.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+24258
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+301292.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+65.89
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5178.54
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4154.53
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5042.05
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Luindex
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1275.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+942
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+48354
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+43487.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+45549.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+73.84
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3790.09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3408.62
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3570.28
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Lusearch
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1392.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1063.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+50239
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27322.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+37752.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+76.40
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3608.61
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1962.53
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2711.74
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Pmd
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3007.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2599.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+43237
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+21981
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+28150.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+86.45
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1437.78
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+730.95
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+936.10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sunflow
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2048.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2023.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+249207.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+114814.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+174329.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+97.78
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12163.60
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5603.99
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8508.84
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Tomcat
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2164.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2558.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+34492
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20897.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+23541
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+118.20
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1593.31
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+965.34
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1087.44
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Tradebeans
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7625.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+195929.7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2569.44
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Tradesoap
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7488.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+112575.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(didn't run; stopped by Rule)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1503.29
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Xalan
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1535
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1504
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+58583.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+29296
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+41090.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+97.98
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3816.50
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1908.53
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2676.93
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Average (mean)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+92.12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3758.40
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2251.69
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3085.88
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Performance Test Results
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The results of the performance tests indicate that the Privilege Escalation
+ Rule implementation caused minimal slowdown, and actually ran 8% faster
+ than the benchmarks without a tool set.
+ This increase is believed to be due to the fluctuations between runs and
+ not due to any effects of the tool.
+ The Security Manager Rule implementation, on the other hand, produced a
+ significant slowdown, causing applications to run over 37 times slower
+ on average.
+ We investigated the cause of this slowdown and found two causes 1) checking
+ for variable changes in JVMTI cause the program to run in interpreted mode
+ and 2) JVMTI checks if the watched object reference was changed at every
+ object reference.
+ To determine how much of a speed increase could be gained by implementing
+ the Security Manager Rule using a tool that does not require the application
+ to run in interpreted mode, we measured how long the benchmarks took to
+ complete in interpreted mode.
+ The tests determined that the interpreted applications runtime increased
+ by 22.5 times the original Just-In-Time Compiled runtime.
+ While this is not the full portion of the slowdown for the Security Manager
+ Rule implementation, running the application in interpreted mode is over
+ 60% of the slowdown.
+ It is likely that the Security Manager implementation could also be improved
+ by avoiding the overhead associated with checking for a security manager
+ change in every object change.
+ Finally, to confirm that the Security Manager Rule implementation was running
+ in interpreted mode, the benchmark was timed with both tools in interpreted
+ mode.
+ While running the tool in interpreted mode was faster than running the
+ tool without interpreted mode explicitly set, the author believe this result
+ is either due to the variations of individual performance tests or that
+ explicitly setting interpreted mode causes the mode switch to occur faster.
+\end_layout
+
+\begin_layout Standard
+Future work could address the slowdown associated with the Security Manager
+ rule implementation.
+ These approaches could focus on the underlying reasons for the slowdown
+ in the tool or re-implement the rule in a different way.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Fill this in later.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The authors hypotheses that the Security Manager Rule can be implemented
+ with significantly less performance overhead if the rule is built into
+ the JVM.
+ The problem with implementing the rule by changing the JVM is that any
+ unofficial changes would not be supported by the JVM developers, thus increases
+ the difficulty to update the JVM to the latest released version.
+ Thus, the rule would likely need to be implemented by the JVM maintainers
+ to create a significantly faster version without losing the ability to
+ update the JVM.
+\end_layout
+
+\begin_layout Standard
+The memory overhead of the tool is likely very small relative to a large
+ program.
+ The tool only copies a couple of memory references, such as the loaded
+ classes permission set, when performing both types of security checks.
+ The copies are also deallocated after each check.
+ A few objects, such as the system's security manager and references to
+ repeatedly called methods in the JVM are saved between security checks.
+ All objects created by the tool likely have a minimal memory footprint
+ compared to the complete application, although the memory footprint was
+ not explicitly measured in this study.
+\end_layout
+
+\begin_layout Standard
+The user overhead of the tool is also minimal.
+ To use the tool in the default configuration, a user either has to compile
+ the tool using the provided makefile or download a binary version of the
+ tool for their system.
+ Once the tool is compiled, the tool can be set to fortify all Java applications
+ on a standard Oracle JVM in two steps: 1) set the JAVA_TOOL_OPTIONS environment
+ variable to point to the library file for the tool with the command 
+\emph on
+-agentpath=path_to_library
+\emph default
+ 2) set the JSF_HOME environment variable to point to the directory with
+ the appropriately named configuration file.
+ JAVA_TOOL_OPTIONS is the environment variable provided by Oracle that allows
+ executing a JVMTI agent for all instances of the JVM.
+ The JSF_HOME environment variable is an environment variable only applicable
+ to the tool.
+ These two options can be set for the whole system or only a terminal using
+ a short script.
+ 
+\end_layout
+
+\begin_layout Standard
+The default configuration of the tool is the Privilege Escalation Rule implement
+ation is turned on while the Security Manager Rule is turned off.
+ The default mode of the tool is enforce mode, which was described in the
+ JVMTI Implementation section.
+ The other default configuration option is to output the security logs to
+ a file named jsf.log in the current directory of the running application.
+ All of these options can be changed in the configuration file.
+ The default configuration of only the Privilege Escalation rule implementation
+ provides the security benefit of the Privilege Escalation Rule without
+ incurring the performance hit of the Security Manage Rule implementation,
+ which is discussed in the next section.
+ The Security Manager Rule implementation can be turned on in the configuration
+ file, adding an extra check while incurring the performance cost of the
+ Security Manager Rule implementation.
+ The tool can be switched from enforce mode to monitor mode if only the
+ log files are desired.
+ The resulting logs can also be set to a single file by specifying the file's
+ path in the configuration file.
 \end_layout
 
 \begin_layout Standard
@@ -5374,13 +6839,19 @@ ZC: At the moment, I'm not happy enough with the performance results to
  
 \end_layout
 
+\begin_layout Plain Layout
+Update - I realize this section is crap but it doesn't seem like I'm going
+ to get any response on my questions until I write something here so here
+ my best effort.
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Subsection
-Effectiveness at Fortifying the Sandbox
+Effectiveness at Fortifying the Sandbox 
 \end_layout
 
 \begin_layout Standard
@@ -5415,20 +6886,9 @@ We ran the ten exploits in our set under the following conditions: without
  against our JRE, test how effective the privilege escalation rule is without
  the security manager rule, and evaluate how effective the agent is in the
  strictest configuration currently available.
- Running the privilege escalation rule alone is interesting because it provides
- some indication of how effective this rule is at stopping applet exploits
- in general, outside of simply fortifying the security manager.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Fix preceding sentence one performance section is completed
-\end_layout
-
-\end_inset
-
-Overall, all ten of the exploits succeed against our JRE without the agent,
+ Running the privilege escalation rule alone shows how effective the current
+ tool is at stopping applet exploits with low runtime overhead.
+ Overall, all ten of the exploits succeed against our JRE without the agent,
  four were stopped by the privilege escalation rule, and all ten were stopped
  when both rules were enforced.
  The exploits that were not stopped by the privilege escalation rule were
