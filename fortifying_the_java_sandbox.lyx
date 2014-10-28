@@ -4288,7 +4288,7 @@ vbox{%
 \backslash
 begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,basicstyle={
 \backslash
-scriptsize},framesep=2mm, firstnumber=156]
+scriptsize},framesep=2mm,firstnumber=156]
 \end_layout
 
 \begin_layout Plain Layout
@@ -4329,7 +4329,7 @@ end{lstlisting}
 begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,basicsty
 le={
 \backslash
-scriptsize},framesep=2mm, firstnumber=163]
+scriptsize},framesep=2mm,firstnumber=163]
 \end_layout
 
 \begin_layout Plain Layout
@@ -4370,7 +4370,7 @@ end{lstlisting}
 \backslash
 begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,basicstyle={
 \backslash
-scriptsize},framesep=2mm, firstnumber=173]
+scriptsize},framesep=2mm,firstnumber=173]
 \end_layout
 
 \begin_layout Plain Layout
@@ -5111,7 +5111,7 @@ key "DaCapo:paper"
 
 , a standard set of Java applications with non-trivial memory loads.
  The applications in the benchmark are Avrora, Batik, Eclipse, Fop, H2,
- Jython, Luindex, Lusearch, Pmd, Sunflow, Tomcat, TradeBeans, TradeSoap,
+ Jython, Luindex, Lusearch, PMD, Sunflow, Tomcat, TradeBeans, TradeSoap,
  and Xalan.
  Performance was measured by running the provided section of the application
  5 times and the the mean of the runtimes was computed.
