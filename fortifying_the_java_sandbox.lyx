@@ -2391,14 +2391,14 @@ status open
 
 \begin_layout Plain Layout
 GitHub Dataset
-\end_layout
+\begin_inset CommandInset label
+LatexCommand label
+name "Table: Github Dataset"
 
 \end_inset
 
 
-\begin_inset CommandInset label
-LatexCommand label
-name "Table: Github Dataset"
+\end_layout
 
 \end_inset
 
@@ -2755,7 +2755,7 @@ fe0cdc5eb70c492993dfb55c39f5a90294383fa1
 \begin_inset Text
 
 \begin_layout Plain Layout
-Unsure
+Generic and Functional Programming Framework
 \end_layout
 
 \end_inset
@@ -3676,10 +3676,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
@@ -3688,10 +3684,6 @@ asda
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
