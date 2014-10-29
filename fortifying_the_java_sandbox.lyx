@@ -3666,30 +3666,6 @@ System.exit()
  to terminate the compilation.
  However, Eclipse wants to continue executing and report an error to the
  user if Ant runs into a error condition.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-asda
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -3788,7 +3764,7 @@ end{lstlisting}
 
 
 \backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=703,bas
+begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=721,bas
 icstyle={
 \backslash
 scriptsize},framesep=2mm]
