@@ -5131,20 +5131,13 @@ tion is not a problem because the non-altered Privilege Escalation Rule
 \begin_inset Float table
 wide true
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Performance Test Results.
- 
-\begin_inset Newline newline
-\end_inset
-
-*These applications could not be run with the configuration of JSF used
- for performance testing, but were included to provide data about their
- performance with and without the JIT.
 \end_layout
 
 \end_inset
@@ -5153,19 +5146,72 @@ Performance Test Results.
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="16" columns="10">
-<features rotate="90" tabularvalignment="middle">
+<lyxtabular version="3" rows="14" columns="6">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top" width="2.5cm">
 <column alignment="center" valignment="top" width="2.5cm">
 <column alignment="center" valignment="top" width="2.5cm">
 <column alignment="center" valignment="top" width="2.5cm">
 <column alignment="center" valignment="top" width="2.5cm">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Runtime (s) / Runtime relative to no tool (%)
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -5181,7 +5227,7 @@ Performance Test Results.
 
 \begin_layout Plain Layout
 1.
- No Tool (msec)
+ No Tool 
 \end_layout
 
 \end_inset
@@ -5195,7 +5241,7 @@ Performance Test Results.
 \end_layout
 
 \begin_layout Plain Layout
-Rule (msec)
+Rule
 \end_layout
 
 \end_inset
@@ -5205,7 +5251,7 @@ Rule (msec)
 
 \begin_layout Plain Layout
 3.
- Both Rules (msec)
+ Both Rules 
 \end_layout
 
 \end_inset
@@ -5215,44 +5261,7 @@ Rule (msec)
 
 \begin_layout Plain Layout
 4.
- No Tool and Interpreted (msec)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5.
- Both Rules and Interpreted (msec)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2/1 (%)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3/1 (%)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4/1 (%)
+ No Tool and Interpreted 
 \end_layout
 
 \end_inset
@@ -5261,7 +5270,8 @@ Rule (msec)
 \begin_inset Text
 
 \begin_layout Plain Layout
-5/1 (%)
+5.
+ Both Rules and Interpreted
 \end_layout
 
 \end_inset
@@ -5281,7 +5291,7 @@ Avrora
 \begin_inset Text
 
 \begin_layout Plain Layout
-6803.2
+6.80 / 100
 \end_layout
 
 \end_inset
@@ -5290,7 +5300,7 @@ Avrora
 \begin_inset Text
 
 \begin_layout Plain Layout
-6865.4
+6.86 / 100.9
 \end_layout
 
 \end_inset
@@ -5299,7 +5309,7 @@ Avrora
 \begin_inset Text
 
 \begin_layout Plain Layout
-109890.8
+109.89 / 1615.28
 \end_layout
 
 \end_inset
@@ -5308,43 +5318,7 @@ Avrora
 \begin_inset Text
 
 \begin_layout Plain Layout
-57044.2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-103356.4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-100.91
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1615.28
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-838.49
+57.04 / 838.49
 \end_layout
 
 \end_inset
@@ -5353,7 +5327,7 @@ Avrora
 \begin_inset Text
 
 \begin_layout Plain Layout
-1519.23
+103.36 / 1519.23
 \end_layout
 
 \end_inset
@@ -5373,7 +5347,7 @@ Batik
 \begin_inset Text
 
 \begin_layout Plain Layout
-2704.4
+2.70 / 100
 \end_layout
 
 \end_inset
@@ -5382,7 +5356,7 @@ Batik
 \begin_inset Text
 
 \begin_layout Plain Layout
-1902.6
+1.90 / 70.4
 \end_layout
 
 \end_inset
@@ -5391,7 +5365,7 @@ Batik
 \begin_inset Text
 
 \begin_layout Plain Layout
-20280.4
+20.28 / 749.9
 \end_layout
 
 \end_inset
@@ -5400,43 +5374,7 @@ Batik
 \begin_inset Text
 
 \begin_layout Plain Layout
-21268.4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-20022.8
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-70.35
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-749.90
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-786.44
+21.26 / 786.44
 \end_layout
 
 \end_inset
@@ -5445,99 +5383,7 @@ Batik
 \begin_inset Text
 
 \begin_layout Plain Layout
-1472.42
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Eclipse*
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-21859.4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-492084.8
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2251.14
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
+20022.8 / 1472.42
 \end_layout
 
 \end_inset
@@ -5557,7 +5403,7 @@ Fop
 \begin_inset Text
 
 \begin_layout Plain Layout
-1379.8
+1.379 / 100
 \end_layout
 
 \end_inset
@@ -5566,7 +5412,7 @@ Fop
 \begin_inset Text
 
 \begin_layout Plain Layout
-1866.4
+1.87 / 135.3
 \end_layout
 
 \end_inset
@@ -5575,7 +5421,7 @@ Fop
 \begin_inset Text
 
 \begin_layout Plain Layout
-21360.2
+21.36 / 1548.06
 \end_layout
 
 \end_inset
@@ -5584,43 +5430,7 @@ Fop
 \begin_inset Text
 
 \begin_layout Plain Layout
-17306.2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-20316.4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-135.27
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1548.06
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1254.25
+17.31 / 1254.25
 \end_layout
 
 \end_inset
@@ -5629,7 +5439,7 @@ Fop
 \begin_inset Text
 
 \begin_layout Plain Layout
-1472.42
+20.32 / 1472.42
 \end_layout
 
 \end_inset
@@ -5649,7 +5459,7 @@ H2
 \begin_inset Text
 
 \begin_layout Plain Layout
-7196.2
+7.20 / 100
 \end_layout
 
 \end_inset
@@ -5658,7 +5468,7 @@ H2
 \begin_inset Text
 
 \begin_layout Plain Layout
-6423
+6.42 / 89.3
 \end_layout
 
 \end_inset
@@ -5667,7 +5477,7 @@ H2
 \begin_inset Text
 
 \begin_layout Plain Layout
-420293.8
+420.29 / 5840.5
 \end_layout
 
 \end_inset
@@ -5676,43 +5486,7 @@ H2
 \begin_inset Text
 
 \begin_layout Plain Layout
-258068.6
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-408695
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-89.26
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5840.50
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3586.18
+258.07 / 3586.2
 \end_layout
 
 \end_inset
@@ -5721,7 +5495,7 @@ H2
 \begin_inset Text
 
 \begin_layout Plain Layout
-5679.32
+408.69 / 5679.3
 \end_layout
 
 \end_inset
@@ -5741,7 +5515,7 @@ Jython
 \begin_inset Text
 
 \begin_layout Plain Layout
-5975.6
+6.00 /100
 \end_layout
 
 \end_inset
@@ -5750,7 +5524,7 @@ Jython
 \begin_inset Text
 
 \begin_layout Plain Layout
-3937.6
+3.94 / 65.9
 \end_layout
 
 \end_inset
@@ -5759,7 +5533,7 @@ Jython
 \begin_inset Text
 
 \begin_layout Plain Layout
-309448.8
+309.45 / 5178.54
 \end_layout
 
 \end_inset
@@ -5768,43 +5542,17 @@ Jython
 \begin_inset Text
 
 \begin_layout Plain Layout
-24258
+24.258 / 4154.53
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: Missing digit?
 \end_layout
 
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
-301292.6
-\end_layout
 
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-65.89
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5178.54
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4154.53
 \end_layout
 
 \end_inset
@@ -5813,7 +5561,7 @@ Jython
 \begin_inset Text
 
 \begin_layout Plain Layout
-5042.05
+301.29 / 5042.05
 \end_layout
 
 \end_inset
@@ -5833,7 +5581,7 @@ Luindex
 \begin_inset Text
 
 \begin_layout Plain Layout
-1275.8
+1.28 / 100
 \end_layout
 
 \end_inset
@@ -5842,7 +5590,7 @@ Luindex
 \begin_inset Text
 
 \begin_layout Plain Layout
-942
+942 / 73.84
 \end_layout
 
 \end_inset
@@ -5851,7 +5599,7 @@ Luindex
 \begin_inset Text
 
 \begin_layout Plain Layout
-48354
+48.35 / 3790.1
 \end_layout
 
 \end_inset
@@ -5860,43 +5608,7 @@ Luindex
 \begin_inset Text
 
 \begin_layout Plain Layout
-43487.2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-45549.6
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-73.84
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3790.09
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3408.62
+43.49 / 3408.6
 \end_layout
 
 \end_inset
@@ -5905,7 +5617,7 @@ Luindex
 \begin_inset Text
 
 \begin_layout Plain Layout
-3570.28
+45.55 / 3570.3
 \end_layout
 
 \end_inset
@@ -5925,7 +5637,7 @@ Lusearch
 \begin_inset Text
 
 \begin_layout Plain Layout
-1392.2
+1.39 / 100
 \end_layout
 
 \end_inset
@@ -5934,7 +5646,7 @@ Lusearch
 \begin_inset Text
 
 \begin_layout Plain Layout
-1063.6
+1.06 / 76.40
 \end_layout
 
 \end_inset
@@ -5943,7 +5655,7 @@ Lusearch
 \begin_inset Text
 
 \begin_layout Plain Layout
-50239
+50.24 / 3608.61
 \end_layout
 
 \end_inset
@@ -5952,43 +5664,7 @@ Lusearch
 \begin_inset Text
 
 \begin_layout Plain Layout
-27322.4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-37752.8
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-76.40
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3608.61
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1962.53
+27.32 / 1962.5
 \end_layout
 
 \end_inset
@@ -5997,7 +5673,7 @@ Lusearch
 \begin_inset Text
 
 \begin_layout Plain Layout
-2711.74
+37.75 / 2711.7
 \end_layout
 
 \end_inset
@@ -6017,7 +5693,7 @@ Pmd
 \begin_inset Text
 
 \begin_layout Plain Layout
-3007.2
+3.01 / 100
 \end_layout
 
 \end_inset
@@ -6026,7 +5702,7 @@ Pmd
 \begin_inset Text
 
 \begin_layout Plain Layout
-2599.6
+2.60 / 86.45
 \end_layout
 
 \end_inset
@@ -6035,7 +5711,7 @@ Pmd
 \begin_inset Text
 
 \begin_layout Plain Layout
-43237
+43.23 / 1437.78
 \end_layout
 
 \end_inset
@@ -6044,43 +5720,7 @@ Pmd
 \begin_inset Text
 
 \begin_layout Plain Layout
-21981
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-28150.4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-86.45
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1437.78
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-730.95
+21.98 / 731.0
 \end_layout
 
 \end_inset
@@ -6089,7 +5729,7 @@ Pmd
 \begin_inset Text
 
 \begin_layout Plain Layout
-936.10
+28.15 / 936.1
 \end_layout
 
 \end_inset
@@ -6109,7 +5749,7 @@ Sunflow
 \begin_inset Text
 
 \begin_layout Plain Layout
-2048.8
+2.04 / 100
 \end_layout
 
 \end_inset
@@ -6118,7 +5758,7 @@ Sunflow
 \begin_inset Text
 
 \begin_layout Plain Layout
-2023.8
+2.02 / 97.78
 \end_layout
 
 \end_inset
@@ -6127,7 +5767,7 @@ Sunflow
 \begin_inset Text
 
 \begin_layout Plain Layout
-249207.8
+249.20 / 12163.6
 \end_layout
 
 \end_inset
@@ -6136,43 +5776,7 @@ Sunflow
 \begin_inset Text
 
 \begin_layout Plain Layout
-114814.6
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-174329.2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-97.78
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-12163.60
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5603.99
+114.8 / 5603.9
 \end_layout
 
 \end_inset
@@ -6181,7 +5785,7 @@ Sunflow
 \begin_inset Text
 
 \begin_layout Plain Layout
-8508.84
+174.32 / 8508.8
 \end_layout
 
 \end_inset
@@ -6201,7 +5805,7 @@ Tomcat
 \begin_inset Text
 
 \begin_layout Plain Layout
-2164.8
+2.16 / 100
 \end_layout
 
 \end_inset
@@ -6210,7 +5814,7 @@ Tomcat
 \begin_inset Text
 
 \begin_layout Plain Layout
-2558.8
+2.56 / 118.20
 \end_layout
 
 \end_inset
@@ -6219,7 +5823,7 @@ Tomcat
 \begin_inset Text
 
 \begin_layout Plain Layout
-34492
+34.49 / 1593.31
 \end_layout
 
 \end_inset
@@ -6228,43 +5832,7 @@ Tomcat
 \begin_inset Text
 
 \begin_layout Plain Layout
-20897.6
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-23541
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-118.20
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1593.31
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-965.34
+20.90 / 965.34
 \end_layout
 
 \end_inset
@@ -6273,191 +5841,7 @@ Tomcat
 \begin_inset Text
 
 \begin_layout Plain Layout
-1087.44
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Tradebeans*
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-7625.4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-195929.7
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2569.44
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Tradesoap*
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-7488.6
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-112575.2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(didn't run; stopped by Rule)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1503.29
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N/A
+23.54 / 1087.4
 \end_layout
 
 \end_inset
@@ -6477,7 +5861,7 @@ Xalan
 \begin_inset Text
 
 \begin_layout Plain Layout
-1535
+1.54 / 100
 \end_layout
 
 \end_inset
@@ -6486,7 +5870,7 @@ Xalan
 \begin_inset Text
 
 \begin_layout Plain Layout
-1504
+1.50 / 97.98
 \end_layout
 
 \end_inset
@@ -6495,7 +5879,7 @@ Xalan
 \begin_inset Text
 
 \begin_layout Plain Layout
-58583.2
+58.58 / 3816.50
 \end_layout
 
 \end_inset
@@ -6504,43 +5888,7 @@ Xalan
 \begin_inset Text
 
 \begin_layout Plain Layout
-29296
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-41090.8
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-97.98
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3816.50
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1908.53
+29.30 / 1908.53
 \end_layout
 
 \end_inset
@@ -6549,7 +5897,7 @@ Xalan
 \begin_inset Text
 
 \begin_layout Plain Layout
-2676.93
+41.09 / 2676.93
 \end_layout
 
 \end_inset
@@ -6560,43 +5908,7 @@ Xalan
 \begin_inset Text
 
 \begin_layout Plain Layout
-Average (mean)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
+Average
 \end_layout
 
 \end_inset
