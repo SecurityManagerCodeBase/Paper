@@ -204,6 +204,23 @@ Be clear right up front that we aren't trying to stop all Java exploits,
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Write a paragraph to talk about why Java security is important.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 A security goal of Java is to allow applications to safely execute untrusted
  code in a sandbox so that the application and the host machine are protected
  from malicious behavior.
@@ -212,7 +229,7 @@ A security goal of Java is to allow applications to safely execute untrusted
  Instead of the sandbox completely protecting the application, security
  researchers are constantly finding ways to exploit how the sandbox is implement
 ed.
- Security Explorations, a company that research security vulnerabilities
+ Security Explorations, a company that researches security vulnerabilities
  in applications, found that the Java Virtual Machine (JVM) contained 19
  weaknesses and developed 12 exploits to demonstrate these weaknesses in
  a report on April 2nd 2012 
@@ -5097,17 +5114,24 @@ key "DaCapo:paper"
 
 \begin_layout Standard
 Since the Dacapo Benchmarks did not set a security manager during any of
- the benchmark runs, the benchmarks had to be tested with the tool set to
- work in all cases, instead of when a security manager is set.
- This created problems for Eclipse, Tradebeans, and Tradesoap where the
- Privilege Escalation Rule prevented the benchmark from running.
+ the benchmark runs, the the tool had to be altered to work in all cases,
+ instead of when a security manager is set.
+ (add something about how the altered version produces the maximum overhead
+ possible) This created problems for Eclipse, Tradebeans, and Tradesoap
+ where the altered Privilege Escalation Rule implementation prevented the
+ benchmark from running.
+ Catching the applications with the altered Privilege Escalation Rule implementa
+tion is not a problem because the non-altered Privilege Escalation Rule
+ implementation can successful execute the Eclipse, Tradebeans, and Tradesoap
+ benchmarks.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide true
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
