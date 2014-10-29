@@ -112,7 +112,11 @@ Carnegie Mellon Univeristy, Pittsburgh, PA
 
 \begin_layout Plain Layout
 
-Email: zfc@cs.cmu.edu, mmaass@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu}}
+
+\backslash
+{zfc, mmass
+\backslash
+}@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu}}
 \end_layout
 
 \end_inset
@@ -855,7 +859,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset listings
-lstparams "language=Java,basicstyle={\tiny}"
+lstparams "language=Java,basicstyle={\scriptsize}"
 inline false
 status open
 
@@ -2387,14 +2391,14 @@ status open
 
 \begin_layout Plain Layout
 GitHub Dataset
-\end_layout
+\begin_inset CommandInset label
+LatexCommand label
+name "Table: Github Dataset"
 
 \end_inset
 
 
-\begin_inset CommandInset label
-LatexCommand label
-name "Table: Github Dataset"
+\end_layout
 
 \end_inset
 
@@ -2751,7 +2755,7 @@ fe0cdc5eb70c492993dfb55c39f5a90294383fa1
 \begin_inset Text
 
 \begin_layout Plain Layout
-Unsure
+Generic and Functional Programming Framework
 \end_layout
 
 \end_inset
@@ -3376,39 +3380,29 @@ The second category, setting a SecurityManager and not changing it during
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+inline false
 status open
 
 \begin_layout Plain Layout
 
-
-\backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=321,frame=single,fonts
-ize=
-\backslash
-scriptsize,framesep=2mm,xrightmargin=0.1cm]
+    public static void main(String[] args) {     
 \end_layout
 
 \begin_layout Plain Layout
 
-   public static void main(String[] args) {     
+        if (System.getSecurityManager() == null) {       
 \end_layout
 
 \begin_layout Plain Layout
 
-   if (System.getSecurityManager() == null) {       
+            System.setSecurityManager(
 \end_layout
 
 \begin_layout Plain Layout
 
-   System.setSecurityManager(new RMISecurityManager());     
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
+                new RMISecurityManager());   
 \end_layout
 
 \end_inset
@@ -3682,10 +3676,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
@@ -3694,10 +3684,6 @@ asda
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -3739,41 +3725,43 @@ vbox{%
 
 
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=691,fontsize=
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=691,basicstyle={
 \backslash
-scriptsize,framesep=2mm]
+scriptsize},framesep=2mm]
 \end_layout
 
 \begin_layout Plain Layout
 
-   System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThre
-ad()));
+    System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThr
+ead()));
 \end_layout
 
 \begin_layout Plain Layout
 
-   ...
+    ...
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-end{Verbatim}
+end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
 
- 
+
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=703,fontsize=
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=703,basicstyle={
 \backslash
-scriptsize,framesep=2mm]
+scriptsize},framesep=2mm] 
 \end_layout
 
 \begin_layout Plain Layout
 
-   getCurrentProject().executeTargets(targets); 
+    getCurrentProject().executeTargets(targets); 
 \backslash
 
 \backslash
@@ -3782,44 +3770,14 @@ Note: Ant is executed on this line
 
 \begin_layout Plain Layout
 
-   ...
+    ...
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-end{Verbatim}
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=703,fontsize=
-\backslash
-scriptsize,framesep=2mm]
-\end_layout
-
-\begin_layout Plain Layout
-
-   finally {
-\end_layout
-
-\begin_layout Plain Layout
-
-   ...
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
+end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3830,35 +3788,64 @@ end{Verbatim}
 
 
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=725,fontsize=
+begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=703,bas
+icstyle={
 \backslash
-scriptsize,framesep=2mm]
+scriptsize},framesep=2mm]
 \end_layout
 
 \begin_layout Plain Layout
 
+    finally {
 \end_layout
 
 \begin_layout Plain Layout
 
-   if (System.getSecurityManager() instanceof AntSecurityManager) { 
-\end_layout
-
-\begin_layout Plain Layout
-
-   System.setSecurityManager(originalSM); 
-\end_layout
-
-\begin_layout Plain Layout
-
-   }
+    ...
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-end{Verbatim} 
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=725,basicstyle={
+\backslash
+scriptsize},framesep=2mm]
+\end_layout
+
+\begin_layout Plain Layout
+
+        if (System.getSecurityManager() instanceof AntSecurityManager) {
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+            System.setSecurityManager(originalSM); 
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting} 
 \end_layout
 
 \begin_layout Plain Layout
@@ -3922,89 +3909,75 @@ Another example of enforcing the architectural constraint occurs in GJMan
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+inline false
 status open
 
 \begin_layout Plain Layout
 
-
-\backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt, firstnumber=703,frame=single,fonts
-ize=
-\backslash
-scriptsize,framesep=2mm,xrightmargin=0.1cm]
+    public static void apply() { 
 \end_layout
 
 \begin_layout Plain Layout
 
-   public static void apply() { 
+        final SecurityManager securityManager = new SecurityManager() {
+ 
 \end_layout
 
 \begin_layout Plain Layout
 
-     final SecurityManager securityManager = new SecurityManager() { 
+            public void checkPermission(Permission permission) { 
 \end_layout
 
 \begin_layout Plain Layout
 
-       public void checkPermission( Permission permission ) { 
+                if(permission.getName().startsWith("exitVM")) { 
 \end_layout
 
 \begin_layout Plain Layout
 
-         if( permission.getName().startsWith("exitVM") ) { 
+                    throw new Exception(); 
 \end_layout
 
 \begin_layout Plain Layout
 
-           throw new Exception() ; 
+                } 
 \end_layout
 
 \begin_layout Plain Layout
 
-         } 
+            } 
 \end_layout
 
 \begin_layout Plain Layout
 
-       } 
+        }; 
 \end_layout
 
 \begin_layout Plain Layout
 
-     } ; 
+       System.setSecurityManager(securityManager); 
 \end_layout
 
 \begin_layout Plain Layout
 
-   System.setSecurityManager( securityManager ) ; 
+    }
 \end_layout
 
 \begin_layout Plain Layout
 
-   }
+    public static void unapply() { 
 \end_layout
 
 \begin_layout Plain Layout
 
-   public static void unapply() { 
+        System.setSecurityManager(null); 
 \end_layout
 
 \begin_layout Plain Layout
 
-     System.setSecurityManager( null ) ; 
-\end_layout
-
-\begin_layout Plain Layout
-
-   }
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
+    }
 \end_layout
 
 \end_inset
@@ -4122,70 +4095,63 @@ vbox{%
 
 
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,firstnumber=22,fontsize=
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
+ber=22,basicstyle={
 \backslash
-scriptsize,framesep=2mm]
+scriptsize},framesep=2mm]
 \end_layout
 
 \begin_layout Plain Layout
 
-   /** 
+    /** 
 \end_layout
 
 \begin_layout Plain Layout
 
-   * The launcher to start eclipse using webstart.
+    * The launcher to start eclipse using webstart.
  To use this launcher, the client 
 \end_layout
 
 \begin_layout Plain Layout
 
-   * must accept to give all security permissions.
+    * must accept to give all security permissions.
 \end_layout
 
 \begin_layout Plain Layout
 
-   ...
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
-\end_layout
-
-\begin_layout Plain Layout
-
+    ...
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
-\backslash
-scriptsize,firstnumber=55,framesep=2mm,commandchars=
-\backslash
-
-\backslash
-
-\backslash
-{
-\backslash
-}]
+end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
 
-   public static void main(String[] args) 
-\backslash
-{ 
 \end_layout
 
 \begin_layout Plain Layout
 
-   System.setSecurityManager(null); 
+
+\backslash
+begin{lstlisting}[numbers=left,numbersep=-10pt,basicstyle={
+\backslash
+scriptsize},firstnumber=55,framesep=2mm,escapechar=
+\backslash
+%]
+\end_layout
+
+\begin_layout Plain Layout
+
+    public static void main(String[] args) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+    System.setSecurityManager(null); %
 \backslash
 textbf{//TODO Hack so that when the classloader loading the fwk is created
  we don't have funny permissions.
@@ -4201,7 +4167,7 @@ textbf{//TODO Hack so that when the classloader loading the fwk is created
 
 
 \backslash
-end{Verbatim}
+end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
@@ -4320,19 +4286,19 @@ vbox{%
 
 
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
+begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,basicstyle={
 \backslash
-scriptsize,framesep=2mm, firstnumber=156]
+scriptsize},framesep=2mm,firstnumber=156]
 \end_layout
 
 \begin_layout Plain Layout
 
-   public void enforceSecurity(boolean enforce){ 
+    public void enforceSecurity(boolean enforce){ 
 \end_layout
 
 \begin_layout Plain Layout
 
-   SecurityManager sm = System.getSecurityManager();
+    SecurityManager sm = System.getSecurityManager();
 \end_layout
 
 \begin_layout Plain Layout
@@ -4341,106 +4307,107 @@ scriptsize,framesep=2mm, firstnumber=156]
 
 \begin_layout Plain Layout
 
-     if (sm != null && sm != lastSecurityManagerInstalled) {
+    if (sm != null && sm != lastSecurityManagerInstalled){
 \end_layout
 
 \begin_layout Plain Layout
 
-     ...
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Verbatim}
+        ...
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
-\backslash
-scriptsize,framesep=2mm, firstnumber=163]
-\end_layout
-
-\begin_layout Plain Layout
-
-     throw new SecurityException                 
-\end_layout
-
-\begin_layout Plain Layout
-
-      (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
-\end_layout
-
-\begin_layout Plain Layout
-
-   }                  
-\end_layout
-
-\begin_layout Plain Layout
-
-   if (enforce) { 
-\end_layout
-
-\begin_layout Plain Layout
-
-     ...
+end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-end{Verbatim}
+begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,basicsty
+le={
+\backslash
+scriptsize},framesep=2mm,firstnumber=163]
+\end_layout
+
+\begin_layout Plain Layout
+
+        throw new SecurityException
+\end_layout
+
+\begin_layout Plain Layout
+
+            (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
+\end_layout
+
+\begin_layout Plain Layout
+
+    }                  
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (enforce) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+        ...
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-begin{Verbatim}[numbers=left,numbersep=-10pt,fontsize=
-\backslash
-scriptsize,framesep=2mm, firstnumber=173]
-\end_layout
-
-\begin_layout Plain Layout
-
-    installSecurityManager();         
-\end_layout
-
-\begin_layout Plain Layout
-
-   } else {             
-\end_layout
-
-\begin_layout Plain Layout
-
-     if (sm != null) {                 
-\end_layout
-
-\begin_layout Plain Layout
-
-       System.setSecurityManager(null);
-\end_layout
-
-\begin_layout Plain Layout
-
-       lastSecurityManagerInstalled = null;             
-\end_layout
-
-\begin_layout Plain Layout
-
-      ...
+end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-end{Verbatim}
+begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,basicstyle={
+\backslash
+scriptsize},framesep=2mm,firstnumber=173]
+\end_layout
+
+\begin_layout Plain Layout
+
+        installSecurityManager();         
+\end_layout
+
+\begin_layout Plain Layout
+
+    } else {             
+\end_layout
+
+\begin_layout Plain Layout
+
+        if (sm != null) {                 
+\end_layout
+
+\begin_layout Plain Layout
+
+           System.setSecurityManager(null);
+\end_layout
+
+\begin_layout Plain Layout
+
+           lastSecurityManagerInstalled = null;             
+\end_layout
+
+\begin_layout Plain Layout
+
+           ...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
@@ -5144,7 +5111,7 @@ key "DaCapo:paper"
 
 , a standard set of Java applications with non-trivial memory loads.
  The applications in the benchmark are Avrora, Batik, Eclipse, Fop, H2,
- Jython, Luindex, Lusearch, Pmd, Sunflow, Tomcat, TradeBeans, TradeSoap,
+ Jython, Luindex, Lusearch, PMD, Sunflow, Tomcat, TradeBeans, TradeSoap,
  and Xalan.
  Performance was measured by running the provided section of the application
  5 times and the the mean of the runtimes was computed.
@@ -5158,14 +5125,32 @@ Since the Dacapo Benchmarks did not set a security manager during any of
  work in all cases, instead of when a security manager is set.
  This created problems for Eclipse, Tradebeans, and Tradesoap where the
  Privilege Escalation Rule prevented the benchmark from running.
- 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
+\begin_inset Float table
 wide true
 sideways false
 status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Performance Test Results.
+ 
+\begin_inset Newline newline
+\end_inset
+
+*These applications could not be run with the configuration of JSF used
+ for performance testing, but were included to provide data about their
+ performance with and without the JIT.
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Tabular
@@ -5471,7 +5456,7 @@ Batik
 \begin_inset Text
 
 \begin_layout Plain Layout
-Eclipse
+Eclipse*
 \end_layout
 
 \end_inset
@@ -6299,7 +6284,7 @@ Tomcat
 \begin_inset Text
 
 \begin_layout Plain Layout
-Tradebeans
+Tradebeans*
 \end_layout
 
 \end_inset
@@ -6391,7 +6376,7 @@ N/A
 \begin_inset Text
 
 \begin_layout Plain Layout
-Tradesoap
+Tradesoap*
 \end_layout
 
 \end_inset
@@ -6666,22 +6651,6 @@ Average (mean)
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Performance Test Results
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
