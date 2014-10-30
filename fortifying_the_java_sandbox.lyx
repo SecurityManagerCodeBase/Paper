@@ -4525,6 +4525,13 @@ The one application that did not fall into either of these categories was
 
 \begin_layout Section
 Privilege Escalation in the JVM
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Privilege-Escalation-in"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4537,7 +4544,10 @@ reference "sub:Java-Exploits"
 
  provided background on privilege escalation exploits that attack vulnerabilitie
 s in Java code.
- The nature of 
+ Essentially, these exploits either exploit a privileged class loader to
+ load a payload class with all permissions or they attack a confused deputy
+ they have direct access to.
+ 
 \end_layout
 
 \begin_layout Section
@@ -4545,14 +4555,28 @@ Rules for Fortifying the Sandbox
 \end_layout
 
 \begin_layout Standard
-Based on the investigation into the proposed claims, it was determined that
- the sandbox could strengthened for applications that set 
+Given the results of our investigation in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Security-Manager-Study"
+
+\end_inset
+
+ and the discussion in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Privilege-Escalation-in"
+
+\end_inset
+
+, we can fortify the sandbox for applications that set 
 \emph on
 a self-protecting
 \emph default
  security manager.
- Using this knowledge two rules were created to protect applications, the
- Privilege Escalation Rule and the Security Manager rule.
+ In this section we define two rules to stop exploits from disabling the
+ manager that are backwards compatible with benign applications: the Privilege
+ Escalation Rule and the Security Manager rule.
  
 \end_layout
 
@@ -4561,11 +4585,14 @@ Privilege Escalation Rule
 \end_layout
 
 \begin_layout Standard
-One way that exploits bypass the sandbox is by using the confused deputy
- The privilege escalation rule states that a class may not load a more permissiv
-e class if a SecurityManager is set for the application.
- This means that the loading classes permissions has to be less restrictive
- or the same level of restriction as the loaded class.
+The 
+\shape italic
+privilege escalation rule
+\shape default
+ ensures that a class may not load a more permissive class if a self-protecting
+ security manager is set for the application.
+ This rule is violated when the protection domain of a loaded class implies
+ a permission that in not implied in the protection domain that loaded it.
  This rule is based around the fact that many exploits load a class with
  more privileges than the calling class to break out of the sandbox.
  
@@ -4573,7 +4600,7 @@ e class if a SecurityManager is set for the application.
 
 \begin_layout Standard
 If all classes in the Java Virtual Machine (JVM) instance were loaded at
- the start of an application, this rule would be without exceptions.
+ the start of an application, this rule would never be broken.
  However, the JVM loads certain classes on demand, and some of the JVM classes
  have the full privileges.
  Thus the rule has to make an exception for these classes.
