@@ -385,6 +385,13 @@ Background
 
 \begin_layout Subsection
 The Java Sandbox
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:The-Java-Sandbox-background"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -587,7 +594,7 @@ key "security_explorations_2012"
 \begin_inset Float table
 wide true
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -617,7 +624,7 @@ name "tab:defenseless-permissions"
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="8" columns="2">
 <features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top">
 <column alignment="left" valignment="top">
@@ -794,7 +801,7 @@ Write to or execute any file*
 </cell>
 </row>
 <row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -811,11 +818,39 @@ setPolicy
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Modify the application's permissions at will
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SecurityPermission(
+\begin_inset Quotes eld
+\end_inset
+
+setProperty.package.access
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Make privileged internal classes accessible
 \end_layout
 
 \end_inset
@@ -4542,12 +4577,71 @@ reference "sub:Java-Exploits"
 
 \end_inset
 
- provided background on privilege escalation exploits that attack vulnerabilitie
+ provided background on exploits that attack privilege escalation vulnerabilitie
 s in Java code.
- Essentially, these exploits either exploit a privileged class loader to
- load a payload class with all permissions or they attack a confused deputy
+ Essentially, these exploits either (1) exploit a privileged class loader
+ to load a payload class with all permissions or (2) attack a confused deputy
  they have direct access to.
+ The former is quite rare and typically the fault of a vulnerable third-party
+ library because directly exposing privileged classes is a violation of
+ the 
+\shape italic
+access control
+\shape default
+ principle that is part of the Java development culture
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm
+\end_layout
+
+\end_inset
+
+.
  
+\end_layout
+
+\begin_layout Standard
+For the most part, benign applications have no reason to directly access
+ privileged classes.
+ The majority of the JRE's privileged classes are internal implementations
+ of features that Java provides applications less-privileged access to.
+ For example, many reflection operations are implemented in the 
+\family typewriter
+sun.reflect
+\family default
+ package, which has all permissions, but Java applications are supposed
+ to use classes in the 
+\family typewriter
+java.lang.reflect
+\family default
+ package to use reflection and do not have direct access to the sun classes
+ given default JRE configurations.
+ Classes in the java package do not perform privileged operations themselves,
+ but do have permission to access classes in the sun package.
+\end_layout
+
+\begin_layout Standard
+To load a privileged class, a privileged class loader must be used, thus
+ a class should typically not have direct access to a class more privileged
+ than itself unless the former had its privileges reduced at some point
+ in the application's execution.
+ This is implicit in the Java security model: if any class could load more
+ privileged classes and directly cause them to execute operations, the sandbox
+ in its current form would serve little purpose.
+ We can leverage these distinctions to further fortify the sandbox because
+ classes should not be loading more privileged classes in the presence of
+ a self-protecting security manager because a self-protecting security manager
+ will not allow the creation of a privileged classloader to load a class
+ with all permissions (see the createClassLoader permission in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:defenseless-permissions"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Section
