@@ -411,6 +411,13 @@ Background
 
 \begin_layout Subsection
 The Java Sandbox
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:The-Java-Sandbox-background"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -613,7 +620,7 @@ key "security_explorations_2012"
 \begin_inset Float table
 wide true
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -643,7 +650,7 @@ name "tab:defenseless-permissions"
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="8" columns="2">
 <features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top">
 <column alignment="left" valignment="top">
@@ -820,7 +827,7 @@ Write to or execute any file*
 </cell>
 </row>
 <row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -837,11 +844,39 @@ setPolicy
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Modify the application's permissions at will
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SecurityPermission(
+\begin_inset Quotes eld
+\end_inset
+
+setProperty.package.access
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Make privileged internal classes accessible
 \end_layout
 
 \end_inset
@@ -860,7 +895,14 @@ Modify the application's permissions at will
 \end_layout
 
 \begin_layout Subsection
-Java Exploits 
+Java Exploits
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Java-Exploits"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -957,7 +999,7 @@ public class Payload implements PrivilegedExceptionAction {
 
 \begin_layout Plain Layout
 
-    public Object run() throws Exception {
+    public void run() throws Exception {
 \end_layout
 
 \begin_layout Plain Layout
@@ -967,27 +1009,7 @@ public class Payload implements PrivilegedExceptionAction {
 
 \begin_layout Plain Layout
 
-        Class cl = System.class; 
-\end_layout
-
-\begin_layout Plain Layout
-
-        Method m = cl.getMethod("setSecurityManager", 
-\end_layout
-
-\begin_layout Plain Layout
-
-            new Class[] { SecurityManager.class }); 
-\end_layout
-
-\begin_layout Plain Layout
-
-        m.invoke(null, new Object[1]);
-\end_layout
-
-\begin_layout Plain Layout
-
-        return null;
+        System.setSecurityManager(null);
 \end_layout
 
 \begin_layout Plain Layout
@@ -1141,10 +1163,10 @@ key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
 \end_layout
 
 \begin_layout Section
-Methodology
+Security Manager Study
 \begin_inset CommandInset label
 LatexCommand label
-name "sec:Methodology"
+name "sec:Security-Manager-Study"
 
 \end_inset
 
@@ -1152,29 +1174,35 @@ name "sec:Methodology"
 \end_layout
 
 \begin_layout Standard
-In security, the best mitigation strategy is not only patching individual
- vulnerabilities once the vulnerabilities have been discovered, which in
- many cases could mean reacting after significant damage has already occurred.
- Instead, a better approach to security is to be proactive, for example
- classifying and catching a new exploit before it can do serious damage.
- To successfully classify a new exploit, the key features which separate
- an exploit and a benign application must be determined.
- Attempting to catch exploits by the specific vulnerability used would be
- difficult, because this approach likely requires being aware of the vulnerabili
-ty before the exploit.
- However, studies into Java exploits suggest that Java exploits interact
- with the sandbox in a similar manner.
- This knowledge leads one to question if exploits can be separated from
- benign applications using the way the application interacts with the sandbox.
- 
+Our intent is to proactively stop exploits that disable the Java sandbox.
+ We focus our efforts on the security manager as it is the means by which
+ applications interact with the sandbox.
+ To successfully stop even 0-day exploits, we must understand which operations
+ both exploits and benign applications perform on the security manager.
+ Assuming there is a difference between the set of operations performed
+ by exploits and those performed by benign applications, we can exclude
+ the operations that exploits depend on that are not of use to benign applicatio
+ns.
+ This outcome could effectively narrow the range of possible operations
+ on the manager to stop exploits while achieving backwards compatibility
+ with benign applications.
+ Additionally, this strategy would help ensure the sandbox will continue
+ to enforce its policy in a given execution without having to deal with
+ the wide diversity in the manifestations of vulnerabilities within the
+ JRE or the subtleties of their exploits.
+ In this section we describe the methodology for and results of an empirical
+ study that validated this strategy.
+\end_layout
+
+\begin_layout Subsection
+Methodology
 \end_layout
 
 \begin_layout Standard
-In attempt to study how benign applications interacted with the sandbox,
- we investigated how applications interact with the security manger, since
- the security manager is the part of the sandbox which handles how applications
- interact with the sandbox.
- To investigate how benign applications interact with the security manager,
+As discussed in previous sections, it is widely known within the Java security
+ community that current exploits that operate on the security manager perform
+ one operation: they disable it.
+ To understand the operations benign applications perform on the manager,
  we undertook an empirical analysis consisting of static, dynamic, and manual
  inspections of the open source Java application landscape.
  Our empirical analysis aimed to validate the following claims, roughly
@@ -1459,7 +1487,7 @@ I'm not happy with this preceding paragraph.
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Applications Studied
 \begin_inset CommandInset label
 LatexCommand label
@@ -3343,7 +3371,7 @@ reference "Table: Github Dataset"
  were in a language that the authors could not read.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Results
 \begin_inset CommandInset label
 LatexCommand label
@@ -3529,7 +3557,7 @@ The study focused on whether the applications in the dataset supported the
  four claims listed in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Methodology"
+reference "sec:Security-Manager-Study"
 
 \end_inset
 
@@ -4557,18 +4585,118 @@ The one application that did not fall into either of these categories was
 \end_layout
 
 \begin_layout Section
-Rules
+Privilege Escalation in the JVM
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Privilege-Escalation-in"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Based on the investigation into the proposed claims, it was determined that
- the sandbox could strengthened for applications that set 
+Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Java-Exploits"
+
+\end_inset
+
+ provided background on exploits that attack privilege escalation vulnerabilitie
+s in Java code.
+ Essentially, these exploits either (1) exploit a privileged class loader
+ to load a payload class with all permissions or (2) attack a confused deputy
+ they have direct access to.
+ The former is quite rare and typically the fault of a vulnerable third-party
+ library because directly exposing privileged classes is a violation of
+ the 
+\shape italic
+access control
+\shape default
+ principle that is part of the Java development culture
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+For the most part, benign applications have no reason to directly access
+ privileged classes.
+ The majority of the JRE's privileged classes are internal implementations
+ of features that Java provides applications less-privileged access to.
+ For example, many reflection operations are implemented in the 
+\family typewriter
+sun.reflect
+\family default
+ package, which has all permissions, but Java applications are supposed
+ to use classes in the 
+\family typewriter
+java.lang.reflect
+\family default
+ package to use reflection and do not have direct access to the sun classes
+ given default JRE configurations.
+ Classes in the java package do not perform privileged operations themselves,
+ but do have permission to access classes in the sun package.
+\end_layout
+
+\begin_layout Standard
+To load a privileged class, a privileged class loader must be used, thus
+ a class should typically not have direct access to a class more privileged
+ than itself unless the former had its privileges reduced at some point
+ in the application's execution.
+ This is implicit in the Java security model: if any class could load more
+ privileged classes and directly cause them to execute operations, the sandbox
+ in its current form would serve little purpose.
+ We can leverage these distinctions to further fortify the sandbox because
+ classes should not be loading more privileged classes in the presence of
+ a self-protecting security manager because a self-protecting security manager
+ will not allow the creation of a privileged classloader to load a class
+ with all permissions (see the createClassLoader permission in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:defenseless-permissions"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Section
+Rules for Fortifying the Sandbox
+\end_layout
+
+\begin_layout Standard
+Given the results of our investigation in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Security-Manager-Study"
+
+\end_inset
+
+ and the discussion in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Privilege-Escalation-in"
+
+\end_inset
+
+, we can fortify the sandbox for applications that set 
 \emph on
 a self-protecting
 \emph default
  security manager.
- Using this knowledge two rules were created to protect applications, the
- Privilege Escalation Rule and the Security Manager rule.
+ In this section we define two rules to stop exploits from disabling the
+ manager that are backwards compatible with benign applications: the Privilege
+ Escalation Rule and the Security Manager rule.
  
 \end_layout
 
@@ -4577,11 +4705,14 @@ Privilege Escalation Rule
 \end_layout
 
 \begin_layout Standard
-One way that exploits bypass the sandbox is by using the confused deputy
- The privilege escalation rule states that a class may not load a more permissiv
-e class if a SecurityManager is set for the application.
- This means that the loading classes permissions has to be less restrictive
- or the same level of restriction as the loaded class.
+The 
+\shape italic
+privilege escalation rule
+\shape default
+ ensures that a class may not load a more permissive class if a self-protecting
+ security manager is set for the application.
+ This rule is violated when the protection domain of a loaded class implies
+ a permission that in not implied in the protection domain that loaded it.
  This rule is based around the fact that many exploits load a class with
  more privileges than the calling class to break out of the sandbox.
  
@@ -4589,7 +4720,7 @@ e class if a SecurityManager is set for the application.
 
 \begin_layout Standard
 If all classes in the Java Virtual Machine (JVM) instance were loaded at
- the start of an application, this rule would be without exceptions.
+ the start of an application, this rule would never be broken.
  However, the JVM loads certain classes on demand, and some of the JVM classes
  have the full privileges.
  Thus the rule has to make an exception for these classes.
@@ -4640,7 +4771,7 @@ Mitigations
 In section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Methodology"
+reference "sec:Security-Manager-Study"
 
 \end_inset
 
