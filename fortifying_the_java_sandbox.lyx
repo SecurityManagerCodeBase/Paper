@@ -1115,10 +1115,10 @@ key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
 \end_layout
 
 \begin_layout Section
-Methodology
+Security Manager Study
 \begin_inset CommandInset label
 LatexCommand label
-name "sec:Methodology"
+name "sec:Security-Manager-Study"
 
 \end_inset
 
@@ -1126,29 +1126,35 @@ name "sec:Methodology"
 \end_layout
 
 \begin_layout Standard
-In security, the best mitigation strategy is not only patching individual
- vulnerabilities once the vulnerabilities have been discovered, which in
- many cases could mean reacting after significant damage has already occurred.
- Instead, a better approach to security is to be proactive, for example
- classifying and catching a new exploit before it can do serious damage.
- To successfully classify a new exploit, the key features which separate
- an exploit and a benign application must be determined.
- Attempting to catch exploits by the specific vulnerability used would be
- difficult, because this approach likely requires being aware of the vulnerabili
-ty before the exploit.
- However, studies into Java exploits suggest that Java exploits interact
- with the sandbox in a similar manner.
- This knowledge leads one to question if exploits can be separated from
- benign applications using the way the application interacts with the sandbox.
- 
+Our intent is to proactively stop exploits that disable the Java sandbox.
+ We focus our efforts on the security manager as it is the means by which
+ applications interact with the sandbox.
+ To successfully stop even 0-day exploits, we must understand which operations
+ both exploits and benign applications perform on the security manager.
+ Assuming there is a difference between the set of operations performed
+ by exploits and those performed by benign applications, we can exclude
+ the operations that exploits depend on that are not of use to benign applicatio
+ns.
+ This outcome could effectively narrow the range of possible operations
+ on the manager to stop exploits while achieving backwards compatibility
+ with benign applications.
+ Additionally, this strategy would help ensure the sandbox will continue
+ to enforce its policy in a given execution without having to deal with
+ the wide diversity in the manifestations of vulnerabilities within the
+ JRE or the subtleties of their exploits.
+ In this section we describe the methodology for and results of an empirical
+ study that validated this strategy.
+\end_layout
+
+\begin_layout Subsection
+Methodology
 \end_layout
 
 \begin_layout Standard
-In attempt to study how benign applications interacted with the sandbox,
- we investigated how applications interact with the security manger, since
- the security manager is the part of the sandbox which handles how applications
- interact with the sandbox.
- To investigate how benign applications interact with the security manager,
+As discussed in previous sections, it is widely known within the Java security
+ community that current exploits that operate on the security manager perform
+ one operation: they disable it.
+ To understand the operations benign applications perform on the manager,
  we undertook an empirical analysis consisting of static, dynamic, and manual
  inspections of the open source Java application landscape.
  Our empirical analysis aimed to validate the following claims, roughly
@@ -1433,7 +1439,7 @@ I'm not happy with this preceding paragraph.
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Applications Studied
 \begin_inset CommandInset label
 LatexCommand label
@@ -3317,7 +3323,7 @@ reference "Table: Github Dataset"
  were in a language that the authors could not read.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Results
 \begin_inset CommandInset label
 LatexCommand label
@@ -3503,7 +3509,7 @@ The study focused on whether the applications in the dataset supported the
  four claims listed in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Methodology"
+reference "sec:Security-Manager-Study"
 
 \end_inset
 
@@ -4531,7 +4537,11 @@ The one application that did not fall into either of these categories was
 \end_layout
 
 \begin_layout Section
-Rules
+Privilege Escalation in the JVM
+\end_layout
+
+\begin_layout Section
+Rules for Fortifying the Sandbox
 \end_layout
 
 \begin_layout Standard
@@ -4614,7 +4624,7 @@ Mitigations
 In section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Methodology"
+reference "sec:Security-Manager-Study"
 
 \end_inset
 
