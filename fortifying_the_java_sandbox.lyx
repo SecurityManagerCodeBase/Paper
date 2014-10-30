@@ -252,6 +252,52 @@ key "svoboda_anatomy_blog_2013"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename most_targeted_apps_ibm_xforce.pdf
+	width 2in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Most targeted applications in the enterprise, according to a Dec.
+ 2013 survey of Trusteer customers 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xforceQ12013"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Past investigations of Java security exploits have shown Java malware commonly
  alters the sandbox's settings
 \begin_inset CommandInset citation
@@ -311,7 +357,7 @@ We set up an investigation of 29 applications from the Qualitas Corpus and
  of the static analysis tools in context and to understand important sandbox
  interactions.
  Finally, application runs were monitored to see how the sandbox changed
- at runtime, verifying the results of the static analysis
+ at runtime, verifying the results of the static analysis.
 \end_layout
 
 \begin_layout Standard
