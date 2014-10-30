@@ -834,7 +834,14 @@ Modify the application's permissions at will
 \end_layout
 
 \begin_layout Subsection
-Java Exploits 
+Java Exploits
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Java-Exploits"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -931,7 +938,7 @@ public class Payload implements PrivilegedExceptionAction {
 
 \begin_layout Plain Layout
 
-    public Object run() throws Exception {
+    public void run() throws Exception {
 \end_layout
 
 \begin_layout Plain Layout
@@ -941,27 +948,7 @@ public class Payload implements PrivilegedExceptionAction {
 
 \begin_layout Plain Layout
 
-        Class cl = System.class; 
-\end_layout
-
-\begin_layout Plain Layout
-
-        Method m = cl.getMethod("setSecurityManager", 
-\end_layout
-
-\begin_layout Plain Layout
-
-            new Class[] { SecurityManager.class }); 
-\end_layout
-
-\begin_layout Plain Layout
-
-        m.invoke(null, new Object[1]);
-\end_layout
-
-\begin_layout Plain Layout
-
-        return null;
+        System.setSecurityManager(null);
 \end_layout
 
 \begin_layout Plain Layout
@@ -4538,6 +4525,19 @@ The one application that did not fall into either of these categories was
 
 \begin_layout Section
 Privilege Escalation in the JVM
+\end_layout
+
+\begin_layout Standard
+Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Java-Exploits"
+
+\end_inset
+
+ provided background on privilege escalation exploits that attack vulnerabilitie
+s in Java code.
+ The nature of 
 \end_layout
 
 \begin_layout Section
