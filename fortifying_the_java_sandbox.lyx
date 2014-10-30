@@ -217,38 +217,22 @@ Write a paragraph to talk about why Java security is important.
 \end_layout
 
 \begin_layout Standard
-A security goal of Java is to allow applications to safely execute untrusted
- code in a sandbox so that the application and the host machine are protected
- from malicious behavior.
- Unfortunately, recent exploits have shown that this security goal has not
- been achieved.
- Instead of the sandbox completely protecting the application, security
- researchers are constantly finding ways to exploit how the sandbox is implement
-ed.
- Security Explorations, a company that researches security vulnerabilities
- in applications, found that the Java Virtual Machine (JVM) contained 19
- weaknesses and developed 12 exploits to demonstrate these weaknesses in
- a report on April 2nd 2012 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "security_explorations_2012"
+The Java Runtime Environment (JRE) is widely deployed and passively processes
+ external content in the form of applets.
+ These facts, combined with the hundreds of recently discovered vulnerabilities
+ in Java, including a zero-day vulnerablitity (CVE-2013-0422), have made
+ Java an extremely popular exploit vector (see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:most-targeted-applications"
 
 \end_inset
 
-.
- Hackers have also discovered zero-day exploits, with the exploit in August
- 2012 and January 2013 making widespread news and detailed in a CERT blog
- post 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "svoboda_anatomy_blog_2013"
-
-\end_inset
-
-(not 100% happy with this sentence at the moment).
- If this trend continues, regular updates will not be enough to ensure the
- integrity of Java applications.
- 
+).
+ Attackers typically lure users to websites containing hidden, yet malicious
+ applets.
+ Once the user visits the website, the exploit triggers a series of events
+ that ends with the delivery of malware, all while the user is left unaware.
 \end_layout
 
 \begin_layout Standard
@@ -272,6 +256,12 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:most-targeted-applications"
+
+\end_inset
+
 Most targeted applications in the enterprise, according to a Dec.
  2013 survey of Trusteer customers 
 \begin_inset CommandInset citation
@@ -298,8 +288,13 @@ key "xforceQ12013"
 \end_layout
 
 \begin_layout Standard
-Past investigations of Java security exploits have shown Java malware commonly
- alters the sandbox's settings
+A security goal of Java, is to allow applications to safely execute untrusted
+ code in a sandbox so that the application and the host machine are protected
+ from malicious behavior.
+ However, the exploits cited cited above show that this goal has not been
+ achieved.
+ Past investigations of Java security exploits have shown Java malware commonly
+ alters the sandbox's settings 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "garber_2012"
@@ -307,30 +302,15 @@ key "garber_2012"
 \end_inset
 
 .
- This alteration of the sandbox is usually achieved by turning the sandbox
- off with a call to 
-\family typewriter
-System.setSecurityManager(null)
-\family default
-
+ Typically, the exploit disables the security manager, the component of
+ the sandbox resposbile for enforcing the secruity policy 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012"
+key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012"
 
 \end_inset
 
-, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "blackhat_2012"
-
-\end_inset
-
-, since the 
-\family typewriter
-SecurityManager
-\family default
- is how the application interacts with the sandbox.
+.
 \end_layout
 
 \begin_layout Standard
