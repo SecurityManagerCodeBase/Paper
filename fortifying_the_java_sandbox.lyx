@@ -141,11 +141,11 @@ The ubiquitously-deployed Java Runtime Enviornent (JRE) routinely processes
  first set and do not attempt to use priviledged classes.
  Exploits do both routinely.
  We used these results to develop two runtime monitors, one that prevents
- security policy modification and one that prevents priviledge escalation.
- The priviledge escalation monitor stops four of ten Metasploit Java exploits
+ security policy modification and one that prevents privilege escalation.
+ The privilege escalation monitor stops four of ten Metasploit Java exploits
  with negligible overhead of X%.
- Running both monitors stops all ten exploits, but with significant overhead
- of XXX% which may be acceptable when running applets since they represent
+ Running both monitors stops all ten exploits with significant overhead
+ of XXX%, which may be acceptable when running applets since they represent
  the biggest danger.
  
 \end_layout
@@ -223,7 +223,7 @@ Write a paragraph to talk about why Java security is important.
 The Java Runtime Environment (JRE) is widely deployed and passively processes
  external content in the form of applets.
  These facts, combined with the hundreds of recently discovered vulnerabilities
- in Java, including a zero-day vulnerablitity (CVE-2013-0422), have made
+ in Java, including a zero-day vulnerability (CVE-2013-0422), have made
  Java an extremely popular exploit vector (see Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -306,7 +306,7 @@ key "garber_2012"
 
 .
  Typically, the exploit disables the security manager, the component of
- the sandbox resposbile for enforcing the secruity policy 
+ the sandbox responsible for enforcing the security policy 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012"
