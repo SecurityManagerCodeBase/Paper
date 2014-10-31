@@ -141,7 +141,7 @@ The ubiquitously-deployed Java Runtime Enviornent (JRE) routinely processes
  first set and do not attempt to use priviledged classes.
  Exploits do both routinely.
  We used these results to develop two runtime monitors, one that prevents
- security policy modification and one that prevents privilege escalation.
+ security manager modification and one that prevents privilege escalation.
  The privilege escalation monitor stops four of ten Metasploit Java exploits
  with negligible overhead of X%.
  Running both monitors stops all ten exploits with significant overhead
