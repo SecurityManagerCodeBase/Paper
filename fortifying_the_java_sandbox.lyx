@@ -1177,7 +1177,7 @@ name "sec:Security-Manager-Study"
 \end_layout
 
 \begin_layout Standard
-Our intent is to proactively stop exploits that disable the Java sandbox.
+Our intent is to pro-actively stop exploits that disable the Java sandbox.
  We focus our efforts on the security manager as it is the means by which
  applications interact with the sandbox.
  To successfully stop even 0-day exploits, we must understand which operations
@@ -1189,10 +1189,10 @@ ns.
  This outcome could effectively narrow the range of possible operations
  on the manager to stop exploits while achieving backwards compatibility
  with benign applications.
- Additionally, this strategy would help ensure the sandbox will continue
- to enforce its policy in a given execution without having to deal with
- the wide diversity in the manifestations of vulnerabilities within the
- JRE or the subtleties of their exploits.
+ Additionally, this strategy would help ensure the sandbox continues to
+ enforce its policy in a given execution without having to deal with the
+ wide diversity in the manifestations of vulnerabilities within the JRE
+ or the subtleties of their exploits.
  In this section we describe the methodology for and results of an empirical
  study that validated this strategy.
 \end_layout
@@ -1223,16 +1223,13 @@ Weak Claim:
 Benign applications do not disable the security manager.
 
 \shape default
- If this claim is shown to be true, exploits can be differentiated from
- benign applications by number of attempts to turn off the the current security
- manager for the system, which would turn off the sandbox.
- A mitigation strategy using this claim would easily be able to differentiate
- between a benign application and an exploit using this strategy.
- However, exploits which weaken the sandbox but do not disable the sandbox,
- would not be caught.
- For example, attackers could bypass the mitigation strategy by either weakening
- the policies enforced by the manager or replacing the current manager with
- one that never throws a 
+ If this claim is true, exploits can be differentiated from benign applications
+ by any attempt to disable the current security manager.
+ While this mitigation would be easy to implement, exploits that weaken
+ the sandbox without disabling it would remain a threat.
+ For example, attackers could potentially bypass the mitigation by modifying
+ the enforced policy to allow the permissions they need or they could replace
+ the current manager with one that never throws a 
 \family typewriter
 SecurityException
 \family default
@@ -1247,17 +1244,16 @@ Moderate Claim:
  
 \emph on
 Benign applications do not weaken the s
+\shape italic
 \emph default
-ecurity manager.
- The goal of this claim is to be able to differentiate between benign applicatio
-ns and exploits by the changes to the sandbox.
- A mitigation using this claim would prevent weakening the sandbox during
- runtime and thus catch both exploits which turn off the sandbox and exploits
- which only weaken the sandbox.
+ecurity manager
+\shape default
+.
+ Validation of this claim would enable mitigations that prevent attackers
+ from weakening or disabling the sandbox.
  However, an implementation of this mitigation would require differentiating
- between changes which weaken the sandbox and changes which do not weaken
- the sandbox.
- Classifying changes to the sandbox is difficult because it requires context
+ between changes which weaken the sandbox and those that do not.
+ Classifying changes in this manner is difficult because it requires context
  specific information that a general mitigation strategy may not have.
  For example, if a permission to write to a file is replaced by a permission
  to write to a different file, is the sandbox weakened, strengthened, or
@@ -1275,14 +1271,22 @@ Benign applications do not change the sandbox if a self-protecting security
  manager has been set
 \shape default
 .
- This claim would allow differentiating exploits from benign applications
- if the sandbox is changed while the application is using the sandbox for
- security.
- A mitigation strategy using this claim would allow clear differentiation
- between benign applications and exploits, while also preventing exploits
- from changing the sandbox in any way.
- Implementing this claim requires determining if the security manager is
- self-protecting, which can be easily achieved at any time.
+ If true, it is possible to implement a mitigation strategy whereby any
+ change to a security manager that is enforcing a strict policy (as defined
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:The-Java-Sandbox-background"
+
+\end_inset
+
+) is disallowed.
+ To implement this claim a runtime monitor must determine if a security
+ manager is self-protecting at the time the manager is set, which can be
+ easily achieved.
+ While this mitigation has the same outcome as the mitigation enabled by
+ successful validation of the moderate claim, this mitigation is significantly
+ easier to implement and is therefore stronger.
 \end_layout
 
 \begin_layout Standard
@@ -1292,17 +1296,11 @@ Ideal Claim:
 \series default
  
 \shape italic
-Benign applications do not change the security manager.
+Benign applications do not change a set security manager.
 
 \shape default
- The goal of this claim is to be able to differentiate between benign applicatio
-ns and exploits using the separator that only exploits change the sandbox
- during execution.
- If the study supports this claim, any attempted change to the security
- manager could be used to determine an exploit attempt.
- A mitigation strategy using this claim could clearly differentiate between
- benign applications and exploits, while also preventing the sandbox from
- changing in any way.
+ If the study supports this claim, any attempted change to an already establishe
+d security manager can be considered malicious.
 \end_layout
 
 \begin_layout Standard
@@ -1314,8 +1312,9 @@ key "QualitasCorpus:APSEC:2010"
 \end_inset
 
  and GitHub to form a dataset of applications that use the security manager.
- To filter relevant applications out of the 112 applications in QC we performed
- a simple grep of each application's source code to find the keyword 
+ To filter relevant applications out of the 112 applications in QC, we performed
+ a simple grep of each application's source code to find instances of the
+ keyword 
 \shape italic
 SecurityManager
 \shape default
@@ -1323,60 +1322,67 @@ SecurityManager
  Assuming any instance of the keyword was found, we included the application
  in our dataset.
  This filtering reduced the set of applications to inspect from 112 to 29.
- The 29 applications were then inspected to make sure the application could
- be compiled.
- If the specific application version used in the Qualitas Corpus was difficult
- to compile, the application was updated to a more recent version.
- 
+ We attempted to compile each of the 29 included applications and updated
+ those where problems arose with modern build tools to the newest version.
+ Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Applications-Studied"
 
 \end_inset
 
- lists the versions of the applications used in the study.
- We performed a similar process using the GitHub search feature configured
- search through Java files for the SecurityManager keyword.
- Initially, we extracted the top 6 applications which used the term SecurityMana
-ger, but upon initial inspection, we came to find this filtering method
- was producing a high false positive rate, meaning that developers were
- using the word SecurityManager in ways that were unrelated to java.lang.SecurityM
-anager (later in-depth inspection determined 4 out of the 6 applications
- did not use the java.lang.SecurityManager).
- We then refined our search to only include applications which seemed to
- set up a sandbox.
- Thus we extracted the top 7 applications which used the term System.setSecurityM
-anager().
- To make sure we covered applications which disabled the security manager,
- the top 7 applications where extracted which used the term System.setSecurityMan
-ager(null).
- Upon inspecting the extracted results, 2 applications were already covered
- in the Qualitas Corpus so they were removed from the dataset.
- We also removed an application which was written in Ruby but contained
- Java files for a final total of 17 applications in the Github dataset.
- All applications that were downloaded from Github were downloaded as the
- latest commits so the Github applications did not need to be updated.
+ lists the versions of the applications used in this study.
+ 
 \end_layout
 
 \begin_layout Standard
-We created static and dynamic analysis tools to assist the manual inspection
- of applications.
- Our static analysis tool consisted of a plugin for FindBugs 
+We performed a similar process using the GitHub search feature configured
+ to search through Java files for the same keyword.
+ Initially, we extracted the top 6 applications from the search results,
+ but we came to find this filtering method was producing a high false positive
+ rate: 4 out of 6 of the applications didn't actually use the 
+\family typewriter
+SecurityManager
+\family default
+ class (e.g.
+ the keyword appeared in a code comment).
+ To counteract these false positives, we refined our search to more precisely
+ include applications that set a manager by using the keyword 
+\shape italic
+System.setSecurityManager(
+\shape default
+.
+ We selected the top 7 applications from these search results while keeping
+ the true positives from the previous search.
+ To ensure we included applications that disable the security manager, we
+ repeated this process using the keyword 
+\shape italic
+System.setSecurityManager(null)
+\shape default
+.
+ From this starting point of 20 applications, we excluded 2 that were already
+ covered in the Qualitas Corpus and a Ruby application that mistakenly made
+ it into the set because it contained Java files.
+ We always downloaded the latest commit of each application to ensure the
+ GitHub dataset reflected their most current versions.
+\end_layout
+
+\begin_layout Standard
+With the dataset in hand, we created static and dynamic analysis tools to
+ assist in the manual inspection of each application.
+ Our static analysis tool is a FindBugs 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hovemeyer_finding_2004"
 
 \end_inset
 
-, a tool used to statically analyze Java programs for code that matches
- a given bug pattern.
- Our plugin used the dataflow analysis in FindBugs to determine the lines
- in the application where 
+ plugin that uses a dataflow analysis to determine where 
 \family typewriter
 System.setSecurityManager
 \family default
-() was called, as well as the lines where the argument used in the setSecurityMa
-nager call was initialized.
+() is called, as well as the lines of code where the method's arguments
+ were initialized.
  We also created a dynamic analysis tool using the Java Virtual Machine
  Tool Interface (JVMTI)
 \begin_inset Foot
@@ -1390,8 +1396,8 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/jvmti/
 
 .
  JVMTI is designed to allow tools to inspect the current state of Java applicati
-ons and allow tools to control the execution of the Java application.
- JVTMI is commonly used for Java debugging and profiling tools.
+ons and control their execution; it is commonly used to create Java debugging
+ and profiling tools.
  Our dynamic analysis tool set a modification watch on the 
 \family typewriter
 security
@@ -1400,14 +1406,13 @@ security
 \family typewriter
 System
 \family default
- class, similar to the way debuggers watch a variable.
- The security field of the System class was chosen because the security
- field is the variable which holds the current security manager object for
- the application, and thus the current sandbox object.
- The field watch printed out the class name, source file name, and line
- of code where any change that effected the security field took place.
- The printed message contained a special notice if the security field was
- set to 
+ class.
+ This particular field holds the current security manager object for the
+ application, which is used throughout the application's execution to ensure
+ that code has the correct permissions to perform protected operations.
+ The watch prints out the class name, source file name, and line of code
+ where any change to the field took place.
+ A special notice is printed when the field is set to 
 \family typewriter
 null
 \family default
@@ -1416,82 +1421,69 @@ null
 \end_layout
 
 \begin_layout Standard
-We split the applications that used the security manager between two reviewers.
- The reviewers both analyzed applications in using the same steps, which
- are listed below.
+We split the dataset between two reviewers.
+ The reviewers both analyzed applications using the steps listed here:
 \end_layout
 
 \begin_layout Enumerate
-The reviewer ran grep on all the Java files in the application to output
- the lines which contain the word SecurityManager.
+The reviewer ran grep on all Java source files in the application to output
+ the lines which contain the keyword 
+\shape slanted
+SecurityManager
+\shape default
+ and the 5 lines before and after these lines.
 \end_layout
 
 \begin_layout Enumerate
-If it was possible to quickly determine the application only used the SecurityMa
-nager in comments or in ways that were unrelated to java.lang.SecurityManager,
- the reviewer labeled the application as a false positive.
+When it was clear from the grep output that the keyword was used in comments
+ or in ways that were unrelated to the security manage class, the reviewer
+ labeled the application as a false positive.
 \end_layout
 
 \begin_layout Enumerate
-If the application was not a false positive and could be compiled, the reviewer
- ran the FindBugs plugin on the application to highlight where the application
- sets the security manager for the system (turns on the sandbox).
+For true positives that compiled, the reviewer ran FindBugs on the application
+ with only our plugin enabled.
 \end_layout
 
 \begin_layout Enumerate
-The reviewer manually inspected the lines mentioned in the static analysis.
- Starting with the line where the system security manager was set and tracing
- the code to where the security manager was initialized.
+The reviewer manually inspected code specified in the FindBugs findings,
+ starting with the line where the manager was set and tracing the code to
+ where the security manager was initialized.
  
 \end_layout
 
 \begin_layout Enumerate
-The reviewer then manually inspected all of the lines mentioned in the grep
- results from step 1 to see how the application interacted with the sandbox.
+The reviewer manually inspected all of the lines mentioned in the grep results
+ from step 1 to see how the application interacted with the sandbox.
  
 \end_layout
 
 \begin_layout Enumerate
-For applications that were not a false positive, could be compiled, and
- effected the security manager during the execution of the application,
- the reviewer monitored the applications with the dynamic analysis tool
- while executing the applications in ways that effect the security manager.
- This step verified the conclusions made from previous steps
+For true positives that compiled and effected the security manager during
+ the execution of the application, the application was executed, while being
+ monitored by our dynamic analysis tool, using parameters and actions the
+ reviewer determined in steps 4 and 5 effect the security manager.
+ This step verified the conclusions from previous steps.
 \end_layout
 
 \begin_layout Enumerate
-Finally, the reviewer summarized the interaction between the application
- and the security manager with an emphasis on points that support or invalidate
+Finally, the reviewer summarized the operations the application performed
+ on the security manager with an emphasis on points that support or reject
  each claim.
 \end_layout
 
 \begin_layout Standard
-As a way to ensure the analysis steps produced the expected results and
- that both reviewers produced similar reviews for the same application,
- the analysis started with both reviewers independently analyzed the same
- 6 applications.
- These provided feedback to the reviewers, allowing the reviewers to focus
- on the same interactions in the application as well as notify the reviewer
- if he was missing something important.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-I'm not happy with this preceding paragraph.
- I think it sounds weird.
- I can't think how to word it correctly so I'll come back to it later.
-\end_layout
-
-\end_inset
-
-
+To ensure the reviewers understood the analysis steps and produced consistent
+ results, we undertook a pilot study where each reviewer independently inspected
+ the same 6 applications.
+ This pilot study was invaluable in ensuring the inspections were performed
+ consistently because one of the reviewers played no role in creating the
+ tools and was therefore less informed about what to expect than our more
+ experienced reviewer.
 \end_layout
 
 \begin_layout Subsection
-Applications Studied
+The Security Manager Dataset
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Applications-Studied"
@@ -1511,13 +1503,14 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+Studied Applications from the Qualitas Corpus 
 \begin_inset CommandInset label
 LatexCommand label
 name "Table: Qualitas Dataset"
 
 \end_inset
 
-Qualitas Corpus Dataset
+
 \end_layout
 
 \end_inset
@@ -2078,7 +2071,7 @@ Netbeans
 \begin_inset Text
 
 \begin_layout Plain Layout
-Integerated Development Enviroment
+Integerated Development Environment
 \end_layout
 
 \end_inset
@@ -2416,29 +2409,8 @@ XML Parsing Library
 \end_layout
 
 \begin_layout Standard
-The Qualitas Corpus 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "QualitasCorpus:APSEC:2010"
-
-\end_inset
-
- is a managed collection of open source Java applications, maintained for
- being a dataset for empirical studies .
- The goal of the Qualitas Corpus is to provide a standard set of well-known
- Java applications that is available to all researchers and can provide
- a basis for comparing results.
- Empirical studies which use an available, standard set of applications
- increase the chance that future researchers can reproduce the results of
- the study.
- 
-\end_layout
-
-\begin_layout Standard
-The original 112 application list was taken from the 20130901 version of
- the Qualitas Corpus.
- Using the filtering methods in the Methodology section, the 112 applications
- were reduced to 29 applications of interest.
+The Qualitas Corpus is a curated collection of open source Java applications
+ for use in reproducible software studies.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2446,8 +2418,10 @@ reference "Table: Qualitas Dataset"
 
 \end_inset
 
- contains the 29 applications used the Qualitas Dataset of this study.
- 11 of the 29 applications are developed by the Apache Software Foundation.
+ contains a list of the 29 applications from QC version 20130901 that are
+ used in this study.
+ 11 of the 29 applications are developed by the Apache Software Foundation
+ (ASF), which may increase the homogeneity of their operations on the manager.
 \end_layout
 
 \begin_layout Standard
@@ -2460,7 +2434,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-GitHub Dataset
+Studied Applications from GitHub 
 \begin_inset CommandInset label
 LatexCommand label
 name "Table: Github Dataset"
@@ -3027,7 +3001,14 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Classification of Applications Interacting with the SecurityManager
+Classification of Application Interactions with the Security Manager
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Classification-of-Application"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3038,18 +3019,18 @@ Classification of Applications Interacting with the SecurityManager
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="4">
+<lyxtabular version="3" rows="6" columns="4">
 <features rotate="0" tabularvalignment="middle">
-<column alignment="center" valignment="top">
+<column alignment="left" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Category
+Type of Interaction
 \end_layout
 
 \end_inset
@@ -3083,51 +3064,12 @@ Total
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 1.
- Change SecurityManager
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-8
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2.
- Only Set SecurityManager
+ Set a manager without later changing it
 \end_layout
 
 \end_inset
@@ -3161,12 +3103,12 @@ Total
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-3.
- Interact With SecurityManager
+2.
+ Change a set security manager
 \end_layout
 
 \end_inset
@@ -3175,7 +3117,7 @@ Total
 \begin_inset Text
 
 \begin_layout Plain Layout
-13
+5
 \end_layout
 
 \end_inset
@@ -3184,7 +3126,7 @@ Total
 \begin_inset Text
 
 \begin_layout Plain Layout
-8
+3
 \end_layout
 
 \end_inset
@@ -3193,19 +3135,19 @@ Total
 \begin_inset Text
 
 \begin_layout Plain Layout
-21
+8
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-4.
- Interacted in Main Application (sub-category of 3)
+3.
+ Interact with manager in production code
 \end_layout
 
 \end_inset
@@ -3239,12 +3181,12 @@ Total
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-5.
- Only Interacted In Test Cases (sub-category of 3)
+4.
+ Interact with manager only in unit tests
 \end_layout
 
 \end_inset
@@ -3278,12 +3220,12 @@ Total
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-6.
- No Interaction (False Positive)
+5.
+ Do not interact (false positive)
 \end_layout
 
 \end_inset
@@ -3329,26 +3271,20 @@ Total
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
+While QC provides a strong starting point for the construction of a dataset
+ for this study, their inclusion criteria
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-Table 4 isn't for this section but putting it here to put all of the big
- tables on one page
+http://qualitascorpus.com/docs/criteria.html
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-While the Qualitas Corpus provides a strong basis for the study, the researchers
- wanted to collect a more diverse dataset (&& Josh said a better reason
- for this earlier.
- Ask him about it.
- &&).
- Thus, applications were also collected from GitHub, a code sharing site.
+ lends to the inclusion of large, popular applications and frameworks.
+ Given this point and the emphasis on ASF applications in our filtered set,
+ we chose to diversify our dataset by turning to GitHub.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3356,22 +3292,7 @@ reference "Table: Github Dataset"
 
 \end_inset
 
- contains the 17 applications used in the GitHub Dataset.While the Qualitas
- Corpus provides a strong basis for the study, the researchers wanted to
- collect a more diverse dataset (&& Josh said a better reason for this earlier.
- Ask him about it.
- &&).
- Thus, applications were also collected from GitHub, a code sharing site.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "Table: Github Dataset"
-
-\end_inset
-
- contains the 17 applications used in the GitHub Dataset.
- refact4j is the only application without a description because the comments
- were in a language that the authors could not read.
+ contains the 17 applications we included from GitHub.
 \end_layout
 
 \begin_layout Subsection
@@ -3386,72 +3307,68 @@ name "sec:Research-Questions-and"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-How commonly are SM's used?
-\end_layout
-
-\begin_layout Plain Layout
-Why do apps use the SM? - ZC: I like How better than Why
-\end_layout
-
-\begin_layout Plain Layout
-What are the common mistakes made by apps using the SM?
-\end_layout
-
-\begin_layout Plain Layout
-This section should cover the rules too (or maybe mitigations should do
- it up front?) -- call them privilege escalation and SecurityManager rules
- or change the names for the rules used in Mitigations section.
-\end_layout
+We divided the security manager dataset into categories based on the operations
+ each application performed on the security manager.
+ The categories are summarized as follows: (1) applications that set a security
+ manager that does not get changed later in the application's execution,
+ (2) applications that change a set manager at some point in the program's
+ execution, (3) applications that interact with a security manager in production
+ code if one is set, (4) applications that only interact with the manager
+ in unit tests, and (5) false positives that do not actually interact with
+ the manager.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Classification-of-Application"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Subsection
-Categorizing Security Manager Interactions
+ shows a breakdown of how each application in our dataset was categorized.
+ The number for each category type in the table corresponds to the number
+ in the previous list and throughout the rest of this section.
 \end_layout
 
 \begin_layout Standard
-The first goal of our inspection of Java applications was to gain an understandi
-ng of how Java applications interacted with the SecurityManager.
- To do so, applications were divided into categories based on how the applicatio
-n interacted with the SecurityManager.
- The categories were: setting a SecurityManager and then changing the applicatio
-n's SecurityManager during execution, setting a SecurityManager and not
- changing it during execution, interacting with a SecurityManager but never
- setting one, and not interacting with a SecurityManager at all.
+Type 1 applications set a security manager that is not changed during any
+ execution of the application after it is set.
+ In other words, for each possible execution path, there is at most one
+ place the application sets a security manager.
+ For example, Weka contains several main methods, most of which never lead
+ to the setting of a security manager.
+ However, if the main method in RemoteEngine.java runs, the application will
+ set a security manager, as shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Weka-snippet"
+
+\end_inset
+
+, unless the environment set one already (e.g.
+ the user set one on the command line or Weka is running as an applet or
+ JNLP application).
+ One type 1 application, JTimeLag, didn't actually set a security manager,
+ but did set the security manager to null as discussed in the section below
+ titled 
+\begin_inset Quotes eld
+\end_inset
+
+Reducing Web Application Development Complexity
+\begin_inset Quotes erd
+\end_inset
+
+.
  
 \end_layout
 
 \begin_layout Standard
-The first category, setting a SecurityManager and then changing the SecurityMana
-ger during execution, means that the applications either sets a different
- SecurityManager as the SecurityManager for the system, or the application
- alters the current SecurityManager for the system.
- Since this category was the most likely category to affect the validity
- of the claims, the applications in this category are further explained
- in later sections of this paper.
- 
-\end_layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
-\begin_layout Standard
-The second category, setting a SecurityManager and not changing it during
- execution, meant that for each execution path, there was at most one place
- the application set a security manager.
- For example, most of the executable files of Weka do not set a security
- manager.
- However, if the executable method in RemoteEngine.java runs without a security
- manage set for the JVM, the application sets a security manager.
-\end_layout
-
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
 inline false
 status open
 
@@ -3467,12 +3384,29 @@ status open
 
 \begin_layout Plain Layout
 
-            System.setSecurityManager(
+            System.setSecurityManager(new RMISecurityManager());   
 \end_layout
+
+\end_inset
+
+
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
+The only location in the Weka code where interaction with a security manager
+ occurs.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Weka-snippet"
 
-                new RMISecurityManager());   
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3481,83 +3415,62 @@ status open
 \end_layout
 
 \begin_layout Standard
-Only one application in this category (JTimelag), explicitly set the security
- manager to null.
- This situation is discussed further in the section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Reducing-Web-Application-Complexity"
+Type 2 applications are of particular interest in validating the claims
+ because they change a set security manager at some point later in the applicati
+on's execution.
+ In other words, they potentially to falsify the weak, moderate, and ideal
+ claims.
+ Due to their effect on our claims, applications of this type are discussed
+ in detail below.
+\end_layout
+
+\begin_layout Standard
+Type 3 applications contain code that enables them to interact with a security
+ manager if one is set, but never actually set a security manager themselves.
+ These applications contain code that either (A) performs permission checks
+ if the application is sandboxed or (B) uses privileged actions
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://docs.oracle.com/javase/7/docs/api/java/security/PrivilegedAction.html
+\end_layout
 
 \end_inset
 
-.
+ to ensure the application works if constrained.
+ Similarly, type 4 applications contain code in unit test that ensure the
+ application works correctly if sandboxed or that set a manager themselves,
+ but these applications are not useful for validating our claims because
+ their interactions with the manager are not in production code.
+\end_layout
+
+\begin_layout Standard
+Type 5 primarily includes applications that have a class whose name contains
+ the word 
+\begin_inset Quotes eld
+\end_inset
+
+SecurityManager
+\begin_inset Quotes erd
+\end_inset
+
+ but whose type does not extend the 
+\family typewriter
+SecurityManager
+\family default
+ class.
+ These custom classes cannot be used to enforce a JRE-wide security policy,
+ thus applications of this type are false positives.
  
 \end_layout
 
-\begin_layout Standard
-The third category, interacting with a SecurityManager but never setting
- one, consists of applications which contained code indicating the application
- was designed to work inside of a sandbox but never explicitly set up a
- sandbox in the application.
- The indicating code consists of adding extra permission checks if the applicati
-on was inside of a sandbox, using doPrivileged calls to avoid checking the
- permissions of all classes on the stack, or ensuring that sections of the
- application would work within a sandbox using test cases.
- This category was further subdivided into applications which altered execution
- inside the main application (meaning extra permission checks or calling
- doPrivileged) and applications which only contained test cases that interacted
- with the sandbox.
- The only contained test cases category also includes one application, system-ru
-les, which was a utility for test cases.
- 
+\begin_layout Subsubsection
+Evaluation of our Claims
 \end_layout
 
 \begin_layout Standard
-The final category, not interacting with a SecurityManager at all, means
- that the application either explicitly referenced the SecurityManager in
- comments but not in the source code or the application defined a class
- containing the name SecurityManager but the defined class did not extend
- java.lang.SecurityManager in any way.
-\end_layout
-
-\begin_layout Standard
-After inspecting the 29 applications in the filtered Qualitas dataset, the
- applications were classified based on how they interacted with the SecurityMana
-ger.
- Five of the applications set and then changed the SecurityManager as the
- program was running.
- Six of the applications contained code that set a SecurityManager, but
- did not change the SecurityManager after it was set.
- Thirteen applications contained code that indicated they were designed
- to run inside a SecurityManager.
- Of those thirteen applications, ten contained code in the application that
- altered behavior when a SecurityManager was set.
- Three of those thirteen applications only interacted with a SecurityManager
- in test cases.
- The remaining five applications in the filtered Qualitas dataset were false
- positives.
-\end_layout
-
-\begin_layout Standard
-The GitHub dataset also contained similar results.
- Three of the seventeen applications set and then changed the SecurityManager.
- One application set a SecurityManager and then did not change the set SecurityM
-anager as the program was running.
- Eight applications contained code that indicated they were designed to
- work inside a sandbox if one was set.
- Of those eight applications, three altered execution if a sandbox was set
- while five of the eight applications only interacted with a sandbox in
- test cases.
- The other five applications were false positives.
-\end_layout
-
-\begin_layout Subsection
-Evaluation of the Claims
-\end_layout
-
-\begin_layout Standard
-The study focused on whether the applications in the dataset supported the
- four claims listed in 
+We only require one counterexample to falsify a claim from section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Security-Manager-Study"
@@ -3565,25 +3478,25 @@ reference "sec:Security-Manager-Study"
 \end_inset
 
 .
- The way the claims were worded, one example that contradicted the claim
- would invalidate the claim.
+ This section summarizes how our claims held up against the results of this
+ study.
 \end_layout
 
 \begin_layout Standard
-The first claim listed was the 
+
 \series bold
-weak claim
+Weak claim
 \series default
 : 
 \shape italic
 Benign applications do not disable the security manager.
  
 \emph on
-The investigation determined that some benign applications turn off the
- system's security manger, which turns off the sandbox.
- The applications, which explicitly turned off the sandbox, usually turned
- off the sandbox for non-security purposes, which are further explained
- in 
+The investigation determined that some benign applications disable the security
+ manager, which turns off the sandbox.
+ The applications that explicitly disabled the manager typically were not
+ using the sandbox for security purposes; these cases are further explained
+ in section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Non-security-uses-of"
@@ -3591,13 +3504,14 @@ reference "sub:Non-security-uses-of"
 \end_inset
 
 .
- Some applications turned off the sandbox to make updating the sandbox easier
+ However, some of these applications turned off the sandbox temporarily
+ to update the imposed security policy.
 \end_layout
 
 \begin_layout Standard
-The second claim listed was the 
+
 \series bold
-moderate claim
+Moderate claim
 \series default
 : 
 \emph on
@@ -3607,15 +3521,15 @@ Benign applications do not weaken the security manager.
 This claim was not definitively falsified if turning off the security manager
  is excluded from weakening.
  However, multiple applications provided methods for the user to dynamically
- change the security manager.
- The methods did not restrict users from weakening the security manager,
- and thus the sandbox, during execution.
+ change the security policy or the manager.
+ These methods did not restrict their callers from weakening the manager
+ during execution.
 \end_layout
 
 \begin_layout Standard
-The third claim was the 
+
 \series bold
-strong claim
+Strong claim
 \series default
 : 
 \shape italic
@@ -3624,34 +3538,26 @@ Benign applications do not change the security manager if a self-protecting
 \shape default
 .
  This claim was supported by both datasets.
- When false positives are excluded from the datasets, 19 out of 24 applications
- in the Qualitas dataset and 9 out of 12 applications in the GitHub dataset
- did not change the security manager during execution.
- This likely implies that the applications did not want the security manager
- to change during runtime.
- In the applications that allowed changing the sandbox, no application ensured
- that the application could change the sandbox in all cases.
- If a self-protecting sandbox is set for all applications in the datasets,
- all attempts to change the sandbox would be prevented by the self-protecting
- sandbox.
+ When false positives are excluded, 19 out of 24 true positives in the Qualitas
+ dataset and 9 out of 12 true positives in the GitHub dataset did not change
+ a set security manager or the policy it enforced during execution.
 \end_layout
 
 \begin_layout Standard
-The fourth claim was the 
+
 \series bold
-ideal claim
+Ideal claim
 \series default
 :
 \shape italic
- Benign applications do not change the security manager.
+ Benign applications do not change a set security manager.
  
 \emph on
-This claim was shown to be false as multiple applications changed the security
- manager, and thus the sandbox, both for security reasons and non-security
- reasons.
+This claim was shown to be false: multiple applications changed the security
+ manager, both for security and non-security reasons.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Non-security uses of the Sandbox
 \begin_inset CommandInset label
 LatexCommand label
@@ -3671,7 +3577,7 @@ When investigating the applications in both of the datasets, the investigators
  in web application development.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 Enforcing Architectural Constraints 
 \end_layout
 
@@ -4057,14 +3963,8 @@ In total, we found 3 applications using a variation of this technique: Eclipse,
  be carefully written to avoid allowing malicious code to turn off the sandbox.
 \end_layout
 
-\begin_layout Subsubsection
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Reducing-Web-Application-Complexity"
-
-\end_inset
-
-Reducing Complexity In Web Application Development
+\begin_layout Subsubsection*
+Reducing Web Application Development Complexity
 \end_layout
 
 \begin_layout Standard
@@ -4270,7 +4170,7 @@ System.setSecurityManager(null);
  had to be inferred.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Changing the SecurityManager for Security Purposes
 \end_layout
 
