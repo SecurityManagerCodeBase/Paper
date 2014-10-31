@@ -125,26 +125,29 @@ Fortifying the Java Sandbox
 \end_layout
 
 \begin_layout Abstract
-The Java sandbox was designed to safely execute code from untrusted sources.
- While the sandbox is an important part of Java application security, there
- is little knowledge in the research community of how applications use the
- sandbox in practice.
- The objective of this paper is to gain an understanding of how applications
- interact with the sandbox and make an initial attempt to fortify the sandbox
- against future exploits.
-  To achieve the objective, we generated several claims about the nature
- of benign interactions with the sandbox and investigated the claims through
- a study of 46 open source applications.
- Our results include two backwards compatible rules, the privilege escalation
- rule and the security manager rule, whose enforcement successfully stops
- a set of 10 Java exploits that were actively used in the wild within the
- last 4 years.
- The study reveals that an implementation of the privilege escalation rule
- can stop 40% while an implementation of the security manager rule can stop
- 100% of tested exploits.
- The implementation of the privilege escalation rule was found to slowdown
- the DaCapo benchmarks by XX.XX% while the implementation of the security
- manager rule was found to slowdown the DaCapo benchmarks by XX.XX%
+The ubiquitously-deployed Java Runtime Enviornent (JRE) routinely processes
+ untrusted external content.
+ The Java sandbox is designed to protect the host machine from malicious
+ content.
+ However, many recent exploits have successfully escaped the sandbox, thereby
+ enabling attackers to infect countless Java hosts.
+ To prevent future exploits it is essential to distinguish patterns of malicious
+ use from patterns of benign use.
+ We therefore performed an empirical study of benign open source applications
+ and compared their use of the Java sandbox to the usage present in recent
+ Java exploits.
+ We found that well-secured benign applications do not modify the sandbox's
+ security manager, the security policy enforcement mechanism, after it is
+ first set and do not attempt to use priviledged classes.
+ Exploits do both routinely.
+ We used these results to develop two runtime monitors, one that prevents
+ security policy modification and one that prevents priviledge escalation.
+ The priviledge escalation monitor stops four of ten Metasploit Java exploits
+ with negligible overhead of X%.
+ Running both monitors stops all ten exploits, but with significant overhead
+ of XXX% which may be acceptable when running applets since they represent
+ the biggest danger.
+ 
 \end_layout
 
 \begin_layout Section
