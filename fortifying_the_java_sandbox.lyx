@@ -3333,10 +3333,10 @@ Type 1 applications set a security manager that is not changed during any
  execution of the application after it is set.
  In other words, for each possible execution path, there is at most one
  place the application sets a security manager.
- For example, Weka contains several main methods, most of which never lead
- to the setting of a security manager.
- However, if the main method in RemoteEngine.java runs, the application will
- set a security manager, as shown in figure 
+ For example, Weka contains several main methods, most of which never set
+ a security manager.
+ However, the main method RemoteEngine.java sets a security manager, as shown
+ in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Weka-snippet"
