@@ -4675,7 +4675,7 @@ a self-protecting
  security manager.
  In this section we define two rules to stop exploits from disabling the
  manager that are backwards compatible with benign applications: the Privilege
- Escalation Rule and the Security Manager rule.
+ Escalation rule and the Security Manager rule.
  
 \end_layout
 
@@ -4688,13 +4688,12 @@ The
 \shape italic
 privilege escalation rule
 \shape default
- ensures that a class may not load a more permissive class if a self-protecting
- security manager is set for the application.
+ ensures that a class may not directly load a more privileged class if a
+ self-protecting security manager is set for the application.
  This rule is violated when the protection domain of a loaded class implies
  a permission that in not implied in the protection domain that loaded it.
- This rule is based around the fact that many exploits load a class with
- more privileges than the calling class to break out of the sandbox.
- 
+ Many exploits break this rule to elevate the privileges of their payload
+ class.
 \end_layout
 
 \begin_layout Standard
@@ -4702,19 +4701,17 @@ If all classes in the Java Virtual Machine (JVM) instance were loaded at
  the start of an application, this rule would never be broken.
  However, the JVM loads certain classes on demand, and some of the JVM classes
  have the full privileges.
- Thus the rule has to make an exception for these classes.
- Specifically, the rule makes exceptions for classes returned by the call
+ The rule makes exceptions for classes in packages that are listed in the
  
 \family typewriter
-java.security.Security.getProperty(
-\begin_inset Quotes eld
-\end_inset
-
 package.access
-\begin_inset Quotes erd
-\end_inset
-
-);.
+\family default
+ property of 
+\family typewriter
+java.security.Security 
+\family default
+as these classes are intended to be loaded when accessed by a trusted proxy
+ class.
  
 \end_layout
 
@@ -4723,23 +4720,17 @@ Security Manager Rule
 \end_layout
 
 \begin_layout Standard
-The Security Manager Rule states that a Security Manager cannot change if
- a 
+The 
+\shape italic
+Security Manager rule
+\shape default
+ states that the manager cannot be changed if a 
 \emph on
 self-protecting
 \emph default
- Security Manager has been set by the application.
- By setting a 
-\emph on
-self-protecting 
-\emph default
-Security Manager, the application is removing ability of changing or removing
- the sandbox.
- Thus, the rule is violated if something in the application causes a change
- in the sandbox's setting, which is what many exploits try to ensure will
- happen.
- (&& probably should tie these to the hypotheses somehow but need to read
- the paper to understand how to do that.&&)
+ security manager has been set by the application.
+ This rule is violated when code causes a change in the sandbox's configuration,
+ which many exploits try to ensure will happen.
 \end_layout
 
 \begin_layout Section
