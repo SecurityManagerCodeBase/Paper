@@ -3368,7 +3368,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset listings
-lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt}"
 inline false
 status open
 
@@ -3642,43 +3642,10 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset ERT
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=691,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
 status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{table}[h] 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{minipage}[b]{0.95
-\backslash
-linewidth} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-setbox0=
-\backslash
-vbox{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
-ber=691,basicstyle={
-\backslash
-scriptsize},framesep=2mm]
-\end_layout
 
 \begin_layout Plain Layout
 
@@ -3691,22 +3658,16 @@ ead()));
     ...
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
 
-\backslash
-end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
-ber=703,basicstyle={
-\backslash
-scriptsize},framesep=2mm] 
-\end_layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -3722,26 +3683,16 @@ Note: Ant is executed on this line
     ...
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
-
-\backslash
-end{lstlisting}
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
 \begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,firstnumber=721,bas
-icstyle={
-\backslash
-scriptsize},framesep=2mm]
-\end_layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=721,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -3753,26 +3704,16 @@ scriptsize},framesep=2mm]
     ...
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
-
-\backslash
-end{lstlisting}
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
 \begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
-ber=725,basicstyle={
-\backslash
-scriptsize},framesep=2mm]
-\end_layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=725,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -3788,48 +3729,6 @@ scriptsize},framesep=2mm]
 \begin_layout Plain Layout
 
         }
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{lstlisting} 
-\end_layout
-
-\begin_layout Plain Layout
-
-} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{0.1cm}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-fbox{
-\backslash
-box0} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{minipage} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{table}
 \end_layout
 
 \end_inset
@@ -3905,7 +3804,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset listings
-lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt}"
 inline false
 status open
 
@@ -4074,43 +3973,10 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset ERT
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=22,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
 status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{table}[h] 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{minipage}[b]{0.95
-\backslash
-linewidth} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-setbox0=
-\backslash
-vbox{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,firstnum
-ber=22,basicstyle={
-\backslash
-scriptsize},framesep=2mm]
-\end_layout
 
 \begin_layout Plain Layout
 
@@ -4133,27 +3999,16 @@ scriptsize},framesep=2mm]
     ...
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
-
-\backslash
-end{lstlisting}
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
 \begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[numbers=left,numbersep=-10pt,basicstyle={
-\backslash
-scriptsize},firstnumber=55,framesep=2mm,escapechar=
-\backslash
-%]
-\end_layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=55,escapechar={\%},xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -4168,52 +4023,6 @@ textbf{//TODO Hack so that when the classloader loading the fwk is created
  we don't have funny permissions.
  This should be revisited.
  }
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{lstlisting}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{0.1cm}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-fbox{
-\backslash
-box0} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{minipage} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{table}
 \end_layout
 
 \end_inset
@@ -4265,42 +4074,10 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset ERT
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=156,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
 status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{table}[h] 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{minipage}[b]{0.95
-\backslash
-linewidth} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-setbox0=
-\backslash
-vbox{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,basicstyle={
-\backslash
-scriptsize},framesep=2mm,firstnumber=156]
-\end_layout
 
 \begin_layout Plain Layout
 
@@ -4326,22 +4103,16 @@ scriptsize},framesep=2mm,firstnumber=156]
         ...
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
 
-\backslash
-end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[breaklines,language=Java,numbers=left,numbersep=-10pt,basicsty
-le={
-\backslash
-scriptsize},framesep=2mm,firstnumber=163]
-\end_layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=163,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -4368,21 +4139,16 @@ scriptsize},framesep=2mm,firstnumber=163]
         ...
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
 
-\backslash
-end{lstlisting}
 \end_layout
 
 \begin_layout Plain Layout
-
-
-\backslash
-begin{lstlisting}[language=Java,numbers=left,numbersep=-10pt,basicstyle={
-\backslash
-scriptsize},framesep=2mm,firstnumber=173]
-\end_layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=173,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -4414,51 +4180,12 @@ scriptsize},framesep=2mm,firstnumber=173]
            ...
 \end_layout
 
-\begin_layout Plain Layout
-
-
-\backslash
-end{lstlisting}
-\end_layout
-
-\begin_layout Plain Layout
-
-} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{0.1cm}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-fbox{
-\backslash
-box0} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{minipage} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{table}
-\end_layout
-
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
