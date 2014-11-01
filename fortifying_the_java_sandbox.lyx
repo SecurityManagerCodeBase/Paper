@@ -3569,12 +3569,11 @@ name "sub:Non-security-uses-of"
 \end_layout
 
 \begin_layout Standard
-When investigating the applications in both of the datasets, the investigators
- discovered applications used the sandbox in ways that were not designed
- to increase the security of the system.
- Specifically, the sandbox was used to enforce architectural constraints
- when interacting with other applications and to reduce development complexity
- in web application development.
+We found several cases where applications use the sandbox in ways that were
+ not intended to increase the security of the system.
+ These applications tended to use the sandbox to enforce architectural constrain
+ts when interacting with other applications or forcibly disable the sandbox
+ to reduce development complexity.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -3582,69 +3581,67 @@ Enforcing Architectural Constraints
 \end_layout
 
 \begin_layout Standard
-Java applications commonly call 
+It is common for Java applications to call 
 \family typewriter
 System.exit()
 \family default
- if the application throws a non-recoverable error condition.
- However, this error handling method causes problems when applications work
- together, specifically when an application calls another application which
- will exit on an error.
- The problem with this interaction is that when the called application executes
- the 
+ when a non-recoverable error condition occurs.
+ This error handling strategy causes problems when an application uses another
+ application that implements this strategy as a library.
+ When the library application executes 
 \family typewriter
 System.exit()
 \family default
- line, the called application kills the calling application as well.
- The calling application is killed along with the called application because
- the execution of 
-\family typewriter
-System.exit()
-\family default
- stops the virtual machine instance in which both applications are running.
+, the calling application is closed as well because both applications are
+ running in the same JVM.
+ In many cases, this is not the intended outcome.
+ 
 \end_layout
 
 \begin_layout Standard
-In many cases, the ability for the called application to kill the calling
- application is an unintended side-effect.
- Thus the calling application needs to enforce the architectural constraint
- that called applications can not terminate the execution of the calling
- application.
- To enforce this architectural constraint, Java applications that call other
- applications set a SecurityManager that prevents 
+To prevent this outcome without modifying the library application, the calling
+ application needs to enforce the architectural constraint that libraries
+ can not terminate the JVM.
+ In practice, applications enforce this architectural constraint by setting
+ a security manager that prevents 
 \family typewriter
 System.exit()
 \family default
  calls.
- The new SecurityManager usually stops all calls to 
-\family typewriter
-System.exit()
-\family default
- while the new SecurityManager is set and, if a SecurityManager was previously
- set, the new SecurityManager defers all other security checks to the previously
- set SecurityManager.
- When the calling application determines that the called application has
- finished, the calling application usually restores the previously set SecurityM
-anager if one exists.
+ If a manager has already been set, applications tend to save a copy of
+ the current manager before replacing it with one that prevents termination
+ of the JVM, but defer to the saved version for all security decisions that
+ do not have to do with enforcing this particular constraint.
+ The original security manager is often restored when the library application
+ is finished executing.
 \end_layout
 
 \begin_layout Standard
-One example of an application preventing another application from calling
- 
-\family typewriter
-System.exit()
-\family default
- is Eclipse in Qualitas which calls Ant.
- When Ant reaches an unrecoverable error condition, Ant will call 
-\family typewriter
-System.exit()
-\family default
- to terminate the compilation.
- However, Eclipse wants to continue executing and report an error to the
- user if Ant runs into a error condition.
+This case appears in Eclipse, which uses Ant as a library.
+ Ant kills the JVM when an unrecoverable error condition occurs to terminate
+ execution of the build script it is running.
+ However, Eclipse wants to continue executing and to report an error to
+ the user when Ant runs into a error condition.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Eclipse-snippet"
+
+\end_inset
+
+ shows how Eclipse sets a security manager to enforce this constraint right
+ before Ant is executed.
+ After Ant closes and any error conditions are handled, the original manager
+ is restored.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -3840,27 +3837,73 @@ end{table}
 
 \end_layout
 
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+This code snippet from Eclipse shows how it uses the manager to prevent
+ Ant from terminating the JVM when an unrecoverable error occurs.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Eclipse-snippet"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-Shown in the code above, on line 691 Eclipse sets a SecurityManager to prevent
- Ant from calling 
-\family typewriter
-System.exit()
-\family default
+GJMan also enforces this architectural constraint, as shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:GJMan-snippet"
+
+\end_inset
+
 .
- After performing some other checks, Ant is executed.
- Then after handling other error conditions, the original SecurityManager
- is restored.
+ The code references a blog post
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://www.jroller.com/ethdsy/entry/disabling_system_exit
+\end_layout
+
+\end_inset
+
+ that appears to be the origin of this solution.
+ The code contains an 
+\family typewriter
+apply
+\family default
+ method that creates and sets a security manager to prevent termination
+ of the JVM and an 
+\family typewriter
+unapply
+\family default
+ method to disable the sandbox.
+ GJMan is a library and does not use these methods itself, but applications
+ that use it could.
+ 
 \end_layout
 
 \begin_layout Standard
-Another example of enforcing the architectural constraint occurs in GJMan
- in the GitHub data set.
- The code references a blog page describing this problem and the implemented
- solution: http://www.jroller.com/ethdsy/entry/disabling_system_exit.
- The code reads 
-\end_layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset listings
 lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt},frame=single,framesep=2mm"
 inline false
@@ -3937,30 +3980,43 @@ status open
 
 \end_layout
 
-\begin_layout Standard
-The code contains the allow method which creates a SecurityManager that
- stops System.exit calls and the sets the created SecurityManager as the
- Sandbox for the Java Virtual Machine.
- The file also includes a method to remove the SecurityManager and removes
- the Sandbox from the Java Virtual Machine.
- While GJMan does not execute these lines explicitly, GJMan is written to
- be a library for other applications, so this file is likely used in other
- applications.
- 
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The methods in GJMan that enable and disable the sandbox to prevent termination
+ of the JVM when select code is running
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:GJMan-snippet"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-In total, we found 3 applications using a variation of this technique: Eclipse,
- GJMan, and AspectJ.
- While this technique is useful in applying architectural constraints, and
- probably the best architectural solution available in Java at the moment,
- this technique is likely to cause problems when applications desire the
- sandbox to also enforce security constraints.
- The reason this technique creates problems when trying to enforce security
- constraints is that the sandbox must be set in a state which it can be
- dynamically removed, otherwise the calling application could never terminate.
- By allowing the sandbox to be dynamically removed, the application must
- be carefully written to avoid allowing malicious code to turn off the sandbox.
+In total, we found 3 applications that use a variation of this technique:
+ Eclipse, GJMan, and AspectJ.
+ While this technique does enforce the desired constraint, and is probably
+ the best solution available in Java at the moment, it is likely to cause
+ problems when applications are also using the sandbox for security purposes.
+ The technique requires the application to dynamically change the security
+ manager, which requires that the manager itself be defenseless or that
+ the application is very carefully written to prevent malicious code from
+ changing the manager or the policy it enforces.
+ Defenseless security managers are not capable of reliably enforcing a serious
+ security policy.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -3968,47 +4024,56 @@ Reducing Web Application Development Complexity
 \end_layout
 
 \begin_layout Standard
-When Java web applications are run inside modern web browser, the application
- is sandboxed to protect the machine which hosts the browser.
- When the sandbox is set up, applications have to work inside the restrictions
- of the sandbox, meaning that applications are only approved to use the
- permissions allowed in the standard web browser sandbox.
+Java automatically sandboxes applets and applications launched via Java
+ Web Start
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://www.oracle.com/technetwork/java/javase/javawebstart/index.html
+\end_layout
+
+\end_inset
+
+.
+ These applications typically need to be written to comply with the default
+ security policy that Java imposes on applications from remote sources.
+ In cases where this is not possible, Java allows applications to run without
+ a sandbox after obtaining user approval.
+ Some developers cause their applications to throw a 
+\family typewriter
+SecurityException
+\family default
+ when the sandbox is enabled to force users to turn the sandbox off if they
+ want to use the application.
+ We found two applications that were using this method: Eclipse and Timelag.
  
 \end_layout
 
 \begin_layout Standard
-To support applications which need to use permissions unavailable in the
- standard web browser sandbox, web browsers allow Java web applications
- to run without a sandbox after obtaining user approval.
- Developers, aware that users can turn off the sandbox, can develop applications
- in a way that require the sandbox to be explicitly turned off.
- Specifically, these applications ensure that the sandbox is off at the
- start of executing the web application.
- If a default sandbox is set, this check will cause the applications to
- crash with a SecurityException.
- Thus, the only way to run the applications are to turn off the sandbox.
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Eclipse-jws-snippet"
+
+\end_inset
+
+ shows a snippet from Eclipse's WebStartMain.java file that performs this
+ operation.
+ The comment shows that Eclipse attempts to disable the sandbox to avoid
+ the permission issues caused by the default sandbox for web start.
+ Timelag performs the same operation in the file JTimelag.java but does not
+ contain any comments, thus we can only infer the motivation behind turning
+ off the sandbox.
 \end_layout
 
 \begin_layout Standard
-In total we found two applications that were using this method: Eclipse
- in Qualitas and Timelag in Github.
- Since malicious applications are also known to turn off the sandbox, i.e.
- null the SecurityManager, it is important to carefully distinguish between
- a benign application which turns off the sandbox and a malicious application
- which turns off the sandbox.
- In the case where the application attempts to turn off the sandbox when
- starting the application and the application does not attempt to ensure
- the turn off attempt will succeed, it is determined that the application
- is trying to check if a sandbox is set and, if so, stop the application.
- On the other hand, applications which attempt to ensure that the sandbox
- is turned off, even when one is set, are likely malicious.
-\end_layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
-\begin_layout Standard
-Eclipse contains the following code section in the file WebStartMain.java
-\end_layout
-
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -4156,50 +4221,50 @@ end{table}
 
 \end_layout
 
-\begin_layout Standard
-The Eclipse comments show that the attempt to turn off the sandbox was done
- to avoid the permission issues caused by the default sandbox for Java Web
- Start.
- Timelag also contains the 
-\family typewriter
-System.setSecurityManager(null);
-\family default
- line as the first line of its main function in the file JTimelag.java but
- does not contain any comments.
- So the motivation behind turning off the sandbox at the beginning of execution
- had to be inferred.
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A snippet from Eclipse that disables the sandbox when Java Web Start is
+ used to run the IDE.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Eclipse-jws-snippet"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
-Changing the SecurityManager for Security Purposes
+Changing the Security Manager for Security Purposes
 \end_layout
 
 \begin_layout Standard
-In both datasets, we found applications that set a SecurityManager at one
- point a program and then either explicitly change or allow the user to
- change the currently set SecurityManager.
- Three applications allow the user to set and change the currently set SecurityM
-anager using provided methods (Batik, Eclipse, and Spring-modules) while
- three applications attempted to explicitly set and change the SecurityManager
- during execution (Ant, Freemind, and Netbeans (!! Not 100% sure about this
- one from what Tianyuan wrote, will need to investigate it later!!)).
- 
+We found applications that set a security manager then either explicitly
+ change it at some later point or allow the user to change it.
+ Batik, Eclipse, and Spring-modules provide methods that allow the user
+ to set and change an existing manager, and Ant, Freemind, and Netbeans
+ explicitly set then change the manager.
 \end_layout
 
 \begin_layout Standard
-For the applications that allowed the user to set and change the SecurityManager
-, it seems the applications are attempting to provide the flexibility of
- the current Sandbox implementation in Java, with no strong security case
- for implementing the SecurityManager interactions this way.
- 
-\end_layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
-\begin_layout Standard
-For example, in Batik, the file ApplicationSecurityEnforcer contains the
- code segment:
-\end_layout
-
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -4394,97 +4459,108 @@ end{table}
 \end_inset
 
 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Batik-snippet"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-This method was designed to allow users to add a SecurityManager to an applicati
-on that uses the Batik library.
- The method first takes a Boolean, then checks to make sure a Batik specific
- SecurityManager is not set.
- If a SecurityManager defined outside of Batik was not set, the application
- either sets a Batik SecurityManager, which refreshes the policy for the
- SecurityManager or sets the SecurityManager to null which turns off the
- sandbox.
- This methods use was demonstrated in some of the examples provided in the
- application download from the Batik website.
- Two of the downloads provide ways to set a SecurityManager at start up,
- the squiggle browser demo and the rasterizer demo.
- While the squiggle browser demo sets a SecurityManager and never changes
- it, the rasterizer demo can be set to call enforceSecurity with a true
- argument the first time and a false argument the second time, cause the
- application to set a SecurityManager and then remove it at the end of the
- demo.
- While this was an interesting occurrence, there seemed to be no valid reason,
- other than showing off the capabilities for the library, to turn the SecurityMa
-nager off at the end of the execution.
-\end_layout
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Batik-snippet"
 
-\begin_layout Standard
-Only in the case where an application can not be reset and the application
- cannot predict future required permissions, which we believe to be rare,
- applications would need the ability to dynamically refresh the sandbox.
- In all other cases, the ability to dynamically adjust the SecurityManager
- and the sandbox's policy is not required.
- As long as the required permission can be predicted before the application
- is running, class loaders with defined permission sets can assign the permissio
-n to any newly loaded Java classes, thus allowing applications to provide
- permissions to the classes that require them.
- (&& I don't like this section's wording - I should ask Michael for input
- on how to word it correctly).
+\end_inset
+
+ shows an interesting case from Batik copied from ApplicationSecurityEnforcer.jav
+a.
+ This method was designed to allow users to optionally constrain the execution
+ of an an application that uses the Batik library.
+ The method takes one parameter that acts as a switch to turn the sandbox
+ on or off.
+ Batik throws an exception if the user wants to toggle the sandbox while
+ a non-Batik manager is set.
+ The download page on the Batik website shows several examples of how to
+ use this method.
+ Two of the examples show ways to set a security manager at start up: the
+ squiggle browser demo and the rasterizer demo.
+ While the squiggle browser demo sets a manager and never changes it, the
+ rasterizer demo can be set to call 
+\family typewriter
+enforceSecurity
+\family default
+ with a true argument the first time and a false argument the second time,
+ which enables then disables the sandbox.
+ While this was an interesting occurrence, there seems to be no valid reason
+ to disable the sandbox in this case other than to show off the capability
+ to do so.
 \end_layout
 
 \begin_layout Standard
 As mentioned earlier, Ant, Freemind, and Netbeans explicitly set and then
- change the current SecurityManager during runtime.
- Ant wants to allow the user the capability to execute Java applications
+ change the current manager during runtime.
+ Ant allows the users to create build scripts that execute Java applications
  during a build under a user specified set of permissions.
- To provide this capability, Ant sets the SecurityManager before executing
- the Java application and then removes the SecurityManager after the application
+ To provide this capability, Ant sets the security manager before executing
+ the Java application and then removes the manager after the application
  has finished executing.
- Netbeans also takes a similar approach ( && need to check this &&).
+ Netbeans performs a similar operation.
+ In both of these cases a defenseless security manager is required, but
+ a better approach would use a custom class loader to load the untrusted
+ classes into a constrained protection domain.
 \end_layout
 
 \begin_layout Standard
-Freemind 0.9.0 also tried to solve a similar problem, but demonstrates the
- difficulty of correctly implementing this solution.
- Freemind is a diagram drawing tool that allows users to execute Groovy
- scripts on the current drawing.
- The developers of Freemind implemented the sandbox so that it would turn
- on before executing a user run script and would turn off after the script
- finished executing.
- The security goals of the Freemind sandbox was to stop malicious scripts
- from creating files, executing programs on the machine, and creating network
- sockets to establish connections with outside entities.
- Unfortunately, in the version we analyzed , these goals were not achieved.
- By implementing the SecurityManager in the old SecurityManager style, explicitl
-y removing privileges, multiple dangerous permissions were left, such as
- the ability to alter private variables with reflection.
- This privilege made it trivial to remove the currently set SecurityManager
- inside a Groovy script, thus turning off the sandbox, and allowing the
- script to create files.
- The authors submitted a sample exploit to the Freemind development group
- and made recommendations on how to improve the security of the Freemind
- sandbox.
- (*** also should probably mention something about the SecurityManager indirecti
-on ***).
+Freemind 0.9.0 tried to solve a similar problem and ended up illustrating
+ the dangers present when using a defenseless manager.
+ Freemind is a mind mapping tool that allows users to execute Groovy scripts
+ embedded in a map they have open.
+ Freemind turns on the sandbox before executing groovy scripts to prevent
+ scripts from executing malicious operations and turns the sandbox off immediate
+ly after the groovy scripts finish.
+ The policy Freemind enforces prevents Groovy scripts from creating network
+ sockets, accessing the filesystem, and executing programs on the machine.
+ In the version we analyzed, these goals were not achieved.
+ By enforcing this narrow policy and allowing the manager to be set and
+ unset at will, Freemind accidentally grants scripts permissions that enable
+ them to disable the sandbox.
+ We crafted a mind map to exploit this vulnerability to execute arbitrary
+ code and reported the issue to the Freemind developers.
+ We included advice about how to achieve the desired outcome securely with
+ our report.
 \end_layout
 
 \begin_layout Standard
-As with the applications that allow setting and chaining the SecurityManager,
- we believe the applications which set and change the SecurityManager explicitly
- can execute correctly using a static SecurityManager with class loaders
- which limit the permissions of the restricted code sections.
- 
-\end_layout
-
-\begin_layout Standard
-The one application that did not fall into either of these categories was
- WildflySecurityManager.
- The WildflySecurityManager allows turning off the permission checks for
- classes which have been granted the DO_UNCHECKED_PERMISSION.
- However, this method of permission checks seems to be the same as assigning
- the privileged classes the AllPermissions and then executing doPrivileged
- on the privileged actions that the privileged class needs to do.
+WildFlySecurityManager is a custom security manager that does not cleanly
+ fit into our categories.
+ WildFlySecurityManager allows permission checks to be disabled for classes
+ granted a custom permission called 
+\family typewriter
+DO_UNCHECKED_PERMISSION
+\family default
+.
+ This strategy is equivalent to running a privileged action with 
+\family typewriter
+doPrivileged
+\family default
+.
 \end_layout
 
 \begin_layout Section
