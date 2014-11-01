@@ -125,7 +125,7 @@ Fortifying the Java Sandbox
 \end_layout
 
 \begin_layout Abstract
-The ubiquitously-deployed Java Runtime Enviornent (JRE) routinely processes
+The ubiquitously-deployed Java Runtime Environment (JRE) routinely processes
  untrusted external content.
  The Java sandbox is designed to protect the host machine from malicious
  content.
@@ -138,7 +138,7 @@ The ubiquitously-deployed Java Runtime Enviornent (JRE) routinely processes
  Java exploits.
  We found that well-secured benign applications do not modify the sandbox's
  security manager, the security policy enforcement mechanism, after it is
- first set and do not attempt to use priviledged classes.
+ first set and do not attempt to use privileged classes.
  Exploits do both routinely.
  We used these results to develop two runtime monitors, one that prevents
  security manager modification and one that prevents privilege escalation.
