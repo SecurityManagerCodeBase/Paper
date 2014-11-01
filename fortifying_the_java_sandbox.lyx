@@ -4314,9 +4314,9 @@ s in Java code.
  Essentially, these exploits either (1) exploit a privileged class loader
  to load a payload class with all permissions or (2) attack a confused deputy
  they have direct access to.
- The former is quite rare and typically the fault of a vulnerable third-party
- library because directly exposing privileged classes is a violation of
- the 
+ The latter is quite rare and typically the fault of a vulnerable third-party
+ library because providing all classes with direct access to a privileged
+ class is a violation of the 
 \shape italic
 access control
 \shape default
@@ -4356,24 +4356,13 @@ java.lang.reflect
 
 \begin_layout Standard
 To load a privileged class, a privileged class loader must be used, thus
- a class should typically not have direct access to a class more privileged
- than itself unless the former had its privileges reduced at some point
- in the application's execution.
+ a class should typically not have direct access to a class that has a vulnerabi
+lity that can be exploited to bypass the sandbox unless the former had its
+ privileges reduced at some point in the application's execution.
  This is implicit in the Java security model: if any class could load more
  privileged classes and directly cause them to execute operations, the sandbox
  in its current form would serve little purpose.
- We can leverage these distinctions to further fortify the sandbox because
- classes should not be loading more privileged classes in the presence of
- a self-protecting security manager because a self-protecting security manager
- will not allow the creation of a privileged classloader to load a class
- with all permissions (see the createClassLoader permission in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:defenseless-permissions"
-
-\end_inset
-
-).
+ We can leverage these distinctions to further fortify the sandbox.
 \end_layout
 
 \begin_layout Section
