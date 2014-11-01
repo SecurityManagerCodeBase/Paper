@@ -3418,7 +3418,7 @@ name "fig:Weka-snippet"
 Type 2 applications are of particular interest in validating the claims
  because they change a set security manager at some point later in the applicati
 on's execution.
- In other words, they potentially to falsify the weak, moderate, and ideal
+ In other words, they potentially falsify the weak, moderate, and ideal
  claims.
  Due to their effect on our claims, applications of this type are discussed
  in detail below.
