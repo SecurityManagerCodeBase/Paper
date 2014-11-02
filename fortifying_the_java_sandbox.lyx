@@ -125,7 +125,7 @@ Fortifying the Java Sandbox
 \end_layout
 
 \begin_layout Abstract
-The ubiquitously-deployed Java Runtime Environment (JRE) is deisgned to
+The ubiquitously-deployed Java Runtime Environment (JRE) is designed to
  execute untrusted code.
  The JRE relies on the Java sandbox to protect the host machine from malicious
  code.
@@ -138,7 +138,7 @@ ons and compared their use of the sandbox to the usage present in recent
  exploits.
  We found that benign applications with secured sandboxes do not modify
  the security manager, the security policy enforcement mechanism, after
- it is first set and do not attempt to use privileged classes.
+ it is first set and do not attempt to directly use privileged classes.
  Exploits do both routinely.
  We used these results to develop two runtime monitors, one that prevents
  security manager modification and one that prevents privilege escalation.
@@ -2071,7 +2071,7 @@ Netbeans
 \begin_inset Text
 
 \begin_layout Plain Layout
-Integerated Development Environment
+Integrated Development Environment
 \end_layout
 
 \end_inset
