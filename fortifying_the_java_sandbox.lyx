@@ -239,6 +239,37 @@ reference "fig:most-targeted-applications"
 \end_layout
 
 \begin_layout Standard
+Java was designed to safely execute untrusted code and safely isolate components
+ from each other in a sandbox so that the application and the host machine
+ are protected from malicious behavior.
+ However, the exploits cited above show that this goal has not been achieved.
+ Past investigations of Java security exploits have shown Java malware commonly
+ alters the sandbox's settings 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "garber_2012"
+
+\end_inset
+
+.
+ Typically, exploits disables the security manager, the component of the
+ sandbox responsible for enforcing the security policy 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012"
+
+\end_inset
+
+.
+ It seems plausible that benign applications interact with the security
+ manager differently.
+ If true, this difference can be exploited to prevent future exploits.
+ To investigate this further, we conducted an empirical study of benign
+ open source Java applications.
+ 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -281,44 +312,9 @@ key "xforceQ12013"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Java was designed to safely execute untrusted code and safely isolate components
- from each other in a sandbox so that the application and the host machine
- are protected from malicious behavior.
- However, the exploits cited above show that this goal has not been achieved.
- Past investigations of Java security exploits have shown Java malware commonly
- alters the sandbox's settings 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "garber_2012"
-
-\end_inset
-
-.
- Typically, exploits disables the security manager, the component of the
- sandbox responsible for enforcing the security policy 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012"
-
-\end_inset
-
-.
- It seems plausible that benign applications interact with the security
- manager differently.
- If true, this difference can be exploited to prevent future exploits.
- To investigate this further, we conducted an empirical study of benign
- open source Java applications.
- 
 \end_layout
 
 \begin_layout Standard
@@ -352,7 +348,7 @@ plugin to isolate code involved in the initialization or modification of
 We discovered two types of security managers: defenseless security managers
  which enforce a security policy which enable code inside the sandbox to
  modify sandbox settings, and self-protecting security managers which disallow
- such behavior..
+ such behavior.
  Applications with defenseless security managers are inherently insecure
  and these applications sometimes modified or disabled the security manager
  during program execution.
@@ -370,28 +366,88 @@ Based on our analysis benign and malicious applications, we implemented
  The first monitor prevents privilege escalation by preventing restricted
  classes inside a sandbox from loading classes with fewer restrictions.
  The second monitor, prevents changes to the sandbox when a self-protecting
- Sandbox is set.
+ security manager is initialized.
+ We evaluated the effectiveness of our monitors against the 10 applets in
+ Metasploit 4.10.0 that succesfully exploit the initial release of Java 7.
+ The priviledge escalation monitor detected and stopped four of the ten
+ exploits, while using both monitors together detected and stopped all ten
+ exploits.
  
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-MM: Don't have this separate section.
- Your first sentence below makes it clear why you shouldn't have a section
- for just related work and we already compare to related work where appropriate
- (i.e.
- if you do a separate section there is no way you're going to prevent it
- from being pitiful).
- I suggest merging the discussion of these three studies into the intro
- as was originally noted above.
-\end_layout
+We evaluated the performance of our monitors using the DaCapo benchmark
+ suite
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DaCapo:paper"
 
 \end_inset
 
+.
+ The priviledge escalation monitor resulted in negligible overhead of X%
+ which is low enough to enable monitoring of any Java application.
+ The security manager monitor is implemented as a JVMTI agent and it monitors
+ a static field, which unfotunately disables just-in-time compilation (JIT).
+ Therefore, the security manager monitor resulted in substatial overhead
+ of XXX%, which is unacceptable for most Java applications.
+ However, the greatest threat comes from Java applets, and many of these
+ are not performance intensive (e.g.
+ they are web forms), so it may be reasonable to enable the security manager
+ monitor only for untrusted applets and use only the priviledge escalation
+ monitor for all other applications.
+\end_layout
 
+\begin_layout Standard
+The contributions of this papers are as follows:
+\end_layout
+
+\begin_layout Itemize
+An empirical study of Java sandbox usage in benign, open-source applications
+ (Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Security-Manager-Study"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+An analysis of priviledge escalation in the Java security model and recent
+ Java exploits (Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Privilege-Escalation-in"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+Two novel rules for distinguishing between benign and malicious Java programs
+ (Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Rules-for-Fortifying"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+Implementations of the two rules as runtime monitors, with accompanying
+ security and performance evaluations (Section
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Mitigations"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -430,6 +486,13 @@ There is little work on how Java applications use the Sandbox and the security
 
 \begin_layout Section
 Background
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Background"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -4424,7 +4487,14 @@ lity that can be exploited to bypass the sandbox unless the former had its
 \end_layout
 
 \begin_layout Section
-Rules for Fortifying the Sandbox
+Rules for Fortifying the Sandbox 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Rules-for-Fortifying"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4508,7 +4578,14 @@ self-protecting
 \end_layout
 
 \begin_layout Section
-Mitigations
+Mitigations 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Mitigations"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
