@@ -125,7 +125,7 @@ Fortifying the Java Sandbox
 \end_layout
 
 \begin_layout Abstract
-The ubiquitously-deployed Java Runtime Environment (JRE) is designed to
+The ubiquitously-installed Java Runtime Environment (JRE) is designed to
  execute untrusted code.
  The JRE relies on the Java sandbox to protect the host machine from malicious
  code.
@@ -220,8 +220,8 @@ Write a paragraph to talk about why Java security is important.
 \end_layout
 
 \begin_layout Standard
-The Java Runtime Environment (JRE) is widely deployed and passively processes
- external content in the form of applets.
+The Java Runtime Environment (JRE) is widely installed on user endpoints
+ and it executes external code in the form of applets.
  These facts, combined with the hundreds of recently discovered vulnerabilities
  in Java, including a zero-day vulnerability (CVE-2013-0422), have made
  Java an extremely popular exploit vector (see Figure 
@@ -291,11 +291,10 @@ key "xforceQ12013"
 \end_layout
 
 \begin_layout Standard
-A security goal of Java, is to allow applications to safely execute untrusted
- code in a sandbox so that the application and the host machine are protected
- from malicious behavior.
- However, the exploits cited cited above show that this goal has not been
- achieved.
+Java was designed to safely execute untrusted code and safely isolate components
+ from each other in a sandbox so that the application and the host machine
+ are protected from malicious behavior.
+ However, the exploits cited above show that this goal has not been achieved.
  Past investigations of Java security exploits have shown Java malware commonly
  alters the sandbox's settings 
 \begin_inset CommandInset citation
@@ -305,8 +304,8 @@ key "garber_2012"
 \end_inset
 
 .
- Typically, the exploit disables the security manager, the component of
- the sandbox responsible for enforcing the security policy 
+ Typically, exploits disables the security manager, the component of the
+ sandbox responsible for enforcing the security policy 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012"
@@ -314,43 +313,64 @@ key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_
 \end_inset
 
 .
+ It seems plausible that benign applications interact with the security
+ manager differently.
+ If true, this difference can be exploited to prevent future exploits.
+ To investigate this further, we conducted an empirical study of benign
+ open source Java applications.
+ 
 \end_layout
 
 \begin_layout Standard
-This knowledge leads to the question: can malicious applications be uniquely
- detected and stopped at runtime based on how they interact with the sandbox?
- To answer this question, it is important to know how benign applications
- interact with the sandbox, to avoid falsely halting an application that
- the user wants to run.
- After a thorough literature review, the authors were unable to find information
- on how Java applications interact with the sandbox.
+Our empirical study was designed to answer the following research question:
+ how to benign applications modify the security manager? To answer this
+ question, we identified every Java project in the Qualitas Corpus
+\begin_inset CommandInset citation
+LatexCommand cite
+key "QualitasCorpus:APSEC:2010"
+
+\end_inset
+
+ and the Github repository that make use of the security manager.
+ We analyzed the resulting 47 projects using a custom FindBugs 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hovemeyer_finding_2004"
+
+\end_inset
+
+plugin to isolate code involved in the initialization or modification of
+ the security manager.
+ We then manually categorized the security manager usage in each of the
+ isolated code snippets.
+ Finally, we used a JVMTI agent to confirm that our categorizations of code
+ were accurate at runtime.
+ 
 \end_layout
 
 \begin_layout Standard
-We set up an investigation of 29 applications from the Qualitas Corpus and
- 17 applications from GitHub to gain an understanding how the applications
- interacted with the sandbox.
- Specifically, the investigation focused on how the applications interacted
- with the SecurityManager since the SecurityManager is the developer facing
- side of the sandbox.
- Applications were first analyzed statically with 2 tools: one that located
- possible initializations of the sandbox and another that found possible
- sandbox interactions.
- The applications were then all manually inspected to analyze the output
- of the static analysis tools in context and to understand important sandbox
- interactions.
- Finally, application runs were monitored to see how the sandbox changed
- at runtime, verifying the results of the static analysis.
+We discovered two types of security managers: defenseless security managers
+ which enforce a security policy which enable code inside the sandbox to
+ modify sandbox settings, and self-protecting security managers which disallow
+ such behavior..
+ Applications with defenseless security managers are inherently insecure
+ and these applications sometimes modified or disabled the security manager
+ during program execution.
+ Some of these applications use the security manager to enforce policies
+ that are unrelated to security.
+ On the other hand, we found that applications with self-protecting security
+ managers, a category which includes all applets, do not change sandbox
+ settings during program execution.
+ 
 \end_layout
 
 \begin_layout Standard
-Based on the findings of this analysis, two rules for fortifying the sandbox
- were implemented: the Privilege Escalation rule, which prevents applications
- from loading a class with less restrictions from a restricted class when
- a sandbox is set, and the SecurityManager rule, which prevents changes
- to the sandbox when a self-protecting Sandbox is set.
- These fortifications were found to allow benign applications to execute
- while stopping a significant portion of malicious exploits.
+Based on our analysis benign and malicious applications, we implemented
+ two runtime monitors.
+ The first monitor prevents privilege escalation by preventing restricted
+ classes inside a sandbox from loading classes with fewer restrictions.
+ The second monitor, prevents changes to the sandbox when a self-protecting
+ Sandbox is set.
  
 \end_layout
 
@@ -1443,12 +1463,24 @@ When it was clear from the grep output that the keyword was used in comments
 \begin_layout Enumerate
 For true positives that compiled, the reviewer ran FindBugs on the application
  with only our plugin enabled.
+ 
 \end_layout
 
 \begin_layout Enumerate
 The reviewer manually inspected code specified in the FindBugs findings,
  starting with the line where the manager was set and tracing the code to
  where the security manager was initialized.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: Did these lines differ substantially from the lines fround by grep?
+ If so, why? If not, what was the point of the Findbugs step?
+\end_layout
+
+\end_inset
+
  
 \end_layout
 
@@ -1464,6 +1496,32 @@ For true positives that compiled and effected the security manager during
  monitored by our dynamic analysis tool, using parameters and actions the
  reviewer determined in steps 4 and 5 effect the security manager.
  This step verified the conclusions from previous steps.
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+JSS: We need more detail here about how the application was 
+\begin_inset Quotes eld
+\end_inset
+
+executed.
+\begin_inset Quotes erd
+\end_inset
+
+ What exactly are the 
+\begin_inset Quotes eld
+\end_inset
+
+parameters and actions determined in step 4 and 5?
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Enumerate
