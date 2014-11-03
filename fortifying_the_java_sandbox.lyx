@@ -252,7 +252,7 @@ key "garber_2012"
 \end_inset
 
 .
- Typically, exploits disables the security manager, the component of the
+ Typically, exploits disable the security manager, the component of the
  sandbox responsible for enforcing the security policy 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -319,7 +319,7 @@ key "xforceQ12013"
 
 \begin_layout Standard
 Our empirical study was designed to answer the following research question:
- how to benign applications modify the security manager? To answer this
+ how do benign applications modify the security manager? To answer this
  question, we identified every Java project in the Qualitas Corpus
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -345,10 +345,16 @@ plugin to isolate code involved in the initialization or modification of
 \end_layout
 
 \begin_layout Standard
-We discovered two types of security managers: defenseless security managers
- which enforce a security policy which enable code inside the sandbox to
- modify sandbox settings, and self-protecting security managers which disallow
- such behavior.
+We discovered two types of security managers: 
+\emph on
+defenseless
+\emph default
+ security managers which enforce a security policy which enable code inside
+ the sandbox to modify sandbox settings, and 
+\emph on
+self-protecting
+\emph default
+ security managers which disallow such behavior.
  Applications with defenseless security managers are inherently insecure
  and these applications sometimes modified or disabled the security manager
  during program execution.
@@ -361,17 +367,16 @@ We discovered two types of security managers: defenseless security managers
 \end_layout
 
 \begin_layout Standard
-Based on our analysis benign and malicious applications, we implemented
+Based on our analysis of benign and malicious applications, we implemented
  two runtime monitors.
  The first monitor prevents privilege escalation by preventing restricted
  classes inside a sandbox from loading classes with fewer restrictions.
  The second monitor, prevents changes to the sandbox when a self-protecting
  security manager is initialized.
  We evaluated the effectiveness of our monitors against the 10 applets in
- Metasploit 4.10.0 that succesfully exploit the initial release of Java 7.
- The priviledge escalation monitor detected and stopped four of the ten
- exploits, while using both monitors together detected and stopped all ten
- exploits.
+ Metasploit 4.10.0 that successfully exploit the initial release of Java 7.
+ The privilege escalation monitor detected and stopped four of the ten exploits,
+ while using both monitors together detected and stopped all ten exploits.
  
 \end_layout
 
@@ -385,16 +390,16 @@ key "DaCapo:paper"
 \end_inset
 
 .
- The priviledge escalation monitor resulted in negligible overhead of X%
+ The privilege escalation monitor resulted in negligible overhead of X%
  which is low enough to enable monitoring of any Java application.
  The security manager monitor is implemented as a JVMTI agent and it monitors
- a static field, which unfotunately disables just-in-time compilation (JIT).
- Therefore, the security manager monitor resulted in substatial overhead
+ a static field, which unfortunately disables just-in-time compilation (JIT).
+ Therefore, the security manager monitor resulted in substantial overhead
  of XXX%, which is unacceptable for most Java applications.
  However, the greatest threat comes from Java applets, and many of these
  are not performance intensive (e.g.
  they are web forms), so it may be reasonable to enable the security manager
- monitor only for untrusted applets and use only the priviledge escalation
+ monitor only for untrusted applets and use only the privilege escalation
  monitor for all other applications.
 \end_layout
 
@@ -415,7 +420,7 @@ reference "sec:Security-Manager-Study"
 \end_layout
 
 \begin_layout Itemize
-An analysis of priviledge escalation in the Java security model and recent
+An analysis of privilege escalation in the Java security model and recent
  Java exploits (Section 
 \begin_inset CommandInset ref
 LatexCommand ref
