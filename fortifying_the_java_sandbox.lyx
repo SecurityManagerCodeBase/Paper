@@ -230,7 +230,7 @@ reference "fig:most-targeted-applications"
  applets.
  Once the user visits the website, the exploit triggers a series of events
  that ends with the delivery of malware, all while the user is left unaware.
- This kind of attack is commonly referred to as a drive-by download.
+ This kind of attack is commonly referred to as a drive-by-download.
 \end_layout
 
 \begin_layout Standard
@@ -4564,25 +4564,31 @@ reference "sec:Security-Manager-Study"
 
 \end_inset
 
- we discussed (1) three claims that would lead to Java exploit mitigations
+ we discussed (1) four claims that could lead to Java exploit mitigations
  if validated and (2) how we went about validating them.
- In section 
+ We also discussed additional information about how applications use the
+ Java sandbox that we learned while successfully validating the strong claim
+ and the overall results of our empirical analysis of the open source Java
+ landscape.
+ The results included two backwards-compatible rules, discussed in section
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Research-Questions-and"
+reference "sec:Rules-for-Fortifying"
 
 \end_inset
 
- we discussed additional research questions we answered while successfully
- validating the strong claim and the overall results of our empirical analysis
- of the open source Java landscape.
- The results included two backwards-compatible rules that can be enforced
- to stop current exploits.
- In this section we discuss the implementation and evaluation of a tool
- that implements the privilege escalation and SecurityManager rules.
- We evaluated this tool in collaboration with a large aerospace company
- that is currently working on deploying the tool to workstations that belong
- to employees that are often the subject of targeted attacks.
+, that can be enforced to stop current exploits.
+ In this section we discuss the implementation and evaluation of runtime
+ monitors that implement the privilege escalation and Security Manager rules.
+ We collectively call these monitors the 
+\shape italic
+Java Sandbox Fortifier
+\shape default
+ (JSF).
+ We evaluated JSF in collaboration with a large aerospace company that is
+ currently working on deploying the tool to workstations that belong to
+ employees that are often the subject of targeted attacks.
  
 \end_layout
 
@@ -4617,14 +4623,16 @@ status collapsed
 \begin_layout Plain Layout
 Our tool, Java Sandbox Fortifier, is open source and hosted on GitHub at
  https://github.com/SecurityManagerCodeBase/JavaSandboxFortifier.
- REVIEWERS: INSPECTING THIS GITHUB PROJECT MAY REVEAL THE AUTHORS' IDENTITIES.
+ 
+\series bold
+REVIEWERS: INSPECTING THIS GITHUB PROJECT MAY REVEAL THE AUTHORS' IDENTITIES.
 \end_layout
 
 \end_inset
 
 .
- In particular, our tool focuses on fortifying the Java sandbox by reducing
- the methods that the sandbox can be successfully bypassed in an attack.
+ In particular, our tool blocks operations that exploits use without effecting
+ the execution of benign applications.
 \end_layout
 
 \begin_layout Standard
@@ -4635,7 +4643,7 @@ JVMTI is a native interface used to access JVM operations that are intended
  application at some configuration specific point in the application's lifecycle.
  The interface allows an agent to set capabilities that enable the tool
  to intercept events such as class and thread creation, field access and
- modifications, breakpoints, and much more.
+ modification, breakpoints, and much more.
  After acquiring the necessary capabilities, a JVMTI agent registers callbacks
  for the events they want to receive.
  JVMTI provides a rich API, hooks for instrumenting the bytecode of loaded
@@ -4643,7 +4651,7 @@ JVMTI is a native interface used to access JVM operations that are intended
  any operation on classes, threads, etc.
  that a tool may want to perform at the time when an event occurs.
  Our agent must intercept three events to enforce the privilege escalation
- and SecurityManager rules: 
+ and Security Manager rules: 
 \family typewriter
 ClassPrepare
 \family default
@@ -4662,7 +4670,7 @@ FieldModification
 \begin_layout Standard
 Our agent was written in C++.
  524 lines of code were required to enforce the privilege escalation rule
- while 377 lines of code were required for the SecurityManager rule when
+ while 377 lines of code were required for the Security Manager rule when
  counted using the Linux tool 
 \family typewriter
 wc
@@ -4701,11 +4709,9 @@ key "cappos_retaining_2010"
 Our agent may be configured to run in enforce or monitor mode.
  In enforce mode a violation of either rule causes the agent to log the
  offending behavior and terminate the JVM to which the agent is attached.
- In monitor mode the agent logs the offending behavior but leaves the JVM's
- execution of the application untouched.
- In either case, a popup is shown to the user to let them know why their
- Java application was terminated when the agent has been configured to show
- popups (this was made configurable to prevent popups on headless servers).
+ A popup is shown to the user to let them know why their Java application
+ was terminated when the agent has been configured to show popups (this
+ was made configurable to prevent popups on headless servers).
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4715,6 +4721,8 @@ reference "fig:A-popup-from"
 
  shows an example of a popup displayed after an exploit was caught breaking
  the privilege escalation rule.
+ In monitor mode the agent logs the offending behavior but leaves the JVM's
+ execution of the application untouched.
 \end_layout
 
 \begin_layout Standard
@@ -4747,17 +4755,6 @@ name "fig:A-popup-from"
 \end_inset
 
 
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: Fix this screenshot so the left side is not cut off and there is not
- a black artifact in the top left corner.
 \end_layout
 
 \end_inset
@@ -4826,6 +4823,9 @@ sun
 \family default
  package, the latter of which is a restricted-access package that contains
  the internal implementations for many Java features.
+ However, enforcing this rule prevents exploits from elevating the privileges
+ of their payloads because the payloads are not in restricted-access packages
+ and cannot be in them with default JRE configurations.
 \end_layout
 
 \begin_layout Standard
@@ -4891,20 +4891,12 @@ GetProtectionDomain
 \begin_layout Standard
 With both protection domains, the implementation of the agent as of the
  time of this writing simply checks to see if the loaded class's protection
- domain has 
-\family typewriter
-AllPermissions
-\family default
- while the class that caused the loading doesn't.
+ domain has all permissions while the class that caused the loading doesn't.
  If the latter is true, the privilege escalation rule has been violated.
  This specific check was used because it is fast, simple, and all privileged
- classes allow 
-\family typewriter
-AllPermissions
-\family default
- under known circumstances.
+ classes allow all permissions under known circumstances.
  It would be easy to update this check to instead ensure that every permission
- in the loaded class's protection domain is also in the other protection
+ in the loaded class's protection domain is also implied by the other protection
  domain to handle cases we are currently not aware of.
 \end_layout
 
@@ -6494,25 +6486,20 @@ Blocked
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Limitations
 \end_layout
 
 \begin_layout Standard
-Neither of these rules will able to stop 100% of all Java exploits.
- Both rules are unable to catch exploits which are able to escape the sandbox
- without violating the constraints the rules impose.
- While the privilege escalation rule is able to stop many of the most common
- Java exploits (40% of tested exploits), the rule still does not catch a
- significant portion of the exploits.
- The SecurityManager rule is also not able to catch all exploits.
- While the SecurityManager rule was able to catch all tested exploits, Java
- makes it possible to write exploits that do not turn off the SecurityManager
- but are still able to cause significant damage.
- While the authors believe the rules created in this study provide a substantial
- improvement over the current sandbox implementation, the authors also believe
- that future work will be able to build upon the results of this study to
- create improved mitigation techniques.
+Neither of these rules will stop all Java exploits.
+ While the rules catch all of the exploits in our set, some Java vulnerabilities
+ can be exploited to cause significant damage without disabling the security
+ manager.
+ For example, our rules will not detect type confusion exploits that mimic
+ privileged classes to perform their operations directly.
+ However, we believe our rules substantially improve Java sandbox security,
+ and that future work will be able to build upon these results to create
+ mitigation techniques for additional types of exploits.
 \end_layout
 
 \begin_layout Standard
@@ -6520,24 +6507,28 @@ Neither of these rules will able to stop 100% of all Java exploits.
 \series bold
 Internal Validity
 \series default
-: The source of data for this study was source code and comments.
- In most cases, security manager interactions could clearly be determined
- although the reason behind complex interactions may be misdiagnosed.
- Also comments and source code could have been taken out of context, leading
- to incorrect conclusions.
- Finally using two different reviewers leads to the possibility of different
- interpretations for the same data.
- Misdiagnosing complex interactions was reduced by using the FindBugs tool
- and the JVMTI tool to help with the analysis, providing a way for the researche
-rs to test their analyses.
- The issue of interpreting comments and source code out of context was reduced
- by examining the whole file but can not be completely reduced without extra
- data sources, such as developer interviews.
- Reducing the possibility of misinterpreting these sections of the program
- is left to future work.
- The issue of using two different researchers reaching different conclusions
- was reduced by comparing the 6 different independent analyses when testing
- the methodology of the study.
+: Our results are dependent on accurately studying the source code of applicatio
+ns and their comments.
+ In most cases, security manager interactions are easily understood, but
+ there are a few particularly complex interactions that may be misdiagnosed.
+ Furthermore, we did not review all of the code for any of the applications,
+ thus we may have taken a comment or some source code out of context in
+ larger applications.
+ Finally, using two different reviewers may lead to variations in the interpreta
+tions of some of the data.
+ 
+\end_layout
+
+\begin_layout Standard
+We mitigated these problems by using our FindBugs plugin and our JVMTI agent,
+ which provided reviewers consistent data about where to look in the code
+ and a means of validating their understanding of the code respectively.
+ Furthermore, we inspected entire source files when inspecting code that
+ contained security manager operations, but it's impossible to achieve a
+ perfect understanding in every case in a reasonable period of time without
+ reaching out to the developer that wrote the code.
+ Finally, we tested our tools and processes in a pilot study to find and
+ mitigate sources of inconsistencies.
 \end_layout
 
 \begin_layout Standard
@@ -6549,14 +6540,9 @@ External Validity:
 y well known applications included in the Qualitas Corpus and publicly available
  applications available on GitHub.
  It is possible that closed source applications interact with the security
- manager differently, although investigating this problem is left to future
- work.
- Another possible problem for the study is that 11 out of 46 applications
- where created by the Apache Software Foundation.
- This problem was reduced by filtering a larger set of applications initially
- for the Qualitas Corpus, showing that in a diverse set of 112 Java applications
-, 83 were determined to not interact with the security manager at all from
- the initial filtering process.
+ manager in ways that we did not see in the open source community, although
+ we did inspect a few small applications with our aerospace collaborators
+ and did not find any code that suggested this is the case.
  
 \end_layout
 
@@ -6567,16 +6553,12 @@ Reliability:
 \series default
 While the majority of the study is easily replicable, certain aspects of
  the studies results change over time.
- Github search results are constantly changing and so using GitHub to generate
+ GitHub search results are constantly changing, thus using GitHub to generate
  a new dataset using our method would likely generate a different dataset.
- Another problem is that applications on GitHub can become inaccessible.
- Ever the course of the study, 2 applications either became private repositories
- or were removed from Github (FileManagerFtpHttpServer and Visor).
- It is also possible that different researchers reach different conclusions
- for what the project developers intended.
- This threat to validity was reduced by the two investigators cross checking
- how 6 applications were interpreted.
- We expect that with similar studies will reach similar conclusions.
+ Furthermore, applications on GitHub can become inaccessible.
+ Over the course of our security manager study, 2 applications either became
+ private repositories or were removed from GitHub (FileManagerFtpHttpServer
+ and Visor).
 \end_layout
 
 \begin_layout Section
