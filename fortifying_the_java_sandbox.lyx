@@ -231,7 +231,7 @@ reference "fig:most-targeted-applications"
  applets.
  Once the user visits the website, the exploit triggers a series of events
  that ends with the delivery of malware, all while the user is left unaware.
- This kind of attack is commonly referred to as a drive-by download.
+ This kind of attack is commonly referred to as a drive-by-download.
 \end_layout
 
 \begin_layout Standard
