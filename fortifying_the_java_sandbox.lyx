@@ -4761,17 +4761,6 @@ name "fig:A-popup-from"
 \end_inset
 
 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: Fix this screenshot so the left side is not cut off and there is not
- a black artifact in the top left corner.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
