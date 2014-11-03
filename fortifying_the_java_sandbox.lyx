@@ -210,10 +210,6 @@ status open
 Write a paragraph to talk about why Java security is important.
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -1536,19 +1532,9 @@ For true positives that compiled, the reviewer ran FindBugs on the application
 
 \begin_layout Enumerate
 The reviewer manually inspected code specified in the FindBugs findings,
- starting with the line where the manager was set and tracing the code to
- where the security manager was initialized.
- 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: Did these lines differ substantially from the lines fround by grep?
- If so, why? If not, what was the point of the Findbugs step?
-\end_layout
-
-\end_inset
-
+ starting with the line where the manager was set and tracing the code back
+ to the various locations the findings said potential security managers
+ were initialized.
  
 \end_layout
 
@@ -1563,33 +1549,10 @@ For true positives that compiled and effected the security manager during
  the execution of the application, the application was executed, while being
  monitored by our dynamic analysis tool, using parameters and actions the
  reviewer determined in steps 4 and 5 effect the security manager.
+ For example, we often learned in earlier steps that the manager was only
+ effected if the user ran the program from the command line with a particular
+ parameter or used a specific feature of the application.
  This step verified the conclusions from previous steps.
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-JSS: We need more detail here about how the application was 
-\begin_inset Quotes eld
-\end_inset
-
-executed.
-\begin_inset Quotes erd
-\end_inset
-
- What exactly are the 
-\begin_inset Quotes eld
-\end_inset
-
-parameters and actions determined in step 4 and 5?
-\begin_inset Quotes erd
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Enumerate
