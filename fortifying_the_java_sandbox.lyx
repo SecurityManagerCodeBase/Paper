@@ -125,10 +125,8 @@ Fortifying the Java Sandbox
 \end_layout
 
 \begin_layout Abstract
-The ubiquitously-installed Java Runtime Environment (JRE) is designed to
- execute untrusted code.
- The JRE relies on the Java sandbox to protect the host machine from malicious
- code.
+The ubiquitously-installed Java Runtime Environment (JRE) executes untrusted
+ code inside a sandbox to protect the host machine from potential maliciousness.
  However, many recent exploits have successfully escaped the sandbox, thereby
  enabling attackers to infect countless Java hosts.
  To prevent future exploits it is essential to distinguish patterns of malicious
@@ -219,8 +217,9 @@ Write a paragraph to talk about why Java security is important.
 The Java Runtime Environment (JRE) is widely installed on user endpoints
  and it executes external code in the form of applets.
  These facts, combined with the hundreds of recently discovered vulnerabilities
- in Java, including a zero-day vulnerability (CVE-2013-0422), have made
- Java an extremely popular exploit vector (see Figure 
+ in Java, including zero-day vulnerabilities (e.g.
+ CVE-2013-0422), have made Java an extremely popular exploit vector (see
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:most-targeted-applications"
@@ -232,15 +231,17 @@ reference "fig:most-targeted-applications"
  applets.
  Once the user visits the website, the exploit triggers a series of events
  that ends with the delivery of malware, all while the user is left unaware.
+ This kind of attack is commonly referred to as a drive-by download.
 \end_layout
 
 \begin_layout Standard
 Java was designed to safely execute untrusted code and safely isolate components
  from each other in a sandbox so that the application and the host machine
  are protected from malicious behavior.
- However, the exploits cited above show that this goal has not been achieved.
- Past investigations of Java security exploits have shown Java malware commonly
- alters the sandbox's settings 
+ However, the exploits cited above show that there is substantial room for
+ improvement.
+ Past investigations of Java exploits have shown Java malware commonly alters
+ the sandbox's settings 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "garber_2012"
@@ -316,7 +317,7 @@ key "xforceQ12013"
 \begin_layout Standard
 Our empirical study was designed to answer the following research question:
  how do benign applications modify the security manager? To answer this
- question, we identified every Java project in the Qualitas Corpus
+ question, we identified Java projects in the Qualitas Corpus
 \begin_inset CommandInset citation
 LatexCommand cite
 key "QualitasCorpus:APSEC:2010"
@@ -335,8 +336,8 @@ plugin to isolate code involved in the initialization or modification of
  the security manager.
  We then manually categorized the security manager usage in each of the
  isolated code snippets.
- Finally, we used a JVMTI agent to confirm that our categorizations of code
- were accurate at runtime.
+ Finally, we used a Java Virtual Machine Tool Interface (JVMTI) agent to
+ confirm that our categorizations of code were accurate at runtime.
  
 \end_layout
 
@@ -370,7 +371,7 @@ Based on our analysis of benign and malicious applications, we implemented
  The second monitor, prevents changes to the sandbox when a self-protecting
  security manager is initialized.
  We evaluated the effectiveness of our monitors against the 10 applets in
- Metasploit 4.10.0 that successfully exploit the initial release of Java 7.
+ Metasploit 4.10.0 that successfully exploit unpatched versions of Java 7.
  The privilege escalation monitor detected and stopped four of the ten exploits,
  while using both monitors together detected and stopped all ten exploits.
  
