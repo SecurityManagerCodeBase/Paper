@@ -145,7 +145,6 @@ ons and compared their use of the sandbox to the usage present in recent
  Running both monitors stops all ten exploits with significant overhead
  of XXX%, which may be acceptable when running applets since they represent
  the biggest danger.
- 
 \end_layout
 
 \begin_layout Section
