@@ -5020,7 +5020,7 @@ Overhead
 \end_layout
 
 \begin_layout Standard
-We measured performance overhead using version 9.12 of the DaCapo Benchmark
+We measured performance overhead using version 9.12-bach of the DaCapo Benchmark
  Suite 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -5933,7 +5933,7 @@ JAVA_TOOL_OPTIONS
 \family default
  environment variable to 
 \emph on
--agentpath=path_to_library
+-agentpath=path_to_jsf_library
 \emph default
  which causes the JVM to attach the agent to every JVM that is started after
  this point and 2) set the 
@@ -5943,7 +5943,7 @@ JSF_HOME
  environment variable to point to the directory containing JSF and its configura
 tion files.
  By default the security manager rule is not enforced due to the large overhead.
- However, a user can easily turn the check in the JSF configuration file.
+ However, a user can easily turn on the rule in the JSF configuration file.
 \end_layout
 
 \begin_layout Standard
