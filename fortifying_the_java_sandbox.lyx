@@ -5021,44 +5021,34 @@ Overhead
 \end_layout
 
 \begin_layout Standard
-Overhead is an important metric of security tools.
- Specifically for these rule implementations, the important metrics which
- need to be investigated are performance overhead, memory overhead, and
- user overhead.
- 
-\end_layout
-
-\begin_layout Standard
-Performance overhead was tested using version 9.12 of the Dacapo Benchmark
- 
+We measured performance overhead using version 9.12 of the DaCapo Benchmark
+ Suite 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "DaCapo:paper"
 
 \end_inset
 
-, a standard set of Java applications with non-trivial memory loads.
- The applications in the benchmark are Avrora, Batik, Eclipse, Fop, H2,
- Jython, Luindex, Lusearch, PMD, Sunflow, Tomcat, TradeBeans, TradeSoap,
- and Xalan.
- Performance was measured by running the provided section of the application
- 5 times and the the mean of the runtimes was computed.
- All performance tests were ran on an 8 Intel i7 core HP Envy M4 laptop
- with 8 GBs of RAM.
+, a standard set of real-world Java applications used for Java benchmarking.
+ Performance was measured by running DaCapo using the converge switch and
+ (info about the settings used to run benchmarks).
+ We ran the benchmarks on an otherwise idle server running Red Hat 4.1.2-12
+ with 32 gigabytes of ram and a 64-bit quad-core Intel X5460 CPU at 3.16
+ GHz.
+ We used the 64-bit version of Java version 1.7.0 update 51.
 \end_layout
 
 \begin_layout Standard
-Since the Dacapo Benchmarks did not set a security manager during any of
- the benchmark runs, the the tool had to be altered to work in all cases,
- instead of when a security manager is set.
- (add something about how the altered version produces the maximum overhead
- possible) This created problems for Eclipse, Tradebeans, and Tradesoap
- where the altered Privilege Escalation Rule implementation prevented the
- benchmark from running.
- Catching the applications with the altered Privilege Escalation Rule implementa
-tion is not a problem because the non-altered Privilege Escalation Rule
- implementation can successful execute the Eclipse, Tradebeans, and Tradesoap
- benchmarks.
+The DaCapo benchmarks do not set a security manager: to measure JSF's overhead
+ we used a modified version of the agent that always performs rule checks.
+ This produces the worst-case overhead because the unmodified version of
+ JSF only attempts to monitor for rule violations when a security manager
+ has actually been set.
+ Modifying the rules to apply in situations where they normally wouldn't
+ creates problems for Eclipse, Tradebeans, and Tradesoap because they fall
+ afoul of the modified implementation of the privilege escalation rule where
+ they don't with the unmodified version.
+ These three applications do not appear in our results.
  
 \end_layout
 
@@ -5897,163 +5887,113 @@ Average
 \end_layout
 
 \begin_layout Standard
-The results of the performance tests indicate that the Privilege Escalation
- Rule implementation caused minimal slowdown, and actually ran 8% faster
- than the benchmarks without a tool set.
- This increase is believed to be due to the fluctuations between runs and
- not due to any effects of the tool.
- The Security Manager Rule implementation, on the other hand, produced a
- significant slowdown, causing applications to run over 37 times slower
- on average.
- We investigated the cause of this slowdown and found two causes 1) checking
- for variable changes in JVMTI cause the program to run in interpreted mode
- and 2) JVMTI checks if the watched object reference was changed at every
- object reference.
- To determine how much of a speed increase could be gained by implementing
- the Security Manager Rule using a tool that does not require the application
- to run in interpreted mode, we measured how long the benchmarks took to
- complete in interpreted mode.
+Our results indicate that the privilege escalation rule causes minimal slowdown
+ with an average of X% overhead.
+ On the other hand, the Security Manager rule produced a significant slowdown,
+ causing applications to run over XXX times slower on average.
+ We investigated the cause of this slowdown and found two issues: A) read
+ and write monitors on fields in JVMTI cause the program to run without
+ the benefit of the JIT and B) JVMTI checks if a watched object was changed
+ every time that object is referenced.
+ We measured how long the benchmarks took to complete in interpreted mode
+ to measure how much of this extensive slowdown is the result of the JIT
+ being off and how much is the result of enforcing the security manage rule.
  The tests determined that the interpreted applications runtime increased
- by 22.5 times the original Just-In-Time Compiled runtime.
- While this is not the full portion of the slowdown for the Security Manager
- Rule implementation, running the application in interpreted mode is over
- 60% of the slowdown.
- It is likely that the Security Manager implementation could also be improved
- by avoiding the overhead associated with checking for a security manager
- change in every object change.
- Finally, to confirm that the Security Manager Rule implementation was running
- in interpreted mode, the benchmark was timed with both tools in interpreted
- mode.
- While running the tool in interpreted mode was faster than running the
- tool without interpreted mode explicitly set, the author believe this result
- is either due to the variations of individual performance tests or that
- explicitly setting interpreted mode causes the mode switch to occur faster.
-\end_layout
-
-\begin_layout Standard
-Future work could address the slowdown associated with the Security Manager
- rule implementation.
- These approaches could focus on the underlying reasons for the slowdown
- in the tool or re-implement the rule in a different way.
- 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Fill this in later.
-\end_layout
-
-\end_inset
-
+ by 22.5 times relative to the JITed version without JSF attached.
+ While we do not break the figures down, the rest of the slowdown is the
+ result of issue B above, the fact that the JRE picks less effecient code
+ paths when certain JVMTI capabilities are enabled, and the actual enforcement
+ of our rule.
  
 \end_layout
 
 \begin_layout Standard
-The authors hypotheses that the Security Manager Rule can be implemented
- with significantly less performance overhead if the rule is built into
- the JVM.
- The problem with implementing the rule by changing the JVM is that any
- unofficial changes would not be supported by the JVM developers, thus increases
- the difficulty to update the JVM to the latest released version.
- Thus, the rule would likely need to be implemented by the JVM maintainers
- to create a significantly faster version without losing the ability to
- update the JVM.
+The security manager rule slowdown can be largely mitigated by advancing
+ JVMTI implementations, for example, to enable the JIT in all cases.
+ However, JVMTI implementors tend to favor ease of implementation over speed
+ because many of the uses of JVMTI, outside of research, are not performance
+ critical.
+ We hypothesize that the security manager rule can be implemented with significa
+ntly less performance overhead if the rule is built into the JVM.
+ This approach has the added benefit that the rules would become a permanent
+ mitigation for all Java applications.
+ At the time of this writing, we are actively communicating with Java developers
+ to explore the prototype implementation of these rules in OpenJDK.
 \end_layout
 
 \begin_layout Standard
-The memory overhead of the tool is likely very small relative to a large
- program.
- The tool only copies a couple of memory references, such as the loaded
- classes permission set, when performing both types of security checks.
- The copies are also deallocated after each check.
- A few objects, such as the system's security manager and references to
- repeatedly called methods in the JVM are saved between security checks.
- All objects created by the tool likely have a minimal memory footprint
- compared to the complete application, although the memory footprint was
- not explicitly measured in this study.
-\end_layout
-
-\begin_layout Standard
-The user overhead of the tool is also minimal.
+The user effort required to use JSF is minimal, and several install options
+ are possible which can help counteract the security manager rule's overhead.
  To use the tool in the default configuration, a user either has to compile
  the tool using the provided makefile or download a binary version of the
  tool for their system.
- Once the tool is compiled, the tool can be set to fortify all Java applications
- on a standard Oracle JVM in two steps: 1) set the JAVA_TOOL_OPTIONS environment
- variable to point to the library file for the tool with the command 
+ Once compiled, JSF can be set to fortify all Java applications on a standard
+ Oracle JVM in two steps: 1) set the 
+\family typewriter
+JAVA_TOOL_OPTIONS
+\family default
+ environment variable to 
 \emph on
 -agentpath=path_to_library
 \emph default
- 2) set the JSF_HOME environment variable to point to the directory with
- the appropriately named configuration file.
- JAVA_TOOL_OPTIONS is the environment variable provided by Oracle that allows
- executing a JVMTI agent for all instances of the JVM.
- The JSF_HOME environment variable is an environment variable only applicable
- to the tool.
- These two options can be set for the whole system or only a terminal using
- a short script.
- 
+ which causes the JVM to attach the agent to every JVM that is started after
+ this point and 2) set the 
+\family typewriter
+JSF_HOME
+\family default
+ environment variable to point to the directory containing JSF and its configura
+tion files.
+ By default the security manager rule is not enforced due to the large overhead.
+ However, a user can easily turn the check in the JSF configuration file.
 \end_layout
 
 \begin_layout Standard
-The default configuration of the tool is the Privilege Escalation Rule implement
-ation is turned on while the Security Manager Rule is turned off.
- The default mode of the tool is enforce mode, which was described in the
- JVMTI Implementation section.
- The other default configuration option is to output the security logs to
- a file named jsf.log in the current directory of the running application.
- All of these options can be changed in the configuration file.
- The default configuration of only the Privilege Escalation rule implementation
- provides the security benefit of the Privilege Escalation Rule without
- incurring the performance hit of the Security Manage Rule implementation,
- which is discussed in the next section.
- The Security Manager Rule implementation can be turned on in the configuration
- file, adding an extra check while incurring the performance cost of the
- Security Manager Rule implementation.
- The tool can be switched from enforce mode to monitor mode if only the
- log files are desired.
- The resulting logs can also be set to a single file by specifying the file's
- path in the configuration file.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
+Another deployment option exists that makes it possible for JSF to only
+ monitor applets and Java Web Start applications.
+ The Java Control Panel allows users to specify runtime paramters for the
+ Java plugin used by browsers
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-Discuss the different deployment options to work around the slowdown
-\end_layout
-
-\begin_layout Plain Layout
-Explicitly mention the default configuration here! (e.g.
- SM rule off)
+http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
+.
+ In this deployment, a user does not set the tool options environment variable
+ and instead sets the runtime parameters to what they would have set the
+ variable to.
+ This avenue can enable most people to use JSF while enforcing both rules
+ because drive-by-downloads, not desktop applications, are the primary means
+ of deliverying Java exploits, many applications run from the Java plugin
+ do not need high performance
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-ZC: At the moment, I'm not happy enough with the performance results to
- write this section.
- I'll come back to it when I have better numbers.
+Many people could simply turn off the plugin to mitigate this issue, but
+ enterprises tend to leave it on because some employees need it: it's cheaper
+ to have a standard, enterprise wide configuration than custom configurations
+ for the few employees that need applets.
  
-\end_layout
-
-\begin_layout Plain Layout
-Update - I realize this section is crap but it doesn't seem like I'm going
- to get any response on my questions until I write something here so here
- my best effort.
 \end_layout
 
 \end_inset
 
+, and less than .1% of websites on the entire Internet contain an applet
+\begin_inset Foot
+status open
 
+\begin_layout Plain Layout
+http://trends.builtwith.com/docinfo/Applet
+\end_layout
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Subsection
