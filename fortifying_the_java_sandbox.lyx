@@ -5038,8 +5038,9 @@ key "DaCapo:paper"
 \end_layout
 
 \begin_layout Standard
-The DaCapo benchmarks do not set a security manager: to measure JSF's overhead
- we used a modified version of the agent that always performs rule checks.
+The DaCapo benchmarks do not set a security manager.
+ Thus, to measure JSF's overhead, we used a modified version of the agent
+ that always performs rule checks.
  This produces the worst-case overhead because the unmodified version of
  JSF only attempts to monitor for rule violations when a security manager
  has actually been set.
@@ -5900,7 +5901,7 @@ Our results indicate that the privilege escalation rule causes minimal slowdown
  The tests determined that the interpreted applications runtime increased
  by 22.5 times relative to the JITed version without JSF attached.
  While we do not break the figures down, the rest of the slowdown is the
- result of issue B above, the fact that the JRE picks less effecient code
+ result of issue B above, the fact that the JRE picks less efficient code
  paths when certain JVMTI capabilities are enabled, and the actual enforcement
  of our rule.
  
@@ -5947,27 +5948,24 @@ tion files.
 \end_layout
 
 \begin_layout Standard
-Another deployment option exists that makes it possible for JSF to only
- monitor applets and Java Web Start applications.
- The Java Control Panel allows users to specify runtime paramters for the
- Java plugin used by browsers
-\begin_inset Foot
+Since Java exploits are primarily delivered by drive-by-downloads 
+\begin_inset Note Comment
 status open
 
 \begin_layout Plain Layout
-http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
+Probably should add a citation here
 \end_layout
 
 \end_inset
 
-.
- In this deployment, a user does not set the tool options environment variable
- and instead sets the runtime parameters to what they would have set the
- variable to.
- This avenue can enable most people to use JSF while enforcing both rules
- because drive-by-downloads, not desktop applications, are the primary means
- of deliverying Java exploits, many applications run from the Java plugin
- do not need high performance
+, applets and Java Web Start applications are the greatest security security
+ risk to most systems.
+ With this in mind, a user can deploy JSF to only monitor applets and Java
+ Web Start applications with both rules.
+ This deployment option provides the strongest protection for the riskiest
+ applications while allowing other applications to execute without a performance
+ penalty.
+ Many applets and Java Web Start applications do not require high performance
 \begin_inset Foot
 status open
 
@@ -5981,7 +5979,9 @@ Many people could simply turn off the plugin to mitigate this issue, but
 
 \end_inset
 
-, and less than .1% of websites on the entire Internet contain an applet
+, and both are relatively rare.
+ A recent study found that less than .1% of websites on the entire Internet
+ contain an applet
 \begin_inset Foot
 status open
 
@@ -5993,6 +5993,26 @@ http://trends.builtwith.com/docinfo/Applet
 
 .
  
+\end_layout
+
+\begin_layout Standard
+Since both applets and Java Web Start applications run inside a browser,
+ adjusting the Java settings of the browser only effects both application
+ types.
+ The user can deploy the tool in the browser by configuring the runtime
+ parameters of the Java browser plugin using the Java Control Panel 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
+\end_layout
+
+\end_inset
+
+.
+ The user would set the runtime parameters to the same values used in the
+ environment variables of other deployments.
 \end_layout
 
 \begin_layout Subsection
