@@ -486,7 +486,7 @@ There is little work on how Java applications use the Sandbox and the security
 \end_layout
 
 \begin_layout Section
-Background
+Background on the Java Sandbox
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Background"
@@ -496,33 +496,8 @@ name "sec:Background"
 
 \end_layout
 
-\begin_layout Subsection
-The Java Sandbox
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:The-Java-Sandbox-background"
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
 The Java sandbox was designed to safely execute code from untrusted sources.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The Java sandbox protects an application by assigning permissions to individual
- classes and then enforcing the permissions through permissions checks.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -548,28 +523,21 @@ key "_permissions_2014"
 \end_inset
 
 ).
- The application defines how to assign classes to different protection domains,
- as well as the specific permission set for each protection domain, based
- on the permissions granted in the policy.
- 
-\begin_inset Note Comment
+ Policies written in the Java policy language
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-ZC: The previous sentence is too long.
- Fix later
+http://docs.oracle.com/javase/7/docs/technotes/guides/security/PolicyFiles.html
 \end_layout
 
 \end_inset
 
-The policy specifies the permissible behavior for the application.
- The sandbox restricts the behavior of the application to what is allowed
- in the policy.
- By default, applications which are executed from the local file system
- are run without a sandbox.
- Web applets, on the other hand, are set to run inside a sandbox by default,
- preventing the applet from performing malicious operations to the determent
- of the host system.
+ explicitly define permission sets and assign code sources to each set.
+ By default, applications executed from the local file system are run without
+ a sandbox, while all other applications are run inside a restrictive sandbox.
+ This prevents the execution of malicious operations on the host system
+ by applications from the network or other untrusted sources.
  
 \end_layout
 
@@ -616,27 +584,31 @@ name "fig:Sandbox-high-level-summary"
 \begin_layout Standard
 Even if a policy is defined, the policy will not be enforced unless the
  sandbox is activated.
- The sandbox is activated by setting the security manager for the system,.
+ The sandbox is activated by setting a security manager for the system.
  This security manager acts as the gateway between the sandbox and the rest
  of the application.
  Whenever a class attempts to execute a method with security implications
- inside a sandbox, the security manager handles the permission check.
+ inside a sandbox, the security manager is queried by the protected method
+ to determine if the operation should be allowed.
  For example, if an application attempts to write to a file (e.g 
 \family typewriter
 java.io.FileOutputStream
 \family default
-) inside a sandbox, the sandbox will ensure that this location inside the
- application has permission to write a file.
- The permission check is usually verified by the security manager checking
- each class in the current stack frame to make sure each class has the required
- permission.
- The permission check usually checks all of the classes in the stack frame,
- going from the class that attempted the write to the main class of the
- application.
- However, the stack walk can be stopped by a privileged class, when the
- privileged class specifically wraps the executing section inside a 
+) inside a sandbox, the class that performs the write will check with the
+ security manager to ensure a write to that file is allowed.
+ Due to the fact that it is up to the protected code to initiate the check,
+ missing checks are a common source of Java vulnerabilities.
+ 
+\end_layout
+
+\begin_layout Standard
+To perform a permission check, the security manager walks the stack to ensure
+ each class in the current stack frame has the required permission.
+ However, the stack walking can be stopped before the entire frame has been
+ walked by a privileged class, when the privileged class specifically wraps
+ code inside a 
 \family typewriter
-doPrivileged()
+doPrivileged
 \family default
  call.
  This allows for privileged code sections to perform actions with security
@@ -663,24 +635,30 @@ key "banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_199
 Java provides flexibility when setting up a sandbox, allowing a sandbox
  to be set at any time during the execution of an application, or in many
  cases, before an application is started.
- In the default case for web applets and applications that use Java Network
- Protocol, a self-protecting security manager is set before the applet is
- loaded from the network.
+ In the default case for web applets and applications that use Java Web
+ Start, a 
+\shape italic
+self-protecting
+\shape default
+ security manager is set before the application is loaded from the network.
  The security manager, and thus the sandbox, is self-protecting in the sense
- that the sandbox does not allow the application to change the settings
- of the sandbox during execution.
- A security manager can also be defenseless, meaning not self protecting.
- A defenseless manager does little to improve the security of the Java applicati
-on being sandboxed.
- However, in our study, we have come to find that defenseless security managers
- have uses in certain applications 
+ that it does not allow the application to change the settings of the sandbox.
+ A security manager can also be 
+\shape italic
+defenseless
+\shape default
+, which in this case is the exact opposite of self-protecting.
+ A defenseless manager does little to improve the security of a constrained
+ application or the system it executes on.
+ However, we show in section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Research-Questions-and"
 
 \end_inset
 
-.
+ that some benign applications have found interesting uses for defenseless
+ managers.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -690,8 +668,8 @@ reference "tab:defenseless-permissions"
 
  summarizes the set of permissions used to distinguish between self-protecting
  and defenseless security managers.
- A security manager enforcing a policy that contains even one of the listed
- permissions is defenseless.
+ A security manager that enforces a policy that contains even one of the
+ listed permissions is defenseless.
  A subset of the permissions in this list were identified in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -981,8 +959,8 @@ Make privileged internal classes accessible
 
 \end_layout
 
-\begin_layout Subsection
-Java Exploits
+\begin_layout Section
+Exploiting Java Code
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Java-Exploits"
@@ -994,19 +972,20 @@ name "sub:Java-Exploits"
 
 \begin_layout Standard
 Malicious drive-by downloads using Java applets as the vector were widely
- reported between 2011 and 2013 (&& probably should add a citation here
- &&: http://java-0day.com/).
- While Java applets should prevent malicious applications from executing
- their payload, vulnerabilities in the Java Runtime Environment (JRE) were
+ reported between 2011 and 2013.
+ While the Java sandbox should prevent malicious applets from executing
+ their payloads, vulnerabilities in the Java Runtime Environment (JRE) were
  leveraged by exploits to set the security manager to 
 \family typewriter
 null
 \family default
 .
- Setting the security manager to null disables the Java sandbox, allowing
- previously constrained classes to perform any operation that the JRE can
- perform, meaning the malicious application can now execute the payload
- on the host system.
+ Setting the security manager to 
+\family typewriter
+null
+\family default
+ disables the sandbox, which allows previously constrained classes to perform
+ any operation that the JRE itself has the privileges to perform.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1185,8 +1164,8 @@ key "_vulnerability_2012_0507"
 \end_layout
 
 \begin_layout Standard
-A prominent subclass of Java exploits take advantage of a confused deputy
- vulnerability 
+Another prominent subclass of Java exploits take advantage of a confused
+ deputy vulnerability 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hardy_confused_1988"
@@ -1194,30 +1173,77 @@ key "hardy_confused_1988"
 \end_inset
 
 , which is a subset of privilege escalation.
- In the case of a confused deputy exploit, the exploit convinces a privileged
- class to return a reference to a class which performs privileged operations
- without security checks, such as the classes in the sun package.
- These privileged classes without security checks are isolated from a self-prote
-cting sandbox, and only callable by classes which have already performed
- security checks.
- However, when untrusted code is able to gain direct access to privileged
- classes without security checks, actions with security effects can be executed
- in a way that avoids the restrictions of the sandbox.
- Once an exploit gains access to a privileged class without security checks,
- the privileged class is usually used to remove the sandbox (see CVE-2012-4681
- 
+ In the case of a confused deputy, the exploit often convinces a class with
+ access to a vulnerable privileged class to return a reference to the latter.
+ The returned privileged classes often contain a vulnerability in the form
+ of a missing security check, where the class should consult with the security
+ manager before performing some operation but doesn't.
+ In some cases the privileged class may be directly accessible, but this
+ is quite rare and typically the fault of a vulnerable third-party library
+ because providing all classes with direct access to a privileged class
+ is a violation of the 
+\shape italic
+access control
+\shape default
+ principle that is part of the Java development culture
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm
+\end_layout
+
+\end_inset
+
+.
+ Once an exploit gains access to a vulnerable privileged class, the class
+ is usually tricked into executing code that disables the sandbox (see CVE-2012-
+4681 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_4681"
 
 \end_inset
 
-), allowing the exploit to execute its payload.
+).
 \end_layout
 
 \begin_layout Standard
-Many of the recent vulnerabilities would not have been introduced if the
- JRE was developed while strictly following 
+For the most part, benign applications have no reason to directly access
+ privileged classes.
+ The majority of the JRE's privileged classes are internal implementations
+ of features that Java provides applications less-privileged access to.
+ For example, many reflection operations are implemented in the 
+\family typewriter
+sun.reflect
+\family default
+ package, which has all permissions, but Java applications are supposed
+ to use classes in the 
+\family typewriter
+java.lang.reflect
+\family default
+ package to use reflection and do not have direct access to the sun classes
+ given default JRE configurations.
+ Classes in the java package do not perform privileged operations themselves,
+ but do have permission to access classes in the sun package.
+\end_layout
+
+\begin_layout Standard
+To load a privileged class, a privileged class loader must be used, thus
+ a class should typically not have direct access to a class that has a vulnerabi
+lity that can be exploited to bypass the sandbox unless the former had its
+ privileges reduced at some point in the application's execution.
+ This is implicit in the Java security model: if any class could load more
+ privileged classes and directly cause them to execute operations, the sandbox
+ in its current form would serve little purpose.
+ We discuss later how we can leverage these distinctions to further fortify
+ the sandbox.
+\end_layout
+
+\begin_layout Standard
+Many of the recent type confusion and privilege escalation vulnerabilities
+ would not have been introduced if the JRE was developed while strictly
+ following 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1247,6 +1273,7 @@ key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
  In the rest of this paper we concern ourselves with ways to fortify the
  Java sandbox without breaking backwards compatibility and not with the
  specifics of particular exploits.
+ 
 \end_layout
 
 \begin_layout Section
@@ -4374,84 +4401,7 @@ DO_UNCHECKED_PERMISSION
 .
  This strategy is equivalent to running a privileged action with 
 \family typewriter
-doPrivileged
-\family default
-.
-\end_layout
-
-\begin_layout Section
-Privilege Escalation in the JVM
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Privilege-Escalation-in"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Java-Exploits"
-
-\end_inset
-
- provided background on exploits that attack privilege escalation vulnerabilitie
-s in Java code.
- Essentially, these exploits either (1) exploit a privileged class loader
- to load a payload class with all permissions or (2) attack a confused deputy
- they have direct access to.
- The latter is quite rare and typically the fault of a vulnerable third-party
- library because providing all classes with direct access to a privileged
- class is a violation of the 
-\shape italic
-access control
-\shape default
- principle that is part of the Java development culture
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm
-\end_layout
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-For the most part, benign applications have no reason to directly access
- privileged classes.
- The majority of the JRE's privileged classes are internal implementations
- of features that Java provides applications less-privileged access to.
- For example, many reflection operations are implemented in the 
-\family typewriter
-sun.reflect
-\family default
- package, which has all permissions, but Java applications are supposed
- to use classes in the 
-\family typewriter
-java.lang.reflect
-\family default
- package to use reflection and do not have direct access to the sun classes
- given default JRE configurations.
- Classes in the java package do not perform privileged operations themselves,
- but do have permission to access classes in the sun package.
-\end_layout
-
-\begin_layout Standard
-To load a privileged class, a privileged class loader must be used, thus
- a class should typically not have direct access to a class that has a vulnerabi
-lity that can be exploited to bypass the sandbox unless the former had its
- privileges reduced at some point in the application's execution.
- This is implicit in the Java security model: if any class could load more
- privileged classes and directly cause them to execute operations, the sandbox
- in its current form would serve little purpose.
- We can leverage these distinctions to further fortify the sandbox.
+doPrivileged.
 \end_layout
 
 \begin_layout Section
