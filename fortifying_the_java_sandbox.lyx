@@ -5031,9 +5031,8 @@ key "DaCapo:paper"
 , a standard set of real-world Java applications used for Java benchmarking.
  Performance was measured by running DaCapo using the converge switch and
  (info about the settings used to run benchmarks).
- We ran the benchmarks on an otherwise idle server running Red Hat 4.1.2-12
- with 32 gigabytes of ram and a 64-bit quad-core Intel X5460 CPU at 3.16
- GHz.
+ We ran the benchmarks on an otherwise idle server with 32 gigabytes of
+ ram and a 64-bit quad-core Intel X5460 CPU at 3.16 GHz.
  We used the 64-bit version of Java version 1.7.0 update 51.
 \end_layout
 
@@ -5891,19 +5890,17 @@ Our results indicate that the privilege escalation rule causes minimal slowdown
  with an average of X% overhead.
  On the other hand, the Security Manager rule produced a significant slowdown,
  causing applications to run over XXX times slower on average.
- We investigated the cause of this slowdown and found two issues: A) read
- and write monitors on fields in JVMTI cause the program to run without
- the benefit of the JIT and B) JVMTI checks if a watched object was changed
- every time that object is referenced.
+ We investigated the cause of this slowdown and found that read and write
+ monitors on fields in JVMTI cause the program to run without the benefit
+ of the JIT.
  We measured how long the benchmarks took to complete in interpreted mode
  to measure how much of this extensive slowdown is the result of the JIT
  being off and how much is the result of enforcing the security manage rule.
  The tests determined that the interpreted applications runtime increased
  by 22.5 times relative to the JITed version without JSF attached.
  While we do not break the figures down, the rest of the slowdown is the
- result of issue B above, the fact that the JRE picks less efficient code
- paths when certain JVMTI capabilities are enabled, and the actual enforcement
- of our rule.
+ result of the fact that the JRE picks less efficient code paths when certain
+ JVMTI capabilities are enabled and the actual enforcement of our rule.
  
 \end_layout
 
@@ -5948,18 +5945,9 @@ tion files.
 \end_layout
 
 \begin_layout Standard
-Since Java exploits are primarily delivered by drive-by-downloads 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Probably should add a citation here
-\end_layout
-
-\end_inset
-
-, applets and Java Web Start applications are the greatest security security
- risk to most systems.
+Since Java exploits are primarily delivered by drive-by-downloads, applets
+ and Java Web Start applications are the greatest security security risk
+ to most systems.
  With this in mind, a user can deploy JSF to only monitor applets and Java
  Web Start applications with both rules.
  This deployment option provides the strongest protection for the riskiest
@@ -5997,10 +5985,10 @@ http://trends.builtwith.com/docinfo/Applet
 
 \begin_layout Standard
 Since both applets and Java Web Start applications run inside a browser,
- adjusting the Java settings of the browser only effects both application
- types.
- The user can deploy the tool in the browser by configuring the runtime
- parameters of the Java browser plugin using the Java Control Panel 
+ adjusting the browser plugin settings only effects both application types.
+ The user can deploy the tool in the only their browsers by configuring
+ the runtime parameters of the Java browser plugin using the Java Control
+ Panel 
 \begin_inset Foot
 status open
 
@@ -6012,7 +6000,7 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
 
 .
  The user would set the runtime parameters to the same values used in the
- environment variables of other deployments.
+ tool options environment variable in other deployments.
 \end_layout
 
 \begin_layout Subsection
