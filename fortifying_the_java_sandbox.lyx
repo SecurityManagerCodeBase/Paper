@@ -545,12 +545,12 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/security/PolicyFiles.html
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename sandbox_overview.png
-	scale 20
+	filename sandbox_overview.pdf
+	scale 30
 
 \end_inset
 
