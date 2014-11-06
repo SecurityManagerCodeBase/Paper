@@ -6464,71 +6464,44 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
-The main findings of the study are:
-\end_layout
-
-\begin_layout Enumerate
-The majority of applications that use the sandbox do not change the SecurityMana
-ger (19/29 in Qualitas and 9/17 in GitHub).
-  These applications either set a SecurityManager and never change it or
- never set a SecurityManager but are designed to work inside a sandbox if
- the application is ran inside a sandbox.
-\end_layout
-
-\begin_layout Enumerate
-A small portion of the applications  studied used the SecurityManager for
- non security purposes (1/29 in Qualitas and 3/17 in GitHub).
-\end_layout
-
-\begin_layout Enumerate
-Multiple developers had difficult implementing the security manager correctly,
- as shown by the vulnerable Freemind implementation and multiple developers'
- comments.
+Our study of Java sandbox usage in open-source applications found that the
+ majority of such applications do not change the security manager.
+ Some of the remaining applications use the security manager only for non-securi
+ty purposes.
+ The final set of applications use the sandbox for security, initialize
+ a self-protecting security manager, and never modify it.
+ These finindings, in combination with our analysis of recent Java exploits,
+ enabled us to build two security monitors which together successfully defeated
+ Metasploit's applet exploits.
+ 
 \end_layout
 
 \begin_layout Standard
-From the results of this study, we
-\end_layout
-
-\begin_layout Enumerate
-Determined two rules which could be used to strengthen the sandbox in a
- majority of applications: the Privilege Escalation Rule and the SecurityManager
- Rule.
-\end_layout
-
-\begin_layout Enumerate
-Tested the two rules against 10 of the most popular past Java exploits and
- were able to stop 40% of the exploits with the Privilege Escalation Rule
- and 100% with the SecurityManager rule.
-\end_layout
-
-\begin_layout Enumerate
-Found the Privilege Escalation Rule could be implemented with low overhead.
+Some applications used the security manager to prevent third party components
+ from calling System.exit().
+ More generally, frameworks often need to enforce constraints on plugins
+ (e.g.
+ to ensure non-interference).
+ This suggests that Java should provide a simpler, alternative mechanism
+ for constraing access to global resources.
+ 
 \end_layout
 
 \begin_layout Standard
-With this study, we were able to take the first steps to understanding how
- Java applications use the sandbox.
- While these results are only from the studied open source applications,
- we believe that the results will generalize to other Java applications.
- We also believe that the study has found many important implications for
- future work to build upon:
-\end_layout
-
-\begin_layout Enumerate
-Extra security can be gained by restricting Java applications from using
- rarely used features.
-\end_layout
-
-\begin_layout Enumerate
-Java applications need a way to enforce architectural constraints when running
- other Java applications in a way that doesn't conflict with security- such
- as the ability to prevent the called application from calling System.exit()
- without setting the sandbox.
-\end_layout
-
-\begin_layout Enumerate
-There is a need to help developers correctly implement the Java sandbox.
+More broadly, we indirectly observed many developers struggling to understand
+ and use the security manager.
+ This is perhaps why there were only 47 applications in our sample.
+ Many developers appear to be confused about how permissions work.
+ In particular, they don't realize that restricting just one permission,
+ but allowing all others enables a 
+\emph on
+defenseless
+\emph default
+ sandbox.
+ There is also a lot of confusion between the new and old-style standboxes.
+ These observations suggest that more resources---tool support, improved
+ documentation, better error messages, should be dedicated to helping developers
+ correctly implement the sandbox.
 \end_layout
 
 \begin_layout Standard
