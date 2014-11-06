@@ -143,9 +143,9 @@ ons and compared their use of the sandbox to the usage present in recent
  security manager modification and one that prevents privilege escalation.
  The privilege escalation monitor stops four of ten Metasploit Java exploits
  with negligible overhead.
- Running both monitors stops all ten exploits with very significant overhead,
- which may be acceptable when running applets since they represent the biggest
- danger.
+ The combination of both monitors stops all ten exploits, but incurs very
+ significant overhead, suggesting that the best application is to risky
+ settings like running applets.
 \end_layout
 
 \begin_layout Section
