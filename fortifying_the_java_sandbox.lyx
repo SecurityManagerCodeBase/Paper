@@ -4685,7 +4685,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename rule_violation_popup.png
-	scale 50
+	width 3in
 
 \end_inset
 
@@ -6470,7 +6470,7 @@ Our study of Java sandbox usage in open-source applications found that the
 ty purposes.
  The final set of applications use the sandbox for security, initialize
  a self-protecting security manager, and never modify it.
- These finindings, in combination with our analysis of recent Java exploits,
+ These findings, in combination with our analysis of recent Java exploits,
  enabled us to build two security monitors which together successfully defeated
  Metasploit's applet exploits.
  
@@ -6478,12 +6478,16 @@ ty purposes.
 
 \begin_layout Standard
 Some applications used the security manager to prevent third party components
- from calling System.exit().
+ from calling 
+\family typewriter
+System.exit()
+\family default
+.
  More generally, frameworks often need to enforce constraints on plugins
  (e.g.
  to ensure non-interference).
  This suggests that Java should provide a simpler, alternative mechanism
- for constraing access to global resources.
+ for constraining access to global resources.
  
 \end_layout
 
@@ -6498,7 +6502,7 @@ More broadly, we indirectly observed many developers struggling to understand
 defenseless
 \emph default
  sandbox.
- There is also a lot of confusion between the new and old-style standboxes.
+ There is also a lot of confusion between the new and old-style sandboxes.
  These observations suggest that more resources---tool support, improved
  documentation, better error messages, should be dedicated to helping developers
  correctly implement the sandbox.
