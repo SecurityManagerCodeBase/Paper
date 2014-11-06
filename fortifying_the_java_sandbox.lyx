@@ -420,7 +420,7 @@ An analysis of privilege escalation in the Java security model and recent
  Java exploits (Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Privilege-Escalation-in"
+reference "sub:Java-Exploits"
 
 \end_inset
 
@@ -1387,7 +1387,7 @@ Benign applications do not change the sandbox if a self-protecting security
  in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:The-Java-Sandbox-background"
+reference "sec:Background"
 
 \end_inset
 
@@ -4426,7 +4426,7 @@ reference "sec:Security-Manager-Study"
  and the discussion in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Privilege-Escalation-in"
+reference "sub:Java-Exploits"
 
 \end_inset
 
@@ -4685,7 +4685,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename rule_violation_popup.png
-	width 3in
+	width 3.25in
 
 \end_inset
 
