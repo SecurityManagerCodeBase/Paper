@@ -6560,14 +6560,15 @@ System.exit()
 We indirectly observed many developers struggling to understand and use
  the security manager.
  This is perhaps why there were only 47 applications in our sample.
- Many developers appear to be confused about how permissions work.
+ Some developers seemed to misunderstand the interaction between policy
+ files and the security manager that enforces the policy.
+ Other developers appear to be confused about how permissions work.
  In particular, they don't realize that restricting just one permission,
  but allowing all others enables a 
 \emph on
 defenseless
 \emph default
  sandbox.
- There is also a lot of confusion between the new and old-style sandboxes.
  These observations suggest that more resources---tool support, improved
  documentation, better error messages, should be dedicated to helping developers
  correctly implement the sandbox.
