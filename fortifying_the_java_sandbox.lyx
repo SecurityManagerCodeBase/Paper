@@ -6530,8 +6530,9 @@ Our study of Java sandbox usage in open-source applications found that the
  majority of such applications do not change the security manager.
  Some of the remaining applications use the security manager only for non-securi
 ty purposes.
- The final set of applications use the sandbox for security, initialize
- a self-protecting security manager, and never modify it.
+ The final set of applications use the sandbox for security and either initializ
+e a self-protecting security manager and never modify it or set a defenseless
+ manager and modify it at runtime.
  These findings, in combination with our analysis of recent Java exploits,
  enabled us to build two security monitors which together successfully defeated
  Metasploit's applet exploits.
@@ -6539,8 +6540,8 @@ ty purposes.
 \end_layout
 
 \begin_layout Standard
-Some applications used the security manager to prevent third party components
- from calling 
+Some of the studied applications used the security manager to prevent third
+ party components from calling 
 \family typewriter
 System.exit()
 \family default
@@ -6550,12 +6551,14 @@ System.exit()
  to ensure non-interference).
  This suggests that Java should provide a simpler, alternative mechanism
  for constraining access to global resources.
+ This is supported by our findings that show people who attempt to make
+ non-trivial use of the sandbox often do so incorrectly.
  
 \end_layout
 
 \begin_layout Standard
-More broadly, we indirectly observed many developers struggling to understand
- and use the security manager.
+We indirectly observed many developers struggling to understand and use
+ the security manager.
  This is perhaps why there were only 47 applications in our sample.
  Many developers appear to be confused about how permissions work.
  In particular, they don't realize that restricting just one permission,
