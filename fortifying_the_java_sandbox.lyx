@@ -5,6 +5,7 @@
 \textclass IEEEtran
 \begin_preamble
 \usepackage{fancyvrb}
+\usepackage{url}
 \end_preamble
 \options conference
 \use_default_options true
@@ -528,7 +529,20 @@ key "_permissions_2014"
 status open
 
 \begin_layout Plain Layout
-http://docs.oracle.com/javase/7/docs/technotes/guides/security/PolicyFiles.html
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+url{http://docs.oracle.com/javase/7/docs/technotes/guides/security/PolicyFiles.html
+}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1187,10 +1201,22 @@ access control
 \shape default
  principle that is part of the Java development culture
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
-https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+url{https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3549,7 +3575,19 @@ Type 3 applications contain code that enables them to interact with a security
 status open
 
 \begin_layout Plain Layout
-http://docs.oracle.com/javase/7/docs/api/java/security/PrivilegedAction.html
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+url{http://docs.oracle.com/javase/7/docs/api/java/security/PrivilegedAction.html}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4045,7 +4083,19 @@ Java automatically sandboxes applets and applications launched via Java
 status open
 
 \begin_layout Plain Layout
-http://www.oracle.com/technetwork/java/javase/javawebstart/index.html
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+url{http://www.oracle.com/technetwork/java/javase/javawebstart/index.html}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -5943,7 +5993,19 @@ Since both applets and Java Web Start applications run inside a browser,
 status open
 
 \begin_layout Plain Layout
-http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+url{http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
