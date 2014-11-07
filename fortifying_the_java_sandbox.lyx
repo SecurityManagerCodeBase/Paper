@@ -3721,8 +3721,8 @@ name "sub:Non-security-uses-of"
 \begin_layout Standard
 We found several cases where applications use the sandbox in ways that were
  not intended to increase the security of the system.
- These applications used the sandbox to enforce architectural constraints
- when interacting with other applications or forcibly disabled the sandbox
+ Most of these applications used the sandbox to enforce architectural constraint
+s when interacting with other applications or forcibly disabled the sandbox
  to reduce development complexity.
 \end_layout
 
@@ -4173,13 +4173,10 @@ reference "fig:Eclipse-jws-snippet"
  Timelag performs the same operation in the file JTimelag.java but does not
  contain any comments, thus we can only infer the motivation behind turning
  off the sandbox.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset listings
@@ -4257,6 +4254,56 @@ name "fig:Eclipse-jws-snippet"
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Static Analysis for Security
+\end_layout
+
+\begin_layout Standard
+A unique case was found in IntelliJ IDEA Community Edition.
+ The IntelliJ editor contains static analysis checks, called inspections,
+ to warn users of potentially problematic sections of code.
+ In the security issues checks, the IntelliJ editor contains two inspection
+ which highlight interactions with the sandbox: 1) calls to System.setSecurityMan
+ager() and 2) custom security managers.
+ The first inspection's description on the IntelliJ website states 
+\begin_inset Quotes eld
+\end_inset
+
+This inspection reports any calls to System.setSecurityManager().
+ While often benign, any call to System.setSecurityManager() should be closely
+ examined in any security audit.
+\begin_inset Quotes eld
+\end_inset
+
+ The second check's descprition on the same site readols 
+\begin_inset Quotes eld
+\end_inset
+
+This inspection reports any user-defined subclasses of java.lang.SecurityManager.
+ While not necessarily representing a security hole, such classes should
+ be thoroughly and professionally inspected for possible security issues.
+\begin_inset Quotes eld
+\end_inset
+
+ We interpret these statements to mean that while uses of these Java features
+ are not necessarily issues, IntelliJ believes these features are potentially
+ problematic and have important security implications.
+ IntelliJ also seems to imply that applications which use these features
+ should be reviewed by a security expert if possible.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: wording from http://www.jetbrains.com/idea/documentation/inspections.jsp.
+ Should we site the source?
 \end_layout
 
 \end_inset
@@ -4783,22 +4830,513 @@ Netbeans similarly sets a security manager around a separate application.
 
 \begin_layout Standard
 Freemind 0.9.0 tried to solve a similar problem and ended up illustrating
- the dangers present when using a defenseless manager.
+ the dangers of a defenseless manager.
  Freemind is a mind mapping tool that allows users to execute Groovy scripts
- embedded in a map they have open.
- Freemind turns on the sandbox before executing groovy scripts to prevent
- scripts from executing malicious operations and turns the sandbox off immediate
-ly after the groovy scripts finish.
- The policy Freemind enforces prevents Groovy scripts from creating network
- sockets, accessing the filesystem, and executing programs on the machine.
- In the version we analyzed, these goals were not achieved.
- By enforcing this narrow policy and allowing the manager to be set and
- unset at will, Freemind accidentally grants scripts permissions that enable
- them to disable the sandbox.
- We crafted a mind map to exploit this vulnerability to execute arbitrary
- code and reported the issue to the Freemind developers.
- We included advice about how to achieve the desired outcome securely with
- our report.
+ on the current map in the editor.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=133,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  public void checkPermission(Permission pPerm, Object pContext) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(mFinalSecurityManager == null) return; 		
+\end_layout
+
+\begin_layout Plain Layout
+
+    mFinalSecurityManager.checkPermission(pPerm, pContext); 	
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Security Checks in the Freemind Security Manager
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Security-Checks-Freemind"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=30,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  /**  
+\end_layout
+
+\begin_layout Plain Layout
+
+   * By default, everything is allowed.
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+   * But you can install a different security controller once,  
+\end_layout
+
+\begin_layout Plain Layout
+
+   * until you install it again.
+ Thus, the code executed in   
+\end_layout
+
+\begin_layout Plain Layout
+
+   * between is securely controlled by that different security manager.
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+   * Moreover, only by double registering the manager is removed.
+ So, no   
+\end_layout
+
+\begin_layout Plain Layout
+
+   * malicious code can remove the active security manager.
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+   *   
+\end_layout
+
+\begin_layout Plain Layout
+
+   * @author foltin  
+\end_layout
+
+\begin_layout Plain Layout
+
+   *  
+\end_layout
+
+\begin_layout Plain Layout
+
+   */
+\end_layout
+
+\begin_layout Plain Layout
+
+   public void setFinalSecurityManager(SecurityManager pFinalSecurityManager)
+ {
+\end_layout
+
+\begin_layout Plain Layout
+
+	 if(pFinalSecurityManager == mFinalSecurityManager){
+\end_layout
+
+\begin_layout Plain Layout
+
+       mFinalSecurityManager = null;
+\end_layout
+
+\begin_layout Plain Layout
+
+	   return;
+\end_layout
+
+\begin_layout Plain Layout
+
+      } 		
+\end_layout
+
+\begin_layout Plain Layout
+
+      if(mFinalSecurityManager != null) {
+\end_layout
+
+\begin_layout Plain Layout
+
+      throw new SecurityException("There is a SecurityManager installed
+ already."); 		
+\end_layout
+
+\begin_layout Plain Layout
+
+      } 		
+\end_layout
+
+\begin_layout Plain Layout
+
+      mFinalSecurityManager = pFinalSecurityManager;
+\end_layout
+
+\begin_layout Plain Layout
+
+    }	
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Freemind Security Manager
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Freemind-Security-Manager"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+After analysis, we believe Freemind attempted to create a secure way to
+ limit different permissions for different plug-ins.
+ The design centered around setting
+\family typewriter
+ pFinalSecurityManager
+\family default
+ variable to a specific security manager for an individual plugin.
+ In this design, the Freemind security manger defers all check to the security
+ manager set as the 
+\family typewriter
+pFinalSecurityManager 
+\family default
+variable, as shown in the example permission check in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Security-Checks-Freemind"
+
+\end_inset
+
+.
+ If no security manager was set as the 
+\family typewriter
+pFinalSecurityManager 
+\family default
+variable, the Freemind security manager allowed the plug-in all permissions.
+ This design means that the Freemind security manager did not perform permission
+ checks itself, and instead held a reference to the security manager implementin
+g the current policy.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Freemind-Security-Manager"
+
+\end_inset
+
+ shows how Freemind changed the 
+\family typewriter
+pFinalSecurityManager 
+\family default
+variable in the file FreemindSecurityManager.java.
+ Initially, 
+\family typewriter
+the setFinalSecurityManager
+\family default
+ method sets the 
+\family typewriter
+pFinalSecurityManager
+\family default
+ to the method argument.
+ Once 
+\family typewriter
+pFinalSecurityManager
+\family default
+ is set, if 
+\family typewriter
+setFinalSecurityManager
+\family default
+ is called with a different security manager, a
+\family typewriter
+ SecurityException
+\family default
+ occurs.
+ Only calling the method with the value of
+\family typewriter
+ pFinalSecurityManager
+\family default
+ causes the method to remove the current security manager.
+ The comment implies this method was implemented to prevent malicious applicatio
+ns from changing the settings of the sandbox.
+\end_layout
+
+\begin_layout Standard
+The Freemind plugin that was sandboxed was the Groovy plug-in, a plug-in
+ that enabled executing Groovy scripts on the current mind map.
+ This plug-in set a security manager that restricted creating network sockets,
+ accessing the file-system, and executing programs on the machine if the
+ Groovy script was unsigned.
+ The security manager allowed all other permissions.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=199,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+	public void checkSecurityAccess(String pTarget) { 	
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example Permission Check in the Groovy Plug-In of Freemind
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Permission-Check-Groovy-Freemind"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Permission-Check-Groovy-Freemind"
+
+\end_inset
+
+ shows a sample permission check from the Groovy plug-in security manager
+ in ScriptingSecurityManager.java.
+ 
+\family typewriter
+checkSecurityAccess
+\family default
+ is the security manager method which checks if sandbox changes are allowed.
+ In the default security manager of the JVM, this method checks if permissions
+ to change the sandbox are allowed in the policy, and if not, a 
+\family typewriter
+SecurityException
+\family default
+ is thrown.
+ However, the implementation in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Permission-Check-Groovy-Freemind"
+
+\end_inset
+
+ has no way to throw a 
+\family typewriter
+SecurityException
+\family default
+.
+ Thus, all changes to the sandbox are allowed.
+ A malicious application can call System.setSecurityManger(null) to turn
+ off the sandbox at any point, and then perform the restricted actions,
+ such as creating network sockets.
+\end_layout
+
+\begin_layout Standard
+To show that the problem with the current implementation was more complex
+ than fixing this permission check alone, we demonstrated that the Groovy
+ plug-in security manager could also be removed using reflection.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Example-Exploit-for-Freemind"
+
+\end_inset
+
+ shows a Groovy exploit that turns off the Groovy plug-in's security manager.
+ The first line gets a reference to the current security manager, the Freemind
+ security manger.
+ Then the class of the Freemind security manager is obtained.
+ In the third line, a reference to the 
+\family typewriter
+mFinalSecurityManager
+\family default
+ is created.
+ The next line changes the 
+\family typewriter
+mFinalSecurityManager's 
+\family default
+modifier from private to public, allowing changes to the value of the private
+ variable.
+ The next line, 
+\family typewriter
+final_sm.set(sm, null)
+\family default
+ sets the value of 
+\family typewriter
+mFinalSecurityManager
+\family default
+ to null, turning off the security checks for the plug-in.
+ The last line of the exploit creates a file, which the script should not
+ be able to do.
+\end_layout
+
+\begin_layout Standard
+Upon realizing that this implementation was exploitable, we sent a notice
+ to the Freemind developers with the exploit shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Example-Exploit-for-Freemind"
+
+\end_inset
+
+.
+ Hopefully, Freemind has improved how they handle plug-in security by this
+ time.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def sm = System.getSecurityManager() 
+\end_layout
+
+\begin_layout Plain Layout
+
+def sm_class = sm.getClass() 
+\end_layout
+
+\begin_layout Plain Layout
+
+def final_sm = sm_class.getDeclaredField("mFinalSecurityManager")
+\end_layout
+
+\begin_layout Plain Layout
+
+final_sm.setAccessible(true) 
+\end_layout
+
+\begin_layout Plain Layout
+
+final_sm.set(sm, null)
+\end_layout
+
+\begin_layout Plain Layout
+
+new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example Exploit for Groovy Plug-In Security Manager
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Example-Exploit-for-Freemind"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
