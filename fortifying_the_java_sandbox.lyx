@@ -4590,14 +4590,12 @@ name "fig:Ant Permissions Example"
 \end_layout
 
 \begin_layout Standard
-
 \begin_inset Float figure
 wide false
 sideways false
 status open
 
 \begin_layout Plain Layout
-
 \begin_inset listings
 lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=98,xrightmargin={0.1cm},numbersep={-10pt}"
 inline false
@@ -4780,6 +4778,15 @@ MySM
  Once the permission checks of the current security manager are turned off,
  the method restores the original security manager.
  
+\end_layout
+
+\begin_layout Standard
+With this implementation, Ant catches applications that perform actions
+ restricted by the user, since the security manager is active when the applicati
+on is executing.
+ Ant is also able to revert to the original security manager after executing
+ the application.
+ However, we are not sure that this implementation is exploit proof.
 \end_layout
 
 \begin_layout Standard
