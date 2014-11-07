@@ -4840,28 +4840,28 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset listings
-lstparams "language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=133,xrightmargin={0.1cm},numbersep={-10pt}"
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=133,xrightmargin={0.1cm},numbersep={-10pt}"
 inline false
 status open
 
 \begin_layout Plain Layout
 
-  public void checkPermission(Permission pPerm, Object pContext) {
+   public void checkPermission(Permission pPerm, Object pContext) {
 \end_layout
 
 \begin_layout Plain Layout
 
-    if(mFinalSecurityManager == null) return; 		
+     if(mFinalSecurityManager == null) return; 		
 \end_layout
 
 \begin_layout Plain Layout
 
-    mFinalSecurityManager.checkPermission(pPerm, pContext); 	
+     mFinalSecurityManager.checkPermission(pPerm, pContext); 	
 \end_layout
 
 \begin_layout Plain Layout
 
-  }
+   }
 \end_layout
 
 \end_inset
@@ -5210,8 +5210,11 @@ SecurityException
 \family default
 .
  Thus, all changes to the sandbox are allowed.
- A malicious application can call System.setSecurityManger(null) to turn
- off the sandbox at any point, and then perform the restricted actions,
+ A malicious application can call 
+\family typewriter
+System.setSecurityManger(null)
+\family default
+ to turn off the sandbox at any point, and then perform the restricted actions,
  such as creating network sockets.
 \end_layout
 
@@ -5273,6 +5276,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset listings
+lstparams "language=Java,basicstyle={\scriptsize},breaklines=true"
 inline false
 status open
 
