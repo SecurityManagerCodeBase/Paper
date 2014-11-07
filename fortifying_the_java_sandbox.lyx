@@ -3725,8 +3725,8 @@ name "sub:Non-security-uses-of"
 \begin_layout Standard
 We found several cases where applications use the sandbox in ways that were
  not intended to increase the security of the system.
- These applications tended to use the sandbox to enforce architectural constrain
-ts when interacting with other applications or forcibly disable the sandbox
+ These applications used the sandbox to enforce architectural constraints
+ when interacting with other applications or forcibly disable the sandbox
  to reduce development complexity.
 \end_layout
 
