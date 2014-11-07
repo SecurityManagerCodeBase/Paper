@@ -3726,7 +3726,7 @@ name "sub:Non-security-uses-of"
 We found several cases where applications use the sandbox in ways that were
  not intended to increase the security of the system.
  These applications used the sandbox to enforce architectural constraints
- when interacting with other applications or forcibly disable the sandbox
+ when interacting with other applications or forcibly disabled the sandbox
  to reduce development complexity.
 \end_layout
 
