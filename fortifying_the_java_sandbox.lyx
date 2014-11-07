@@ -111,7 +111,7 @@ Carnegie Mellon Univeristy, Pittsburgh, PA
 
 
 \backslash
-{zfc, mmass
+{zfc, mmaass
 \backslash
 }@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu}}
 \end_layout
@@ -4444,7 +4444,7 @@ a.
  Batik throws an exception if the user wants to toggle the sandbox while
  a non-Batik manager is set.
  The download page on the Batik website shows several examples of how to
- use this method.
+ use the library.
  Two of the examples show ways to set a security manager at start up: the
  squiggle browser demo and the rasterizer demo.
  While the squiggle browser demo sets a manager and never changes it, the
@@ -4463,14 +4463,336 @@ enforceSecurity
 As mentioned earlier, Ant, Freemind, and Netbeans explicitly set and then
  change the current manager during runtime.
  Ant allows the users to create build scripts that execute Java applications
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: I think the term applications is too broad.
+ I think this only happens when executing a class and not a jar.
+ I can't check at the moment since my computer is doing performance tests.
+\end_layout
+
+\end_inset
+
  during a build under a user specified set of permissions.
- To provide this capability, Ant sets the security manager before executing
- the Java application and then removes the manager after the application
- has finished executing.
- Netbeans performs a similar operation.
- In both of these cases a defenseless security manager is required, but
- a better approach would use a custom class loader to load the untrusted
+ The user specified set of permissions is defined from the permissions element
+ inside an Ant build file.
+ Inside the permissions element, a user can explicitly grant and revoke
+ permissions available to the application.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Ant Permissions Example"
+
+\end_inset
+
+ shows the first example on the Ant Permissions site.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: Should we site this? https://ant.apache.org/manual/Types/permissions.html
+\end_layout
+
+\end_inset
+
+ In this example, the contents of the grant element provide the application
+ all permissions.
+ Then the contents of the revoke element restricts the application from
+ using all property permissions.
+ This permissions snippet means that the application can perform all actions
+ except for those that require 
+\family typewriter
+PropertyPermissions
+\family default
+.
+ This snippet also means that Ant will set a defenseless security manager.
+ Thus a malicious application can easily bypass the restrictions in this
+ example by executing the line 
+\family typewriter
+System.setSecurityManager(null)
+\family default
+, which turns off the sandbox.
+ Once the sandbox has been turned off, the malicious application can perform
+ all actions which require 
+\family typewriter
+PropertyPermissions
+\family default
+.
+ The Ant Permissions site does not mention that an implementation of this
+ example would be vulnerable.
+ The site also does not mention that allowing certain permissions will potential
+ly enable the restricted application to bypass any user specified restrictions.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=XML,basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<permissions>   
+\end_layout
+
+\begin_layout Plain Layout
+
+  <grant class="java.security.AllPermission"/>   
+\end_layout
+
+\begin_layout Plain Layout
+
+  <revoke class="java.util.PropertyPermission"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+</permissions>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ant Permissions Example
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Ant Permissions Example"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset listings
+lstparams "language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=98,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    public synchronized void setSecurityManager() throws BuildException
+ {         
+\end_layout
+
+\begin_layout Plain Layout
+
+      origSm = System.getSecurityManager();         
+\end_layout
+
+\begin_layout Plain Layout
+
+      init();         
+\end_layout
+
+\begin_layout Plain Layout
+
+      System.setSecurityManager(new MySM());         
+\end_layout
+
+\begin_layout Plain Layout
+
+      active = true;     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    /**      
+\end_layout
+
+\begin_layout Plain Layout
+
+      * Initializes the list of granted permissions, checks the list of
+ revoked permissions.
+      
+\end_layout
+
+\begin_layout Plain Layout
+
+      */     private void init() throws BuildException {
+\end_layout
+
+\begin_layout Plain Layout
+
+      ...
+\end_layout
+
+\end_inset
+
+
+\begin_inset listings
+lstparams "numbers=left,basicstyle={\scriptsize},firstnumber=169,xrightmargin={0.1cm},numbersep={-10pt}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    public synchronized void restoreSecurityManager() {         
+\end_layout
+
+\begin_layout Plain Layout
+
+      active = false;         
+\end_layout
+
+\begin_layout Plain Layout
+
+      System.setSecurityManager(origSm);     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ant Permissions Enforcement
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Ant-Permissions-Enforcement"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To provide the user the ability to grant and revoke permissions, Ant uses
+ the code section from Permissions.java shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Ant-Permissions-Enforcement"
+
+\end_inset
+
+.
+ When Ant is about to execute the restricted application, Ant calls the
+ 
+\family typewriter
+setSecurityManager
+\family default
+ method of the Permissions class.
+ This method starts by saving the current security manager to a temporary
+ variable.
+ Then the 
+\family typewriter
+init
+\family default
+ method creates the set of granted permissions.
+ The 
+\family typewriter
+setSecurityManager
+\family default
+ method then initializes a custom security manager, 
+\family typewriter
+MySM
+\family default
+, which enforces the permissions specified by the user.
+ When the security manager is initially set, the security manager allows
+ all permission checks to succeed, making it a defenseless security manager.
+ Once the 
+\family typewriter
+setSecurityManager
+\family default
+ method changes altered to true, 
+\family typewriter
+MySM
+\family default
+ enforces the specified permissions.
+ 
+\end_layout
+
+\begin_layout Standard
+When Ant has finished executing the application, Ant calls the method 
+\family typewriter
+restoreSecurityManager
+\family default
+ to remove the security manager.
+ This method sets active to false, which turns off all permission checks
+ performed by 
+\family typewriter
+MySM
+\family default
+.
+ Once the permission checks of the current security manager are turned off,
+ the method restores the original security manager.
+ 
+\end_layout
+
+\begin_layout Standard
+Netbeans similarly sets a security manager around a separate application.
+ In both of these cases a defenseless security manager is required, otherwise
+ the application would not be able to change the current security manager.
+ However, this technique may cause problems if Ant or Netbeans is used in
+ a security critical setting, since a security critical setting would need
+ a self-protecting security manager.
+ A better approach would be to use a custom class loader to load the untrusted
  classes into a constrained protection domain.
+ This approach would allow Ant and Netbeans to run inside of a self-protecting
+ security manager.
 \end_layout
 
 \begin_layout Standard
