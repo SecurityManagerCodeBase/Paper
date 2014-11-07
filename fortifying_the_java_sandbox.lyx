@@ -201,19 +201,6 @@ Be clear right up front that we aren't trying to stop all Java exploits,
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Write a paragraph to talk about why Java security is important.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 The Java Runtime Environment (JRE) is widely installed on user endpoints
  and it executes external code in the form of applets.
  These facts, combined with the hundreds of recently discovered vulnerabilities
@@ -260,7 +247,7 @@ key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_
 .
  It seems plausible that benign applications interact with the security
  manager differently.
- If true, this difference can be exploited to prevent future exploits.
+ If true, this difference can be exploited to prevent future attacks.
  To investigate this further, we conducted an empirical study of benign
  open source Java applications.
  
@@ -324,7 +311,7 @@ key "QualitasCorpus:APSEC:2010"
 
 \end_inset
 
- and the Github repository that make use of the security manager.
+ and the GitHub repository that make use of the security manager.
  We analyzed the resulting 47 projects using a custom FindBugs 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1345,23 +1332,25 @@ As discussed in previous sections, it is widely known within the Java security
  To understand the operations benign applications perform on the manager,
  we undertook an empirical analysis consisting of static, dynamic, and manual
  inspections of the open source Java application landscape.
- Our empirical analysis aimed to validate the following claims, roughly
- categorized by the strength of the mitigation that is possible if the claim
- is true:
+ More precisely, we answer the following research question: how do open
+ source Java applications interact with the security manager? To answer
+ this question, our empirical analysis aimed to validate the following hypothese
+s, roughly categorized by the strength of the mitigation that is possible
+ if the hypothesis is true:
 \end_layout
 
 \begin_layout Standard
 
 \series bold
-Weak Claim:
+Weak Hypothesis:
 \series default
  
 \shape italic
 Benign applications do not disable the security manager.
 
 \shape default
- If this claim is true, exploits can be differentiated from benign applications
- by any attempt to disable the current security manager.
+ If this hypothesis is true, exploits can be differentiated from benign
+ applications by any attempt to disable the current security manager.
  While this mitigation would be easy to implement, exploits that weaken
  the sandbox without disabling it would remain a threat.
  For example, attackers could potentially bypass the mitigation by modifying
@@ -1376,7 +1365,7 @@ SecurityException
 \begin_layout Standard
 
 \series bold
-Moderate Claim:
+Moderate Hypothesis:
 \series default
  
 \emph on
@@ -1386,7 +1375,7 @@ Benign applications do not weaken the s
 ecurity manager
 \shape default
 .
- Validation of this claim would enable mitigations that prevent attackers
+ Validation of this hypothesis would enable mitigations that prevent attackers
  from weakening or disabling the sandbox.
  However, an implementation of this mitigation would require differentiating
  between changes which weaken the sandbox and those that do not.
@@ -1400,7 +1389,7 @@ ecurity manager
 \begin_layout Standard
 
 \series bold
-Strong Claim:
+Strong Hypothesis:
 \series default
  
 \shape italic
@@ -1418,26 +1407,26 @@ reference "sec:Background"
 \end_inset
 
 ) is disallowed.
- To implement this claim a runtime monitor must determine if a security
+ To implement this mitigation a runtime monitor must determine if a security
  manager is self-protecting at the time the manager is set, which can be
  easily achieved.
  While this mitigation has the same outcome as the mitigation enabled by
- successful validation of the moderate claim, this mitigation is significantly
- easier to implement and is therefore stronger.
+ successful validation of the moderate hypothesis, this mitigation is significan
+tly easier to implement and is therefore stronger.
 \end_layout
 
 \begin_layout Standard
 
 \series bold
-Ideal Claim:
+Ideal Hypothesis:
 \series default
  
 \shape italic
 Benign applications do not change a set security manager.
 
 \shape default
- If the study supports this claim, any attempted change to an already establishe
-d security manager can be considered malicious.
+ If the study supports this hypothesis, any attempted change to an already
+ established security manager can be considered malicious.
 \end_layout
 
 \begin_layout Standard
@@ -1611,7 +1600,7 @@ For true positives that compiled and effected the security manager during
 \begin_layout Enumerate
 Finally, the reviewer summarized the operations the application performed
  on the security manager with an emphasis on points that support or reject
- each claim.
+ each hypothesis.
 \end_layout
 
 \begin_layout Standard
@@ -3487,7 +3476,7 @@ reference "fig:Weka-snippet"
 
 , unless the environment set one already (e.g.
  the user set one on the command line or Weka is running as an applet or
- JNLP application).
+ web start application).
  One type 1 application, JTimeLag, didn't actually set a security manager,
  but did set the security manager to null as discussed in the section below
  titled 
@@ -3557,12 +3546,12 @@ name "fig:Weka-snippet"
 \end_layout
 
 \begin_layout Standard
-Type 2 applications are of particular interest in validating the claims
+Type 2 applications are of particular interest in validating the hypotheses
  because they change a set security manager at some point later in the applicati
 on's execution.
  In other words, they potentially falsify the weak, moderate, and ideal
- claims.
- Due to their effect on our claims, applications of this type are discussed
+ hypotheses.
+ Due to their effect on our hypotheses, applications of this type are discussed
  in detail below.
 \end_layout
 
@@ -3595,7 +3584,7 @@ url{http://docs.oracle.com/javase/7/docs/api/java/security/PrivilegedAction.html
  to ensure the application works if constrained.
  Similarly, type 4 applications contain code in unit test that ensure the
  application works correctly if sandboxed or that set a manager themselves,
- but these applications are not useful for validating our claims because
+ but these applications are not useful for validating our hypotheses because
  their interactions with the manager are not in production code.
 \end_layout
 
@@ -3619,12 +3608,19 @@ SecurityManager
  
 \end_layout
 
+\begin_layout Standard
+The remainder of this section provides details about type 1 and type 2 applicati
+ons, with few details about the remaining types because they did not have
+ a significant bearing on the outcomes of this study.
+\end_layout
+
 \begin_layout Subsubsection
-Evaluation of our Claims
+Evaluation of our hypotheses
 \end_layout
 
 \begin_layout Standard
-We only require one counterexample to falsify a claim from section 
+We only require one counterexample to falsify a hypothesis from section
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Security-Manager-Study"
@@ -3632,14 +3628,14 @@ reference "sec:Security-Manager-Study"
 \end_inset
 
 .
- This section summarizes how our claims held up against the results of this
- study.
+ This section summarizes how our hypotheses held up against the results
+ of this study.
 \end_layout
 
 \begin_layout Standard
 
 \series bold
-Weak claim
+Weak Hypothesis
 \series default
 : 
 \shape italic
@@ -3665,15 +3661,15 @@ reference "sub:Non-security-uses-of"
 \begin_layout Standard
 
 \series bold
-Moderate claim
+Moderate Hypothesis
 \series default
 : 
 \emph on
 Benign applications do not weaken the security manager.
  
 \emph default
-This claim was not definitively falsified if turning off the security manager
- is excluded from weakening.
+This hypothesis was not definitively falsified if turning off the security
+ manager is excluded from weakening.
  However, multiple applications provided methods for the user to dynamically
  change the security policy or the manager.
  These methods did not restrict their callers from weakening the manager
@@ -3683,7 +3679,7 @@ This claim was not definitively falsified if turning off the security manager
 \begin_layout Standard
 
 \series bold
-Strong claim
+Strong Hypothesis
 \series default
 : 
 \shape italic
@@ -3691,7 +3687,7 @@ Benign applications do not change the security manager if a self-protecting
  security manager has been set
 \shape default
 .
- This claim was supported by both datasets.
+ This hypothesis was supported by both datasets.
  When false positives are excluded, 19 out of 24 true positives in the Qualitas
  dataset and 9 out of 12 true positives in the GitHub dataset did not change
  a set security manager or the policy it enforced during execution.
@@ -3700,15 +3696,15 @@ Benign applications do not change the security manager if a self-protecting
 \begin_layout Standard
 
 \series bold
-Ideal claim
+Ideal Hypothesis
 \series default
 :
 \shape italic
  Benign applications do not change a set security manager.
  
 \emph on
-This claim was shown to be false: multiple applications changed the security
- manager, both for security and non-security reasons.
+This hypothesis was shown to be false: multiple applications changed the
+ security manager, both for security and non-security reasons.
 \end_layout
 
 \begin_layout Subsubsection
@@ -4101,14 +4097,14 @@ url{http://www.oracle.com/technetwork/java/javase/javawebstart/index.html}
 \end_inset
 
 ) created complexity for certain applications.
- In the latest version of Java at the time of this paper (1.7.72 and 1.8.25),
- Java requires that a web user accepts a Java web application originating
- from a source other than the host machine before executing the application.
- By default, Java executes the application inside a restrictive sandbox.
- The restrictive sandbox severely limits the permissions of the application.
- Inside the restrictive sandbox, the applications cannot perform multiple
- operations which include accessing files on the local filesystem, retrieving
- resources from any third party server, and changing the security manager.
+ In the latest versions of the JRE at the time of this paper (1.7.72 and 1.8.25),
+ Java requires that users agree that a Java web application originating
+ from a source other than the host machine should be executed.
+ By default, Java executes the application inside a restrictive sandbox
+ that severely limits the operations the application can perform.
+ Inside the restrictive sandbox, applications cannot perform operations
+ such as accessing files on the local filesystem, retrieving resources from
+ any third party server, and changing the security manager.
  
 \end_layout
 
@@ -4117,31 +4113,21 @@ For some applications, the restrictions imposed by the restrictive sandbox
  may prevent required behavior.
  Thus, Java provides a way to run applications outside the restrictive sandbox.
  To avoid executing the applet in a restrictive sandbox, a developer must
- first get the application signed by a recognized certificate authority.
+ first get the application digitally signed by a recognized certificate
+ authority.
  Once the application has been properly signed, the developer may specify
- that the application request the user to run outside the restrictive sandbox.
- For an application to run outside the restrictive sandbox, the user will
- have to accept 2 requests: the pop-up to run the application and the pop-up
+ that the application should run outside of the sandbox.
+ Before running this kind of application outside of the sandbox, the use
+ must accept two prompts: a pop-up to run the application and second pop-up
  to run outside the sandbox.
  
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: Good basic explanation of the web sandbox if we want to use it: http://docs.o
-racle.com/javase/tutorial/deployment/applet/security.html
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 If an application is executed inside a restrictive sandbox and uses permissions
  prevented by the restrictive sandbox, the application developer has two
- options: adjust the application at run time to not require the restricted
- permissions or have the application terminate with a 
+ options: adjust the application to not require the restricted permissions
+ or have the application terminate with a 
 \family typewriter
 SecurityException
 \family default
@@ -4155,14 +4141,18 @@ SecurityException
  as the full version.
  The other option does not allow the application to execute the application
  inside a restrictive sandbox.
- This option forces the user to run the application outside the restrictive
- sandbox, since the application would not work otherwise.
+ This option forces the user to run the application outside the sandbox,
+ since the application would not work otherwise.
  We found that applications using this method attempted to set the security
- manager to null at the beginning of the application, causing the restrictive
- sandbox to catch the security violation and terminate the application.
+ manager to 
+\family typewriter
+null
+\family default
+ at the beginning of the application, causing the sandbox to catch the security
+ violation and terminate the application.
  We believe developers did not allow the application to terminate farther
- into the application's execution to avoid the user misdiagnosing a permission
- violation for another error.
+ into the application's execution to prevent the user from misdiagnosing
+ a permission violation for another error.
  During the investigation, we found two applications that used this method:
  Eclipse and Timelag.
  
@@ -4462,23 +4452,12 @@ enforceSecurity
 \begin_layout Standard
 As mentioned earlier, Ant, Freemind, and Netbeans explicitly set and then
  change the current manager during runtime.
- Ant allows the users to create build scripts that execute Java applications
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: I think the term applications is too broad.
- I think this only happens when executing a class and not a jar.
- I can't check at the moment since my computer is doing performance tests.
-\end_layout
-
-\end_inset
-
- during a build under a user specified set of permissions.
- The user specified set of permissions is defined from the permissions element
- inside an Ant build file.
+ Ant allows the users to create build scripts that execute Java classes
+ and JAR's during a build under a user specified set of permissions.
+ The user specified set of permissions is defined in the permissions element
+ of an Ant build file.
  Inside the permissions element, a user can explicitly grant and revoke
- permissions available to the application.
+ permissions available to the Java code.
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4486,19 +4465,22 @@ reference "fig:Ant Permissions Example"
 
 \end_inset
 
- shows the first example on the Ant Permissions site.
- 
-\begin_inset Note Comment
-status open
+ shows the first example on the Ant Permissions website
+\begin_inset Foot
+status collapsed
 
 \begin_layout Plain Layout
-ZC: Should we site this? https://ant.apache.org/manual/Types/permissions.html
+https://ant.apache.org/manual/Types/permissions.html
 \end_layout
 
 \end_inset
 
- In this example, the contents of the grant element provide the application
- all permissions.
+.
+ In this example, the contents of the 
+\family typewriter
+grant
+\family default
+ element provide the application all permissions.
  Then the contents of the revoke element restricts the application from
  using all property permissions.
  This permissions snippet means that the application can perform all actions
@@ -4508,20 +4490,20 @@ PropertyPermissions
 \family default
 .
  This snippet also means that Ant will set a defenseless security manager.
- Thus a malicious application can easily bypass the restrictions in this
- example by executing the line 
+ Malicious code can easily bypass the restrictions in this example by executing
+ the line 
 \family typewriter
 System.setSecurityManager(null)
 \family default
 , which turns off the sandbox.
- Once the sandbox has been turned off, the malicious application can perform
- all actions which require 
+ Once the sandbox has been turned off, the malicious code can perform all
+ actions which require 
 \family typewriter
 PropertyPermissions
 \family default
 .
- The Ant Permissions site does not mention that an implementation of this
- example would be vulnerable.
+ The Ant Permissions website does not mention that an implementation of
+ this example would be vulnerable.
  The site also does not mention that allowing certain permissions will potential
 ly enable the restricted application to bypass any user specified restrictions.
  
@@ -4577,10 +4559,6 @@ name "fig:Ant Permissions Example"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -4764,7 +4742,7 @@ MySM
 \end_layout
 
 \begin_layout Standard
-When Ant has finished executing the application, Ant calls the method 
+When Ant has finished executing the application, it calls the method 
 \family typewriter
 restoreSecurityManager
 \family default
@@ -4786,7 +4764,7 @@ With this implementation, Ant catches applications that perform actions
 on is executing.
  Ant is also able to revert to the original security manager after executing
  the application.
- However, we are not sure that this implementation is exploit proof.
+ However, we are not sure that this implementation is free of vulnerabilities.
 \end_layout
 
 \begin_layout Standard
@@ -4796,10 +4774,11 @@ Netbeans similarly sets a security manager around a separate application.
  However, this technique may cause problems if Ant or Netbeans is used in
  a security critical setting, since a security critical setting would need
  a self-protecting security manager.
- A better approach would be to use a custom class loader to load the untrusted
+ A better implementation would use a custom class loader to load the untrusted
  classes into a constrained protection domain.
- This approach would allow Ant and Netbeans to run inside of a self-protecting
- security manager.
+ This approach would be in line with the way the sandbox is intended to
+ be used and would be more clearly correct and trustworthy while allowing
+ Ant and Netbeans to run inside of a self-protecting sandbox.
 \end_layout
 
 \begin_layout Standard
@@ -4946,11 +4925,11 @@ reference "sec:Security-Manager-Study"
 
 \end_inset
 
- we discussed (1) four claims that could lead to Java exploit mitigations
+ we discussed (1) four hypotheses that could lead to Java exploit mitigations
  if validated and (2) how we went about validating them.
  We also discussed additional information about how applications use the
- Java sandbox that we learned while successfully validating the strong claim
- and the overall results of our empirical analysis of the open source Java
+ Java sandbox that we learned while successfully validating the strong hypothesi
+s and the overall results of our empirical analysis of the open source Java
  landscape.
  The results included two backwards-compatible rules, discussed in section
  
@@ -6951,6 +6930,8 @@ We indirectly observed many developers struggling to understand and use
 defenseless
 \emph default
  sandbox.
+ In general, developers appear to believe the sandbox functions as a blacklist
+ when, in reality, it is a whitelist.
  These observations suggest that more resources---tool support, improved
  documentation, better error messages, should be dedicated to helping developers
  correctly implement the sandbox.
