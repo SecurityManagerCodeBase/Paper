@@ -5266,8 +5266,7 @@ reference "fig:Example-Exploit-for-Freemind"
 \end_inset
 
 .
- Hopefully, Freemind has improved how they handle plug-in security by this
- time.
+ Hopefully, Freemind has improved plug-in security by this time.
  
 \begin_inset Float figure
 wide false
