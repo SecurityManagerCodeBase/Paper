@@ -5931,11 +5931,17 @@ key "DaCapo:paper"
 \end_inset
 
 , a standard set of real-world Java applications used for Java benchmarking.
- Performance was measured by running DaCapo using the converge switch and
- (info about the settings used to run benchmarks).
- We ran the benchmarks on an otherwise idle server with 32 gigabytes of
- ram and a 64-bit quad-core Intel X5460 CPU at 3.16 GHz.
- We used the 64-bit version of Java version 1.7.0 update 51.
+ Performance was measured by running DaCapo 5 times using the converge switch
+ 
+\emph on
+--converge --max-iterations 30 --window 3.
+ 
+\emph default
+The average for each benchmark is the geometric mean of the last benchmark
+ execution times from the 5 convergence iterations.
+ We ran the benchmarks on an otherwise idle laptop with 8 gigabytes of RAM
+ and an 8 core 64-bit Intel i7-3632QM CPU at 2.2 GHz.
+ We used the 64-bit version of Java version 1.7.0 update 60.
 \end_layout
 
 \begin_layout Standard
@@ -5945,12 +5951,14 @@ The DaCapo benchmarks do not set a security manager.
  This produces the worst-case overhead because the unmodified version of
  JSF only attempts to monitor for rule violations when a security manager
  has actually been set.
- Modifying the rules to apply in situations where they normally wouldn't
- creates problems for Eclipse, Tradebeans, and Tradesoap because they fall
- afoul of the modified implementation of the privilege escalation rule where
- they don't with the unmodified version.
- These three applications do not appear in our results.
  
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Performance-Test-Results."
+
+\end_inset
+
+ contains the performance results from these tests.
 \end_layout
 
 \begin_layout Standard
@@ -5964,6 +5972,13 @@ status open
 
 \begin_layout Plain Layout
 Performance Test Results.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Performance-Test-Results."
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -7257,29 +7272,37 @@ total
 
 \begin_layout Standard
 Our results indicate that the privilege escalation rule causes minimal slowdown
- with an average of X% overhead.
+ with an average of -0.8% overhead, which we believe is due to variations
+ in the benchmark runs and not the tool.
  On the other hand, the Security Manager rule produced a significant slowdown,
- causing applications to run over XXX times slower on average.
+ causing applications to run over 45 times slower on average.
  We investigated the cause of this slowdown and found that read and write
  monitors on fields in JVMTI cause the program to run without the benefit
  of the JIT.
- We measured how long the benchmarks took to complete in interpreted mode
- to measure how much of this extensive slowdown is the result of the JIT
- being off and how much is the result of enforcing the security manage rule.
+ We measured the benchmarks in interpreted mode to measure how much of this
+ extensive slowdown is the result of the JIT being off.
  The tests determined that the interpreted applications runtime increased
- by 22.5 times relative to the JITed version without JSF attached.
- While we do not break the figures down, the rest of the slowdown is the
- result of the fact that the JRE picks less efficient code paths when certain
- JVMTI capabilities are enabled and the actual enforcement of our rule.
+ by 14.1 times relative to the JITed version of the application.
+ While we do not break the figures down, the rest of the slowdown is likley
+ caused by the JRE executing less efficient code paths when certain JVMTI
+ capabilities are enabled along with the actual enforcement of our rule.
  
+\end_layout
+
+\begin_layout Standard
+Other performance test were conducted where the JVMTI tool was set to perform
+ the same event watches as the both montiors settting but contained empty
+ handling methods.
+ These tests produced similar results to times to the both monitors.
+ This leads us to believe that the significant performance slowdown is caused
+ by how the JVMTI monitors for changes to the security manager.
 \end_layout
 
 \begin_layout Standard
 The security manager rule slowdown can be largely mitigated by advancing
  JVMTI implementations, for example, to enable the JIT in all cases.
  However, JVMTI implementors tend to favor ease of implementation over speed
- because many of the uses of JVMTI, outside of research, are not performance
- critical.
+ because many uses of JVMTI, outside of research, are not performance critical.
  We hypothesize that the security manager rule can be implemented with significa
 ntly less performance overhead if the rule is built into the JVM.
  This approach has the added benefit that the rules would become a permanent
@@ -7310,7 +7333,7 @@ JSF_HOME
 \family default
  environment variable to point to the directory containing JSF and its configura
 tion files.
- By default the security manager rule is not enforced due to the large overhead.
+ By default the security manager rule is not enforced due to the overhead.
  However, a user can easily turn on the rule in the JSF configuration file.
 \end_layout
 
@@ -7356,9 +7379,8 @@ http://trends.builtwith.com/docinfo/Applet
 \begin_layout Standard
 Since both applets and Java Web Start applications run inside a browser,
  adjusting the browser plugin settings only effects both application types.
- The user can deploy the tool in the only their browsers by configuring
- the runtime parameters of the Java browser plugin using the Java Control
- Panel 
+ The user can deploy the tool in only his browsers by configuring the runtime
+ parameters of the Java browser plugin with the Java Control Panel 
 \begin_inset Foot
 status open
 
