@@ -5921,7 +5921,7 @@ The DaCapo benchmarks do not set a security manager.
  This produces the worst-case overhead because the unmodified version of
  JSF only attempts to monitor for rule violations when a security manager
  has actually been set.
- 
+ Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Performance-Test-Results."
@@ -7260,12 +7260,14 @@ Our results indicate that the privilege escalation rule causes minimal slowdown
 \end_layout
 
 \begin_layout Standard
-Other performance test were conducted where the JVMTI tool was set to perform
- the same event watches as the both montiors settting but contained empty
- handling methods.
- These tests produced similar results to times to the both monitors.
- This leads us to believe that the significant performance slowdown is caused
- by how the JVMTI monitors for changes to the security manager.
+We also measured performance with a version of the agent that receives the
+ required events for both monitors but does nothing with them -- the code
+ that enforces the rules in events was removed.
+ These tests produced results that are nearly identical to the results we
+ received when the rule implementations were in place.
+ This strongly suggests that the significant performance slowdown is caused
+ by JVMTI's implementation of the events we register for to enforce the
+ security manager rule.
 \end_layout
 
 \begin_layout Standard
