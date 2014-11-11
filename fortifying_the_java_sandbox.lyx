@@ -82,6 +82,13 @@ status open
 
 
 \backslash
+author{BLINDED FOR SUBMISSION}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
 author{
 \backslash
 IEEEauthorblockN{Zack Coker, Michael Maass, Tianyuan Ding, and Joshua Sunshine}
@@ -89,7 +96,7 @@ IEEEauthorblockN{Zack Coker, Michael Maass, Tianyuan Ding, and Joshua Sunshine}
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 IEEEauthorblockA{School of Computer Science
 \backslash
@@ -100,7 +107,7 @@ IEEEauthorblockA{School of Computer Science
 
 \begin_layout Plain Layout
 
-Carnegie Mellon Univeristy, Pittsburgh, PA
+%Carnegie Mellon Univeristy, Pittsburgh, PA
 \backslash
 
 \backslash
@@ -109,7 +116,7 @@ Carnegie Mellon Univeristy, Pittsburgh, PA
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 {zfc, mmaass
 \backslash
@@ -127,25 +134,26 @@ Fortifying the Java Sandbox
 
 \begin_layout Abstract
 The ubiquitously-installed Java Runtime Environment (JRE) executes untrusted
- code inside a sandbox to protect the host machine from potential maliciousness.
- However, many recent exploits have successfully escaped the sandbox, thereby
- enabling attackers to infect countless Java hosts.
- To prevent future exploits it is essential to distinguish patterns of malicious
- use from patterns of benign use.
- We therefore performed an empirical study of benign, open-source Java applicati
-ons and compared their use of the sandbox to the usage present in recent
+ code inside a sandbox to protect the host machine from potential malicious
+ behavior.
+ However, dozens of recent exploits have successfully escaped the sandbox,
+ thereby enabling attackers to infect countless Java hosts.
+ It is essential to distinguish patterns of malicious use from patterns
+ of benign use to pro-actively prevent future exploits.
+ We therefore performed an empirical study of benign open-source Java applicatio
+ns and compared their use of the sandbox to the usage present in recent
  exploits.
  We found that benign applications with secured sandboxes do not modify
  the security manager, the security policy enforcement mechanism, after
  it is first set and do not attempt to directly use privileged classes.
- Exploits do both routinely.
- We used these results to develop two runtime monitors, one that prevents
- security manager modification and one that prevents privilege escalation.
+ Exploits routinely do both.
+ We used these results to develop two runtime monitors: the first prevents
+ security manager modification, and the second prevents privilege escalation.
  The privilege escalation monitor stops four of ten Metasploit Java exploits
  with negligible overhead.
- The combination of both monitors stops all ten exploits, but incurs very
- significant overhead, suggesting that the best application is to risky
- settings like running applets.
+ The combination of both monitors stops all ten exploits, but incurs significant
+ overhead, suggesting that it is best applied to risky settings like running
+ applets.
 \end_layout
 
 \begin_layout Section
@@ -201,12 +209,11 @@ Be clear right up front that we aren't trying to stop all Java exploits,
 \end_layout
 
 \begin_layout Standard
-The Java Runtime Environment (JRE) is widely installed on user endpoints
- and it executes external code in the form of applets.
+The Java Runtime Environment (JRE) is widely installed on user endpoints,
+ where it executes external code in the form of applets.
  These facts, combined with the hundreds of recently discovered vulnerabilities
  in Java, including zero-day vulnerabilities (e.g.
- CVE-2013-0422), have made Java an extremely popular exploit vector (see
- Figure 
+ CVE-2013-0422), have made Java a popular exploit vector (see Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:most-targeted-applications"
@@ -214,21 +221,29 @@ reference "fig:most-targeted-applications"
 \end_inset
 
 ).
- Attackers typically lure users to websites containing hidden, yet malicious
+ Attackers typically lure users to websites containing hidden malicious
  applets.
  Once the user visits the website, the exploit triggers a series of events
  that ends with the delivery of malware, all while the user is left unaware.
- This kind of attack is commonly referred to as a drive-by-download.
+ This kind of attack is commonly referred to as a 
+\begin_inset Quotes eld
+\end_inset
+
+drive-by download
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-Java was designed to safely execute untrusted code and safely isolate components
- from each other in a sandbox so that the application and the host machine
- are protected from malicious behavior.
- However, the exploits cited above show that there is substantial room for
- improvement.
- Past investigations of Java exploits have shown Java malware commonly alters
- the sandbox's settings 
+Java includes a mechanism to safely execute untrusted code and isolate component
+s from one another in a sandbox, such that both the application and the
+ host machine are protected from malicious behavior.
+ However, the exploits cited above show that there is substantial room to
+ improve the containment of code within the sandbox.
+ Previous investigations of Java exploits have shown Java malware commonly
+ alters the sandbox's settings 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "garber_2012"
@@ -245,12 +260,9 @@ key "fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_
 \end_inset
 
 .
- It seems plausible that benign applications interact with the security
- manager differently.
+ We hypothesize that, when compared to the exploits, benign applications
+ interact with the security manager differently.
  If true, this difference can be exploited to prevent future attacks.
- To investigate this further, we conducted an empirical study of benign
- open source Java applications.
- 
 \end_layout
 
 \begin_layout Standard
@@ -280,7 +292,8 @@ name "fig:most-targeted-applications"
 
 \end_inset
 
-Most targeted applications in the enterprise, according to a Dec.
+Java is the most targeted applications in the enterprise, according to a
+ Dec.
  2013 survey of Trusteer customers 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -302,9 +315,11 @@ key "xforceQ12013"
 \end_layout
 
 \begin_layout Standard
-Our empirical study was designed to answer the following research question:
+To validate this insight, we conducted an empirical study of benign open
+ source Java applications.
+ Our empirical study was designed to answer the following research question:
  how do benign applications modify the security manager? To answer this
- question, we identified Java projects in the Qualitas Corpus
+ question, we identified Java projects in the Qualitas Corpus 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "QualitasCorpus:APSEC:2010"
@@ -319,12 +334,12 @@ key "hovemeyer_finding_2004"
 
 \end_inset
 
-plugin to isolate code involved in the initialization or modification of
+ plugin to isolate code involved in the initialization or modification of
  the security manager.
- We then manually categorized the security manager usage in each of the
+ We then manually characterized the security manager usage in each of the
  isolated code snippets.
  Finally, we used a Java Virtual Machine Tool Interface (JVMTI) agent to
- confirm that our categorizations of code were accurate at runtime.
+ confirm that our characterizations were accurate at run time.
  
 \end_layout
 
@@ -333,17 +348,17 @@ We discovered two types of security managers:
 \emph on
 defenseless
 \emph default
- security managers which enforce a security policy which enable code inside
+ security managers, which enforce a security policy that allows code inside
  the sandbox to modify sandbox settings, and 
 \emph on
 self-protecting
 \emph default
- security managers which disallow such behavior.
- Applications with defenseless security managers are inherently insecure
- and these applications sometimes modified or disabled the security manager
+ security managers, which disallow such behavior.
+ Applications with defenseless security managers are inherently insecure.
+ These applications sometimes modified or disabled the security manager
  during program execution.
  Some of these applications use the security manager to enforce policies
- that are unrelated to security.
+ unrelated to security.
  On the other hand, we found that applications with self-protecting security
  managers, a category which includes all applets, do not change sandbox
  settings during program execution.
@@ -352,21 +367,31 @@ self-protecting
 
 \begin_layout Standard
 Based on our analysis of benign and malicious applications, we implemented
- two runtime monitors.
+ two runtime monitors to fortify the Java sandbox.
  The first monitor prevents privilege escalation by preventing restricted
  classes inside a sandbox from loading classes with fewer restrictions.
- The second monitor, prevents changes to the sandbox when a self-protecting
+ The second monitor prevents changes to the sandbox when a self-protecting
  security manager is initialized.
- We evaluated the effectiveness of our monitors against the 10 applets in
- Metasploit 4.10.0 that successfully exploit unpatched versions of Java 7.
- The privilege escalation monitor detected and stopped four of the ten exploits,
- while using both monitors together detected and stopped all ten exploits.
+ We evaluated the effectiveness of our monitors against the ten applets
+ in Metasploit 4.10.0
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+http://www.metasploit.com/
+\end_layout
+
+\end_inset
+
+ that successfully exploit unpatched versions of Java 7.
+ The privilege escalation monitor detected and stopped four of the ten exploits.
+ Using both monitors together detected and stopped all ten exploits.
  
 \end_layout
 
 \begin_layout Standard
 We evaluated the performance of our monitors using the DaCapo benchmark
- suite
+ suite 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "DaCapo:paper"
@@ -374,33 +399,21 @@ key "DaCapo:paper"
 \end_inset
 
 .
- The privilege escalation monitor resulted in negligible overhead of X%
- which is low enough to enable monitoring of any Java application.
- The security manager monitor is implemented as a JVMTI agent and it monitors
+ The privilege escalation monitor resulted in negligible overhead of X%,
+ low enough to enable monitoring of any Java application.
+ The security manager monitor is implemented as a JVMTI agent that monitors
  a static field, which unfortunately disables just-in-time compilation (JIT).
  Therefore, the security manager monitor resulted in substantial overhead
  of XXX%, which is unacceptable for most Java applications.
  However, the greatest threat comes from Java applets, and many of these
  are not performance intensive (e.g.
- they are web forms), so it may be reasonable to enable the security manager
- monitor only for untrusted applets and use only the privilege escalation
- monitor for all other applications.
+ web forms), so it may be reasonable to enable the security manager monitor
+ only for untrusted applets and use only the privilege escalation monitor
+ for all other applications.
 \end_layout
 
 \begin_layout Standard
 The contributions of this papers are as follows:
-\end_layout
-
-\begin_layout Itemize
-An empirical study of Java sandbox usage in benign, open-source applications
- (Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Security-Manager-Study"
-
-\end_inset
-
-).
 \end_layout
 
 \begin_layout Itemize
@@ -409,6 +422,18 @@ An analysis of privilege escalation in the Java security model and recent
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Java-Exploits"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+An empirical study of Java sandbox usage in benign, open-source applications
+ (Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Security-Manager-Study"
 
 \end_inset
 
@@ -429,7 +454,7 @@ reference "sec:Rules-for-Fortifying"
 
 \begin_layout Itemize
 Implementations of the two rules as runtime monitors, with accompanying
- security and performance evaluations (Section
+ security and performance evaluations (Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Mitigations"
@@ -437,40 +462,6 @@ reference "sec:Mitigations"
 \end_inset
 
 ).
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Related Work
-\end_layout
-
-\begin_layout Plain Layout
-ZC: Maybe add this later
-\end_layout
-
-\begin_layout Plain Layout
-There is little work on how Java applications use the Sandbox and the security
- manager.
-\end_layout
-
-\begin_layout Plain Layout
-- list studies into Java exploits
-\end_layout
-
-\begin_layout Plain Layout
-- list other empirical studies into sandboxes
-\end_layout
-
-\begin_layout Plain Layout
-- list other Java empirical studies relating to security
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -7363,17 +7354,8 @@ Effectiveness at Fortifying the Sandbox
 We performed an experiment to evaluate how effective our agent is at blocking
  exploits that disable the sandbox.
  In our experiment, we ran Java 7 exploits for the browser from Metasploit
- 4.10.0
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-http://www.metasploit.com/
-\end_layout
-
-\end_inset
-
- on 64-bit Windows 7 against the initial release of version 7 of the JRE.
+ 4.10.0 on 64-bit Windows 7 against the initial release of version 7 of the
+ JRE.
  This version of Metasploit contains twelve applets that are intended to
  exploit JRE 7 or earlier, but two did not successfully run due to Java
  exceptions we did not debug.
