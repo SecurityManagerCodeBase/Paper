@@ -3042,11 +3042,12 @@ The Qualitas Corpus is a curated collection of open source Java applications
  that are used in this study.
  11 of the 29 applications are developed by the Apache Software Foundation
  (ASF), which may increase the homogeneity of their operations on the manager.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
-wide true
+wide false
 sideways false
 status open
 
@@ -3092,7 +3093,7 @@ Type of Interaction
 \begin_inset Text
 
 \begin_layout Plain Layout
-Qualitas
+QC
 \end_layout
 
 \end_inset
@@ -3346,6 +3347,17 @@ reference "Table:applications-studied"
 \end_inset
 
 .
+ Version numbers and Git commit hashes are available in an online supplement.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://goo.gl/dtcqTM
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
