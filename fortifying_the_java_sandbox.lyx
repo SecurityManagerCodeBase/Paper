@@ -476,23 +476,42 @@ name "sec:Background"
 \end_layout
 
 \begin_layout Standard
-The Java sandbox was designed to safely execute code from untrusted sources.
- Figure 
+In this section we describe components of the Java sandbox that are relevant
+ to understanding this work, how they compose to form the sandbox, and their
+ functions.
+ These points are summarized in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Sandbox-high-level-summary"
 
 \end_inset
 
- summarizes the components of the sandbox that are relevant to this work.
- Essentially, when a class loader loads a class from some location (e.g.,
- network, filesystem, etc.) the class is assigned a code source.
- The assigned code source is used to indicate the origin of the code and
- to associate the class with a protection domain.
- Protection domains segment the classes of an application into different
- groups, where each group is assigned a unique permission set.
+.
+ The Java sandbox was designed to safely execute code from untrusted sources.
+ Essentially, when a 
+\shape italic
+class loader
+\shape default
+ loads a class from some location (e.g., network, filesystem, etc.) the class
+ is assigned a 
+\shape italic
+code source
+\shape default
+.
+ The assigned code source indicates the origin of the code and associates
+ the class with a 
+\shape italic
+protection domain
+\shape default
+.
+ Protection domains segment the application classes into groups, where each
+ group is assigned a unique 
+\shape italic
+permission set
+\shape default
+.
  The permission sets contain permissions explicitly allowing actions with
- possible security implications such as writing to the filesystem, accessing
+ possible security implications, such as writing to the filesystem, accessing
  the network, using certain reflection features, etc.
  (see a more complete list at 
 \begin_inset CommandInset citation
@@ -525,11 +544,11 @@ url{http://docs.oracle.com/javase/7/docs/technotes/guides/security/PolicyFiles.h
 
 \end_inset
 
- explicitly define permission sets and assign code sources to each set.
+ define permission sets and assign code sources to each set.
  By default, applications executed from the local file system are run without
- a sandbox, while all other applications are run inside a restrictive sandbox.
- This prevents the execution of malicious operations on the host system
- by applications from the network or other untrusted sources.
+ a sandbox, and all other applications are run inside a restrictive sandbox.
+ This prevents applications from the network or other untrusted sources
+ from executing malicious operations on the host system.
  
 \end_layout
 
@@ -553,7 +572,8 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A high-level summary of the Java sandbox as it pertains to this work.
+A summary of the components of the Java sandbox that are relevant to understandi
+ng this work.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Sandbox-high-level-summary"
@@ -574,38 +594,37 @@ name "fig:Sandbox-high-level-summary"
 \end_layout
 
 \begin_layout Standard
-Even if a policy is defined, the policy will not be enforced unless the
- sandbox is activated.
+Defined policies will not be enforced unless the sandbox is activated.
  The sandbox is activated by setting a security manager for the system.
  This security manager acts as the gateway between the sandbox and the rest
  of the application.
  Whenever a class attempts to execute a method with security implications
- inside a sandbox, the security manager is queried by the protected method
- to determine if the operation should be allowed.
- For example, if an application attempts to write to a file (e.g 
+ inside a sandbox, the protected method queries the security manager to
+ determine if the operation should be allowed.
+ For example, if an application attempts to write to a file (e.g.
+ 
 \family typewriter
 java.io.FileOutputStream
 \family default
 ) inside a sandbox, the class that performs the write will check with the
- security manager to ensure a write to that file is allowed.
- Due to the fact that it is up to the protected code to initiate the check,
- missing checks are a common source of Java vulnerabilities.
+ security manager to ensure that a write to that file is allowed.
+ Missing checks are a common source of Java vulnerabilities because protected
+ code must initiate the check.
  
 \end_layout
 
 \begin_layout Standard
 To perform a permission check, the security manager walks the stack to ensure
  each class in the current stack frame has the required permission.
- However, the stack walking can be stopped before the entire frame has been
- walked by a privileged class, when the privileged class specifically wraps
- code inside a 
+ However, privileged code can stop stack walking before the entire frame
+ has been walked by wrapping code inside a 
 \family typewriter
 doPrivileged
 \family default
  call.
- This allows for privileged code sections to perform actions with security
- implications at the request of non-privileged code sections, once the request
- has been properly verified.
+ This allows privileged code sections to perform actions with security implicati
+ons at the request of non-privileged code sections, once the request has
+ been properly verified.
  If the permission check reaches a class in the stack frame that does not
  have the correct permissions, the security manager will throw a 
 \family typewriter
@@ -624,24 +643,23 @@ key "banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_199
 \end_layout
 
 \begin_layout Standard
-Java provides flexibility when setting up a sandbox, allowing a sandbox
- to be set at any time during the execution of an application, or in many
- cases, before an application is started.
- In the default case for web applets and applications that use Java Web
- Start, a 
+Java is flexible about when in an application's execution the sandbox is
+ configured and enabled.
+ The default case for web applets and applications that use Java Web Start
+ is to set a 
 \shape italic
 self-protecting
 \shape default
- security manager is set before the application is loaded from the network.
+ security manager before loading the application from the network.
  The security manager, and thus the sandbox, is self-protecting in the sense
- that it does not allow the application to change the settings of the sandbox.
+ that it does not allow the application to change sandbox settings.
  A security manager can also be 
 \shape italic
 defenseless
 \shape default
-, which in this case is the exact opposite of self-protecting.
+, which is the exact opposite of self-protecting.
  A defenseless manager does little to improve the security of a constrained
- application or the system it executes on.
+ application or the host.
  However, we show in section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -651,7 +669,11 @@ reference "sec:Research-Questions-and"
 
  that some benign applications have found interesting uses for defenseless
  managers.
- Table 
+ 
+\end_layout
+
+\begin_layout Standard
+Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:defenseless-permissions"
@@ -660,8 +682,8 @@ reference "tab:defenseless-permissions"
 
  summarizes the set of permissions used to distinguish between self-protecting
  and defenseless security managers.
- A security manager that enforces a policy that contains even one of the
- listed permissions is defenseless.
+ We consider any security manager that enforces a policy that contains even
+ one of the listed permissions to be defenseless.
  A subset of the permissions in this list were identified in 
 \begin_inset CommandInset citation
 LatexCommand cite
