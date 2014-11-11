@@ -139,7 +139,7 @@ The ubiquitously-installed Java Runtime Environment (JRE) executes untrusted
  However, dozens of recent exploits have successfully escaped the sandbox,
  thereby enabling attackers to infect countless Java hosts.
  It is essential to distinguish patterns of malicious use from patterns
- of benign use to pro-actively prevent future exploits.
+ of benign use to proactively prevent future exploits.
  We therefore performed an empirical study of benign open-source Java applicatio
 ns and compared their use of the sandbox to the usage present in recent
  exploits.
@@ -318,7 +318,7 @@ key "xforceQ12013"
 To validate this insight, we conducted an empirical study of benign open
  source Java applications.
  Our empirical study was designed to answer the following research question:
- how do benign applications modify the security manager? To answer this
+ How do benign applications modify the security manager? To answer this
  question, we identified Java projects in the Qualitas Corpus 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1233,7 +1233,7 @@ privileged class
 \shape italic
 access control
 \shape default
- principle that is part of the Java development culture
+ principle that is part of the Java development culture.
 \begin_inset Foot
 status open
 
@@ -1255,7 +1255,6 @@ url{https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm}
 
 \end_inset
 
-.
  Once an exploit gains access to a vulnerable privileged class, that class
  can be tricked into executing code that disables the sandbox (see CVE-2012-4681
  
@@ -1304,7 +1303,7 @@ A privileged class loader must be used to load a privileged class.
  Thus, a class typically does not have direct access to a class that has
  a vulnerability that can be exploited to bypass the sandbox unless the
  former had its privileges reduced at some point in the application's execution.
- This is implicit in the Java security model: if any class could load more
+ This is implicit in the Java security model: If any class could load more
  privileged classes and directly cause the execution of privileged operations,
  the sandbox in its current form would serve little purpose.
  In sections 
@@ -1378,18 +1377,17 @@ name "sec:Security-Manager-Study"
 \end_layout
 
 \begin_layout Standard
-Our intent is to pro-actively stop exploits that disable the Java sandbox.
- We focus our efforts on the security manager as it is the means by which
+We intend to proactively stop exploits that disable the Java sandbox.
+ We focus our efforts on the security manager, as it is the means by which
  applications interact with the sandbox.
- To successfully stop even 0-day exploits, we must understand which operations
- both exploits and benign applications perform on the security manager.
+ To successfully stop even zero-day exploits, we must understand which operation
+s exploitive and benign applications perform on the security manager.
  Assuming there is a difference between the set of operations performed
  by exploits and those performed by benign applications, we can exclude
- the operations that exploits depend on that are not of use to benign applicatio
-ns.
- This outcome could effectively narrow the range of possible operations
- on the manager to stop exploits while achieving backwards compatibility
- with benign applications.
+ the operations on which exploits depend, that are not of use to benign
+ applications.
+ This outcome could narrow the range of operations on the manager to stop
+ exploits, while maintaining backwards compatibility for benign applications.
  Additionally, this strategy would help ensure the sandbox continues to
  enforce its policy in a given execution without having to deal with the
  wide diversity in the manifestations of vulnerabilities within the JRE
@@ -1405,15 +1403,15 @@ Methodology
 \begin_layout Standard
 As discussed in previous sections, it is widely known within the Java security
  community that current exploits that operate on the security manager perform
- one operation: they disable it.
+ one operation: They disable it.
  To understand the operations benign applications perform on the manager,
  we undertook an empirical analysis consisting of static, dynamic, and manual
  inspections of the open source Java application landscape.
- More precisely, we answer the following research question: how do open
+ More precisely, we answer the following research question: How do open
  source Java applications interact with the security manager? To answer
  this question, our empirical analysis aimed to validate the following hypothese
 s, roughly categorized by the strength of the mitigation that is possible
- if the hypothesis is true:
+ if the hypothesis holds:
 \end_layout
 
 \begin_layout Standard
@@ -1426,8 +1424,8 @@ Weak Hypothesis:
 Benign applications do not disable the security manager.
 
 \shape default
- If this hypothesis is true, exploits can be differentiated from benign
- applications by any attempt to disable the current security manager.
+ If this hypothesis holds, exploits can be differentiated from benign applicatio
+ns by any attempt to disable the current security manager.
  While this mitigation would be easy to implement, exploits that weaken
  the sandbox without disabling it would remain a threat.
  For example, attackers could potentially bypass the mitigation by modifying
@@ -1460,7 +1458,7 @@ ecurity manager
  specific information that a general mitigation strategy may not have.
  For example, if a permission to write to a file is replaced by a permission
  to write to a different file, is the sandbox weakened, strengthened, or
- exactly as secure?
+ exactly as secure as it was before?
 \end_layout
 
 \begin_layout Standard
@@ -1474,9 +1472,9 @@ Benign applications do not change the sandbox if a self-protecting security
  manager has been set
 \shape default
 .
- If true, it is possible to implement a mitigation strategy whereby any
- change to a security manager that is enforcing a strict policy (as defined
- in section 
+ If supported, it is possible to implement a mitigation strategy that disallows
+ any change to a security manager that is enforcing a strict policy (as
+ defined in section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Background"
@@ -1484,12 +1482,12 @@ reference "sec:Background"
 \end_inset
 
 ) is disallowed.
- To implement this mitigation a runtime monitor must determine if a security
- manager is self-protecting at the time the manager is set, which can be
- easily achieved.
+ To implement this mitigation, a runtime monitor must determine if a security
+ manager is self-protecting at the time the manager is set.
+ This can be easily achieved.
  While this mitigation has the same outcome as the mitigation enabled by
- successful validation of the moderate hypothesis, this mitigation is significan
-tly easier to implement and is therefore stronger.
+ successful validation of the moderate hypothesis, it is significantly easier
+ to implement and is therefore stronger.
 \end_layout
 
 \begin_layout Standard
@@ -1516,17 +1514,18 @@ key "QualitasCorpus:APSEC:2010"
 
  and GitHub to form a dataset of applications that use the security manager.
  To filter relevant applications out of the 112 applications in QC, we performed
- a simple grep of each application's source code to find instances of the
- keyword 
+ a simple 
+\family typewriter
+grep
+\family default
+ of each application's source code to find instances of the keyword 
 \shape italic
 SecurityManager
 \shape default
 .
- Assuming any instance of the keyword was found, we included the application
+ When any instance of the keyword was found, we included the application
  in our dataset.
  This filtering reduced the set of applications to inspect from 112 to 29.
- We attempted to compile each of the 29 included applications and updated
- those where problems arose with modern build tools to the newest version.
  Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1541,9 +1540,9 @@ reference "sec:Applications-Studied"
 \begin_layout Standard
 We performed a similar process using the GitHub search feature configured
  to search through Java files for the same keyword.
- Initially, we extracted the top 6 applications from the search results,
+ Initially, we extracted the top six applications from the search results,
  but we came to find this filtering method was producing a high false positive
- rate: 4 out of 6 of the applications didn't actually use the 
+ rate: four out of six of the applications didn't actually use the 
 \family typewriter
 SecurityManager
 \family default
@@ -1555,19 +1554,18 @@ SecurityManager
 System.setSecurityManager(
 \shape default
 .
- We selected the top 7 applications from these search results while keeping
- the true positives from the previous search.
+ We selected the top seven applications from these search results while
+ keeping the true positives from the previous search.
  To ensure we included applications that disable the security manager, we
  repeated this process using the keyword 
 \shape italic
 System.setSecurityManager(null)
 \shape default
 .
- From this starting point of 20 applications, we excluded 2 that were already
- covered in the Qualitas Corpus and a Ruby application that mistakenly made
- it into the set because it contained Java files.
- We always downloaded the latest commit of each application to ensure the
- GitHub dataset reflected their most current versions.
+ From this starting point of 20 applications, we excluded two that were
+ already covered in the Qualitas Corpus and a Ruby application that mistakenly
+ made it into the set because it contained Java files.
+ We always downloaded the latest commit of each application.
 \end_layout
 
 \begin_layout Standard
@@ -1584,10 +1582,9 @@ key "hovemeyer_finding_2004"
 \family typewriter
 System.setSecurityManager
 \family default
-() is called, as well as the lines of code where the method's arguments
- were initialized.
- We also created a dynamic analysis tool using the Java Virtual Machine
- Tool Interface (JVMTI)
+() is called, as well as the lines of code where its arguments were initialized.
+ We created a dynamic analysis tool using the Java Virtual Machine Tool
+ Interface (JVMTI).
 \begin_inset Foot
 status collapsed
 
@@ -1597,7 +1594,6 @@ http://docs.oracle.com/javase/7/docs/technotes/guides/jvmti/
 
 \end_inset
 
-.
  JVMTI is designed to allow tools to inspect the current state of Java applicati
 ons and control their execution; it is commonly used to create Java debugging
  and profiling tools.
@@ -1610,9 +1606,7 @@ security
 System
 \family default
  class.
- This particular field holds the current security manager object for the
- application, which is used throughout the application's execution to ensure
- that code has the correct permissions to perform protected operations.
+ This field holds the current security manager object for the application.
  The watch prints out the class name, source file name, and line of code
  where any change to the field took place.
  A special notice is printed when the field is set to 
@@ -1625,7 +1619,7 @@ null
 
 \begin_layout Standard
 We split the dataset between two reviewers.
- The reviewers both analyzed applications using the steps listed here:
+ The reviewers both analyzed applications using the following steps:
 \end_layout
 
 \begin_layout Enumerate
@@ -1664,10 +1658,10 @@ The reviewer manually inspected all of the lines mentioned in the grep results
 \end_layout
 
 \begin_layout Enumerate
-For true positives that compiled and effected the security manager during
+For true positives that compiled and affected the security manager during
  the execution of the application, the application was executed, while being
  monitored by our dynamic analysis tool, using parameters and actions the
- reviewer determined in steps 4 and 5 effect the security manager.
+ reviewer determined in steps 4 and 5 affect the security manager.
  For example, we often learned in earlier steps that the manager was only
  effected if the user ran the program from the command line with a particular
  parameter or used a specific feature of the application.
@@ -1684,10 +1678,7 @@ Finally, the reviewer summarized the operations the application performed
 To ensure the reviewers understood the analysis steps and produced consistent
  results, we undertook a pilot study where each reviewer independently inspected
  the same 6 applications.
- This pilot study was invaluable in ensuring the inspections were performed
- consistently because one of the reviewers played no role in creating the
- tools and was therefore less informed about what to expect than our more
- experienced reviewer.
+ This pilot study ensured the inspections were performed consistently.
 \end_layout
 
 \begin_layout Subsection
@@ -3116,7 +3107,7 @@ Github
 The Qualitas Corpus is a curated collection of open source Java applications
  for use in reproducible software studies.
  We investigated the sandbox usage of 29 applications from QC version 20130901
- that are used in this study.
+ that we use in this study.
  11 of the 29 applications are developed by the Apache Software Foundation
  (ASF), which may increase the homogeneity of their operations on the manager.
  
@@ -3413,9 +3404,9 @@ http://qualitascorpus.com/docs/criteria.html
 
 \end_inset
 
- lends to the inclusion of large, popular applications and frameworks.
+ leads to the inclusion of large, popular applications and frameworks.
  Given this point and the emphasis on ASF applications in our filtered set,
- we chose to diversify our dataset by turning to GitHub.
+ we diversified our dataset by turning to GitHub.
  The full list of applications studied are listed in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5499,7 +5490,7 @@ key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_
 \end_inset
 
 .
- We implemented a tool in JVMTI to pro-actively stop exploits written directly
+ We implemented a tool in JVMTI to proactively stop exploits written directly
  in the Java programming language to exploit vulnerable Java code
 \begin_inset Foot
 status collapsed
