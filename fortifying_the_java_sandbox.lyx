@@ -7225,7 +7225,7 @@ Our results indicate that the privilege escalation rule causes minimal slowdown
 
 \begin_layout Standard
 We also measured performance with a version of the agent that receives the
- required events for both monitors but does nothing with them -- the code
+ required events for both monitors but does nothing with them---the code
  that enforces the rules in events was removed.
  These tests produced results that are nearly identical to the results we
  received when the rule implementations were in place.
