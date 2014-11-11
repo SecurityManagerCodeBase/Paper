@@ -476,7 +476,7 @@ name "sec:Background"
 \end_layout
 
 \begin_layout Standard
-In this section we describe components of the Java sandbox that are relevant
+In this section, we describe components of the Java sandbox that are relevant
  to understanding this work, how they compose to form the sandbox, and their
  functions.
  These points are summarized in figure 
@@ -985,11 +985,17 @@ name "sub:Java-Exploits"
 \end_layout
 
 \begin_layout Standard
-Malicious drive-by downloads using Java applets as the vector were widely
- reported between 2011 and 2013.
- While the Java sandbox should prevent malicious applets from executing
- their payloads, vulnerabilities in the Java Runtime Environment (JRE) were
- leveraged by exploits to set the security manager to 
+This section provides an analysis of privilege escalation in the Java security
+ model and recent Java exploits.
+ Between 2011 and 2013, drive-by downloads that used Java applets as the
+ vector were widely reported.
+ While the Java sandbox 
+\shape italic
+should
+\shape default
+ prevent malicious applets from executing their payloads, exploits leveraged
+ vulnerabilities in the Java Runtime Environment (JRE) to set the security
+ manager to 
 \family typewriter
 null
 \family default
@@ -998,7 +1004,7 @@ null
 \family typewriter
 null
 \family default
- disables the sandbox, which allows previously constrained classes to perform
+ disables the sandbox, allowing previously constrained classes to perform
  any operation that the JRE itself has the privileges to perform.
  Figure 
 \begin_inset CommandInset ref
@@ -1007,8 +1013,18 @@ reference "fig:A-typical-exploit-payload"
 
 \end_inset
 
- shows a typical payload.
- 
+ shows a typical payload class whose privileges have been elevated by an
+ exploit to allow it to disable the sandbox.
+ This example exploit uses 
+\family typewriter
+doPrivileged
+\family default
+ to allow the unprivileged exploit class to execute the operations in the
+ payload without causing a 
+\family typewriter
+SecurityException
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -1130,7 +1146,8 @@ public class Payload implements PrivilegedExceptionAction {
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A typical Java exploit payload from http://pastebin.com/QWU1rqjf.
+A typical sandbox-disabling Java exploit payload from http://pastebin.com/QWU1rqj
+f.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:A-typical-exploit-payload"
@@ -1151,23 +1168,20 @@ name "fig:A-typical-exploit-payload"
 \end_layout
 
 \begin_layout Standard
-Some Java exploits use type confusion to bypass the sandbox.
- A type confusion vulnerability is exploited by breaking type safety, thus
- allowing the attacker to craft an object that can perform operations as
- if it is an instance of a class of a different type.
- For example, attackers will craft objects that either (1) point to the
- 
+Less than half of recent Java exploits use 
+\shape italic
+type confusion
+\shape default
+ to bypass the sandbox.
+ A type confusion vulnerability is exploited by breaking type safety, allowing
+ the attacker to craft an object that can perform operations as if it is
+ an instance of a class of a different type.
+ For example, attackers craft objects that either (1) point to the 
 \family typewriter
 System
 \family default
- class to cause any operation they perform to happen on the real 
-\family typewriter
-System
-\family default
- class, thus allowing them to directly alter the field where the security
- manager is stored or (2) act as if they have the same type as a privileged
- class loader to load a payload class with all permissions (see CVE-2012-0507
- 
+ class or (2) act as if they have the same type as a privileged class loader
+ (see CVE-2012-0507 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_0507"
@@ -1175,27 +1189,47 @@ key "_vulnerability_2012_0507"
 \end_inset
 
 ).
+ In the first case the attack causes any operation performed on the masqueraded
+ class to happen on the real 
+\family typewriter
+System
+\family default
+ class, allowing the attacker to directly alter the field where the security
+ manager is stored.
+ In the second case the malicious class can load the exploit's payload with
+ elevated privileges.
 \end_layout
 
 \begin_layout Standard
-Another prominent subclass of Java exploits take advantage of a confused
- deputy vulnerability 
+Another prominent class of Java exploits takes advantage of a 
+\shape italic
+confused deputy
+\shape default
+ vulnerability 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hardy_confused_1988"
 
 \end_inset
 
-, which is a subset of privilege escalation.
+, which is an example of privilege escalation.
  In the case of a confused deputy, the exploit often convinces a class with
- access to a vulnerable privileged class to return a reference to the latter.
- The returned privileged classes often contain a vulnerability in the form
- of a missing security check, where the class should consult with the security
- manager before performing some operation but doesn't.
- In some cases the privileged class may be directly accessible, but this
- is quite rare and typically the fault of a vulnerable third-party library
- because providing all classes with direct access to a privileged class
- is a violation of the 
+ access to a vulnerable 
+\shape italic
+privileged class
+\shape default
+ (i.e.
+ a class with more privileges than the application's classes) to return
+ a reference to it.
+ The returned privileged class often contains a vulnerability such as a
+ missing security check (e.g.
+ where the class should consult with the security manager before performing
+ some operation, but does not).
+ In some cases, the privileged class may be directly accessible to all Java
+ applications, but this is quite rare and typically the fault of a vulnerable
+ third-party library.
+ Providing all classes with direct access to a privileged class is a violation
+ of the 
 \shape italic
 access control
 \shape default
@@ -1222,9 +1256,9 @@ url{https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm}
 \end_inset
 
 .
- Once an exploit gains access to a vulnerable privileged class, the class
- is usually tricked into executing code that disables the sandbox (see CVE-2012-
-4681 
+ Once an exploit gains access to a vulnerable privileged class, that class
+ can be tricked into executing code that disables the sandbox (see CVE-2012-4681
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_vulnerability_2012_4681"
@@ -1238,38 +1272,63 @@ key "_vulnerability_2012_4681"
 For the most part, benign applications have no reason to directly access
  privileged classes.
  The majority of the JRE's privileged classes are internal implementations
- of features that Java provides applications less-privileged access to.
+ of features that applications can access via less-privileged code paths.
  For example, many reflection operations are implemented in the 
 \family typewriter
 sun.reflect
 \family default
- package, which has all permissions, but Java applications are supposed
- to use classes in the 
+ package, which has all permissions.
+ However, Java applications are supposed to use classes in the 
 \family typewriter
 java.lang.reflect
 \family default
- package to use reflection and do not have direct access to the sun classes
- given default JRE configurations.
- Classes in the java package do not perform privileged operations themselves,
- but do have permission to access classes in the sun package.
+ package to use reflection and do not have direct access to the 
+\family typewriter
+sun
+\family default
+ classes given default JRE configurations.
+ Classes in the 
+\family typewriter
+java
+\family default
+ package do not perform privileged operations themselves, but do have permission
+ to access classes in the 
+\family typewriter
+sun
+\family default
+ package.
 \end_layout
 
 \begin_layout Standard
-To load a privileged class, a privileged class loader must be used, thus
- a class should typically not have direct access to a class that has a vulnerabi
-lity that can be exploited to bypass the sandbox unless the former had its
- privileges reduced at some point in the application's execution.
+A privileged class loader must be used to load a privileged class.
+ Thus, a class typically does not have direct access to a class that has
+ a vulnerability that can be exploited to bypass the sandbox unless the
+ former had its privileges reduced at some point in the application's execution.
  This is implicit in the Java security model: if any class could load more
- privileged classes and directly cause them to execute operations, the sandbox
- in its current form would serve little purpose.
- We discuss later how we can leverage these distinctions to further fortify
- the sandbox.
+ privileged classes and directly cause the execution of privileged operations,
+ the sandbox in its current form would serve little purpose.
+ In sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Rules-for-Fortifying"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Mitigations"
+
+\end_inset
+
+ we discuss how we can leverage these distinctions to further fortify the
+ sandbox.
 \end_layout
 
 \begin_layout Standard
 Many of the recent type confusion and privilege escalation vulnerabilities
- would not have been introduced if the JRE was developed while strictly
- following 
+ would not have been introduced if the JRE were developed strictly following
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1296,9 +1355,14 @@ key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
  a total of six different secure coding rules and four guidelines.
  In the typical case, following just one or two of the broken rules and
  guidelines would have prevented a serious exploit.
- In the rest of this paper we concern ourselves with ways to fortify the
- Java sandbox without breaking backwards compatibility and not with the
- specifics of particular exploits.
+ 
+\end_layout
+
+\begin_layout Standard
+In the rest of this paper, we do not concern ourselves with the specifics
+ of particular exploits.
+ We will now explore ways to fortify the Java sandbox without breaking backwards
+ compatibility.
  
 \end_layout
 
