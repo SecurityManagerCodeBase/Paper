@@ -3456,9 +3456,9 @@ reference "tab:Classification-of-Application"
 
 \end_inset
 
- shows a breakdown of how each application in our dataset was categorized.
- The number for each category type in the table corresponds to the number
- in the previous list and throughout the rest of this section.
+ shows how each application in our dataset was categorized.
+ The number for each category type in the table corresponds to the numbers
+ in the previous list used throughout the rest of this section.
 \end_layout
 
 \begin_layout Standard
@@ -3468,8 +3468,11 @@ Type 1 applications set a security manager that is not changed during any
  place the application sets a security manager.
  For example, Weka contains several main methods, most of which never set
  a security manager.
- However, the main method RemoteEngine.java sets a security manager, as shown
- in figure 
+ However, the main method in 
+\family typewriter
+RemoteEngine.java
+\family default
+ sets a security manager, as shown in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Weka-snippet"
@@ -3477,9 +3480,9 @@ reference "fig:Weka-snippet"
 \end_inset
 
 , unless the environment set one already (e.g.
- the user set one on the command line or Weka is running as an applet or
+ the user set one on the command line, or Weka is running as an applet or
  web start application).
- One type 1 application, JTimeLag, didn't actually set a security manager,
+ One Type 1 application, JTimeLag, didn't actually set a security manager,
  but did set the security manager to null as discussed in the section below
  titled 
 \begin_inset Quotes eld
@@ -3548,9 +3551,9 @@ name "fig:Weka-snippet"
 \end_layout
 
 \begin_layout Standard
-Type 2 applications are of particular interest in validating the hypotheses
- because they change a set security manager at some point later in the applicati
-on's execution.
+Type 2 applications are of particular interest in validating our hypotheses
+ because they change a set security manager at some point in the application's
+ execution.
  In other words, they potentially falsify the weak, moderate, and ideal
  hypotheses.
  Due to their effect on our hypotheses, applications of this type are discussed
@@ -3559,7 +3562,8 @@ on's execution.
 
 \begin_layout Standard
 Type 3 applications contain code that enables them to interact with a security
- manager if one is set, but never actually set a security manager themselves.
+ manager if one is set, but that never actually set a security manager themselve
+s.
  These applications contain code that either (A) performs permission checks
  if the application is sandboxed or (B) uses privileged actions
 \begin_inset Foot
@@ -3584,9 +3588,9 @@ url{http://docs.oracle.com/javase/7/docs/api/java/security/PrivilegedAction.html
 \end_inset
 
  to ensure the application works if constrained.
- Similarly, type 4 applications contain code in unit test that ensure the
- application works correctly if sandboxed or that set a manager themselves,
- but these applications are not useful for validating our hypotheses because
+ Similarly, Type 4 applications contain unit test code that ensures the
+ application works correctly if sandboxed or that set a manager themselves.
+ These applications are not useful for validating our hypotheses because
  their interactions with the manager are not in production code.
 \end_layout
 
@@ -3600,7 +3604,7 @@ SecurityManager
 \begin_inset Quotes erd
 \end_inset
 
- but whose type does not extend the 
+ but do not extend the 
 \family typewriter
 SecurityManager
 \family default
@@ -3611,7 +3615,7 @@ SecurityManager
 \end_layout
 
 \begin_layout Standard
-The remainder of this section provides details about type 1 and type 2 applicati
+The remainder of this section provides details about Type 1 and Type 2 applicati
 ons, with few details about the remaining types because they did not have
  a significant bearing on the outcomes of this study.
 \end_layout
@@ -3644,8 +3648,8 @@ Weak Hypothesis
 Benign applications do not disable the security manager.
  
 \emph on
-The investigation determined that some benign applications disable the security
- manager, which turns off the sandbox.
+The investigation determined that some benign applications do disable the
+ security manager, which turns off the sandbox.
  The applications that explicitly disabled the manager typically were not
  using the sandbox for security purposes; these cases are further explained
  in section 
@@ -3690,9 +3694,9 @@ Benign applications do not change the security manager if a self-protecting
 \shape default
 .
  This hypothesis was supported by both datasets.
- When false positives are excluded, 19 out of 24 true positives in the Qualitas
- dataset and 9 out of 12 true positives in the GitHub dataset did not change
- a set security manager or the policy it enforced during execution.
+ 19 out of 24 true positives in the Qualitas dataset and 9 out of 12 true
+ positives in the GitHub dataset did not change a set security manager or
+ the policy it enforced during execution.
 \end_layout
 
 \begin_layout Standard
@@ -3721,8 +3725,8 @@ name "sub:Non-security-uses-of"
 \end_layout
 
 \begin_layout Standard
-We found several cases where applications use the sandbox in ways that were
- not intended to increase the security of the system.
+We found several cases of applications using the sandbox in ways unrelated
+ to system security.
  Most of these applications used the sandbox to enforce architectural constraint
 s when interacting with other applications or forcibly disabled the sandbox
  to reduce development complexity.
@@ -3733,13 +3737,13 @@ Enforcing Architectural Constraints
 \end_layout
 
 \begin_layout Standard
-It is common for Java applications to call 
+Java applications commonly call 
 \family typewriter
 System.exit()
 \family default
  when a non-recoverable error condition occurs.
  This error handling strategy causes problems when an application uses another
- application that implements this strategy as a library.
+ application as a library that implements this strategy.
  When the library application executes 
 \family typewriter
 System.exit()
@@ -3770,10 +3774,10 @@ System.exit()
 
 \begin_layout Standard
 This case appears in Eclipse, which uses Ant as a library.
- Ant kills the JVM when an unrecoverable error condition occurs to terminate
- execution of the build script it is running.
- However, Eclipse wants to continue executing and to report an error to
- the user when Ant runs into a error condition.
+ When an unrecoverable error condition occurs, Ant kills the JVM to terminate
+ execution of the build script currently running.
+ However, Eclipse should continue executing and report an error to the user
+ when Ant runs into an error condition.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3922,7 +3926,7 @@ reference "fig:GJMan-snippet"
 \end_inset
 
 .
- The code references a blog post
+ A code comment that isn't shown references a blog post
 \begin_inset Foot
 status open
 
@@ -3932,7 +3936,7 @@ http://www.jroller.com/ethdsy/entry/disabling_system_exit
 
 \end_inset
 
- that appears to be the origin of this solution.
+ that we believe is the origin of this solution.
  The code contains an 
 \family typewriter
 apply
@@ -4059,11 +4063,12 @@ name "fig:GJMan-snippet"
 \begin_layout Standard
 In total, we found 3 applications that use a variation of this technique:
  Eclipse, GJMan, and AspectJ.
- While this technique does enforce the desired constraint, and is probably
- the best solution available in Java at the moment, it is likely to cause
- problems when applications are also using the sandbox for security purposes.
+ While this technique does enforce the desired constraint, and appears to
+ be the best solution available in Java at the moment, it may cause problems
+ when applications are also using the sandbox for security purposes.
  The technique requires the application to dynamically change the security
- manager, which requires that the manager itself be defenseless or that
+ manager.
+ This operation requires that the manager itself be defenseless or that
  the application is very carefully written to prevent malicious code from
  changing the manager or the policy it enforces.
  Defenseless security managers are not capable of reliably enforcing a serious
@@ -4075,8 +4080,8 @@ Reducing Web Application Development Complexity
 \end_layout
 
 \begin_layout Standard
-During our investigation, we found that the Java security policies for web
- applications (applets and applications launched via Java Web Start 
+We found that the Java security policies for web applications (applets and
+ applications launched via Java Web Start)
 \begin_inset Foot
 status open
 
@@ -4098,21 +4103,20 @@ url{http://www.oracle.com/technetwork/java/javase/javawebstart/index.html}
 
 \end_inset
 
-) created complexity for certain applications.
- In the latest versions of the JRE at the time of this paper (1.7.72 and 1.8.25),
- Java requires that users agree that a Java web application originating
- from a source other than the host machine should be executed.
- By default, Java executes the application inside a restrictive sandbox
- that severely limits the operations the application can perform.
- Inside the restrictive sandbox, applications cannot perform operations
- such as accessing files on the local filesystem, retrieving resources from
- any third party server, and changing the security manager.
+ created complexity for certain applications.
+ In the latest versions of the JRE (1.7.72 and 1.8.25), users are prompted to
+ allow the execution of Java web applications originating from a source
+ other than the host machine.
+ By default, Java executes such an application inside a restrictive sandbox
+ that severely limits the operations the application can perform, excluding
+ operations such as accessing local files, retrieving resources from any
+ third party server, or changing the security manager.
  
 \end_layout
 
 \begin_layout Standard
-For some applications, the restrictions imposed by the restrictive sandbox
- may prevent required behavior.
+For some applications, required behaviors may be prevented by the restrictive
+ sandbox.
  Thus, Java provides a way to run applications outside the restrictive sandbox.
  To avoid executing the applet in a restrictive sandbox, a developer must
  first get the application digitally signed by a recognized certificate
@@ -4120,8 +4124,8 @@ For some applications, the restrictions imposed by the restrictive sandbox
  Once the application has been properly signed, the developer may specify
  that the application should run outside of the sandbox.
  Before running this kind of application outside of the sandbox, the use
- must accept two prompts: a pop-up to run the application and second pop-up
- to run outside the sandbox.
+ must accept two prompts: one to run the application, and a second to run
+ outside the sandbox.
  
 \end_layout
 
@@ -4138,13 +4142,12 @@ SecurityException
  sandbox and then avoid using restricted permissions.
  Thus, the application would only be able to execute a subset of the full
  application.
- This option requires more development effort because the application is
- essentially implemented twice, once as the restricted version and again
- as the full version.
+ This requires more development effort because the application is essentially
+ implemented twice, once as the restricted version and again as the full
+ version.
  The other option does not allow the application to execute the application
  inside a restrictive sandbox.
- This option forces the user to run the application outside the sandbox,
- since the application would not work otherwise.
+ This option forces the user to run the application outside the sandbox.
  We found that applications using this method attempted to set the security
  manager to 
 \family typewriter
@@ -4152,16 +4155,12 @@ null
 \family default
  at the beginning of the application, causing the sandbox to catch the security
  violation and terminate the application.
- We believe developers did not allow the application to terminate farther
- into the application's execution to prevent the user from misdiagnosing
- a permission violation for another error.
- During the investigation, we found two applications that used this method:
- Eclipse and Timelag.
  
 \end_layout
 
 \begin_layout Standard
-Figure 
+We found two applications that used this method: Eclipse and Timelag.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Eclipse-jws-snippet"
@@ -5288,13 +5287,12 @@ http://www.jetbrains.com/idea/documentation/inspections.jsp
 , called inspections, to warn users of potentially problematic sections
  of code.
  In the inspections for security issues, the IntelliJ editor contains two
- inspections that directly pertain to interactions with the sandbox: 1)
- one that highlights calls to 
+ inspections that directly pertain to interactions with the sandbox: one
+ that highlights calls to 
 \family typewriter
 System.setSecurityManager()
 \family default
- and 2) another that highlights the definition of custom security manager
- classes.
+ and another that highlights the definition of custom security manager classes.
  The descriptions for these inspections respectively contain warnings that
  imply that interaction with the manager can create security issues:
 \end_layout
@@ -5325,7 +5323,7 @@ While not necessarily representing a security hole, such classes should
 
 \begin_layout Standard
 IntelliJ's concern with developers interacting with the security manager
- in these ways is clearly warranted given our findings above.
+ in these ways is warranted given our findings above.
 \end_layout
 
 \begin_layout Section
