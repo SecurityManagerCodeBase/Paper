@@ -3714,7 +3714,7 @@ This hypothesis was shown to be false: multiple applications changed the
 \end_layout
 
 \begin_layout Standard
-In short, the strong mitigation is the only proposed mitigations that can
+In short, the strong mitigation is the only proposed mitigation that can
  be implemented without breaking benign applications.
 \end_layout
 
