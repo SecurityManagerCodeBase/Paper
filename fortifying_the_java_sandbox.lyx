@@ -5477,7 +5477,7 @@ key "DaCapo:paper"
 
 \end_inset
 
-, standard set of real-world Java applications, to measure Quarantine's
+, a standard set of real-world Java applications, to measure Quarantine's
  performance effects.
  Siefers et al.
  creates a tool, Robusta, which separates JNI code into another sandbox
@@ -5511,7 +5511,7 @@ key "cova_detection_2010"
 
 \end_inset
 
-, and in Flash 
+, and in Adobe Flash 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ford_analyzing_2009"
