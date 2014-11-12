@@ -8106,8 +8106,19 @@ ZC: I cannot think of a good sentence to differentiate the their approach
 \end_layout
 
 \begin_layout Standard
+Provos et al.
+ describe a method of seperating privileges to reduce privilege escalation,
+ which is partially employed in the Java security model 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Provos-PrivilegeEscalation"
+
+\end_inset
+
+.
+ 
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Plain Layout
 ZC: All sentences with citations in the rest of the paper:
