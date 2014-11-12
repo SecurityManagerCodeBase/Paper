@@ -1399,8 +1399,8 @@ As discussed in the previous sections, it is widely known within the Java
  source Java applications interact with the security manager? To answer
  this question, our empirical analysis aimed to validate four independent
  hypotheses.
- Each hypothesis is paired with a mitigation that is possible to implement
- if the hypothesis is supported.
+ Each hypothesis is paired with a mitigation that can be implemented if
+ the hypothesis is supported.
  The mitigations are given names that denote their relative strengths when
  compared to each other.
  For example, a 
@@ -1421,7 +1421,7 @@ ideal
 \end_inset
 
  mitigation stops all in-scope exploits and can never be bypassed.
- Our hypotheses and the mitigations each enable follow: 
+ Our hypotheses and their accompanying mitigations follow: 
 \end_layout
 
 \begin_layout Standard
