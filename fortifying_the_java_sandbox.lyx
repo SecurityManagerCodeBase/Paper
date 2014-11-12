@@ -1397,15 +1397,37 @@ As discussed in the previous sections, it is widely known within the Java
  inspections of the open source Java application landscape.
  More precisely, we answer the following research question: How do open
  source Java applications interact with the security manager? To answer
- this question, our empirical analysis aimed to validate the following hypothese
-s, roughly categorized by the strength of the mitigation that is possible
- if the hypothesis holds:
+ this question, our empirical analysis aimed to validate four independent
+ hypotheses.
+ Each hypothesis is paired with a mitigation that is possible to implement
+ if the hypothesis is supported.
+ The mitigations are given names that denote their relative strengths when
+ compared to each other.
+ For example, a 
+\begin_inset Quotes eld
+\end_inset
+
+weak
+\begin_inset Quotes erd
+\end_inset
+
+ mitigation stops a small number of in-scope exploits and is easily bypassed.
+ An 
+\begin_inset Quotes eld
+\end_inset
+
+ideal
+\begin_inset Quotes erd
+\end_inset
+
+ mitigation stops all in-scope exploits and can never be bypassed.
+ Our hypotheses and the mitigations each enable follow: 
 \end_layout
 
 \begin_layout Standard
 
 \series bold
-Weak Hypothesis:
+Hypothesis 1:
 \series default
  
 \shape italic
@@ -1414,8 +1436,12 @@ Benign applications do not disable the security manager.
 \shape default
  If this hypothesis holds, exploits can be differentiated from benign applicatio
 ns by any attempt to disable the current security manager.
- While this mitigation would be easy to implement, exploits that weaken
- the sandbox without disabling it would remain a threat.
+ This 
+\series bold
+weak mitigation
+\series default
+ would be easy to implement, but exploits that weaken the sandbox without
+ disabling it would remain a threat.
  For example, attackers could potentially bypass the mitigation by modifying
  the enforced policy to allow the permissions they need or they could replace
  the current manager with one that never throws a 
@@ -1428,7 +1454,7 @@ SecurityException
 \begin_layout Standard
 
 \series bold
-Moderate Hypothesis:
+Hypothesis 2:
 \series default
  
 \emph on
@@ -1440,8 +1466,12 @@ ecurity manager
 .
  Validation of this hypothesis would enable mitigations that prevent attackers
  from weakening or disabling the sandbox.
- However, an implementation of this mitigation would require differentiating
- between changes which weaken the sandbox and those that do not.
+ However, an implementation of this 
+\series bold
+moderate mitigation
+\series default
+ would require differentiating between changes which weaken the sandbox
+ and those that do not.
  Classifying changes in this manner is difficult because it requires context
  specific information that a general mitigation strategy may not have.
  For example, if a permission to write to a file is replaced by a permission
@@ -1452,7 +1482,7 @@ ecurity manager
 \begin_layout Standard
 
 \series bold
-Strong Hypothesis:
+Hypothesis 3:
 \series default
  
 \shape italic
@@ -1470,8 +1500,12 @@ reference "sec:Background"
 \end_inset
 
 ) is disallowed.
- To implement this mitigation, a runtime monitor must determine if a security
- manager is self-protecting at the time the manager is set.
+ To implement this 
+\series bold
+strong mitigation
+\series default
+, a runtime monitor must determine if a security manager is self-protecting
+ at the time the manager is set.
  This can be easily achieved.
  While this mitigation has the same outcome as the mitigation enabled by
  successful validation of the moderate hypothesis, it is significantly easier
@@ -1481,7 +1515,7 @@ reference "sec:Background"
 \begin_layout Standard
 
 \series bold
-Ideal Hypothesis:
+Hypothesis 4:
 \series default
  
 \shape italic
@@ -1490,6 +1524,13 @@ Benign applications do not change a set security manager.
 \shape default
  If the study supports this hypothesis, any attempted change to an already
  established security manager can be considered malicious.
+ The 
+\series bold
+ideal mitigation
+\series default
+ could easily be implemented in the JVM or an external tool to ensure the
+ sandbox can never be turned off or weakened.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -3529,8 +3570,8 @@ name "fig:Weka-snippet"
 Type 2 applications are of particular interest in validating our hypotheses
  because they change a set security manager at some point in the application's
  execution.
- In other words, they potentially falsify the weak, moderate, and ideal
- hypotheses.
+ In other words, the weak, moderate, and ideal mitigations potentially break
+ them.
  Due to their effect on our hypotheses, applications of this type are discussed
  in detail below.
 \end_layout
@@ -3581,7 +3622,7 @@ ons, with few details about the remaining types because they did not have
 \end_layout
 
 \begin_layout Subsubsection
-Evaluation of our hypotheses
+Evaluation of our Hypotheses
 \end_layout
 
 \begin_layout Standard
@@ -3601,7 +3642,7 @@ reference "sec:Security-Manager-Study"
 \begin_layout Standard
 
 \series bold
-Weak Hypothesis
+Hypothesis 1
 \series default
 : 
 \shape italic
@@ -3627,7 +3668,7 @@ reference "sub:Non-security-uses-of"
 \begin_layout Standard
 
 \series bold
-Moderate Hypothesis
+Hypothesis 2
 \series default
 : 
 \emph on
@@ -3645,7 +3686,7 @@ This hypothesis was not definitively falsified if turning off the security
 \begin_layout Standard
 
 \series bold
-Strong Hypothesis
+Hypothesis 3
 \series default
 : 
 \shape italic
@@ -3654,15 +3695,14 @@ Benign applications do not change the security manager if a self-protecting
 \shape default
 .
  This hypothesis was supported by both datasets.
- 19 out of 24 true positives in the Qualitas dataset and 9 out of 12 true
- positives in the GitHub dataset did not change a set security manager or
- the policy it enforced during execution.
+ No applications in our set change the sandbox settings after a self-protecting
+ security manager is set.
 \end_layout
 
 \begin_layout Standard
 
 \series bold
-Ideal Hypothesis
+Hypothesis 4
 \series default
 :
 \shape italic
@@ -3671,6 +3711,11 @@ Ideal Hypothesis
 \emph on
 This hypothesis was shown to be false: multiple applications changed the
  security manager, both for security and non-security reasons.
+\end_layout
+
+\begin_layout Standard
+In short, the strong mitigation is the only proposed mitigations that can
+ be implemented without breaking benign applications.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5470,7 +5515,7 @@ reference "sec:Security-Manager-Study"
 
  we discussed (1) four hypotheses that could lead to Java exploit mitigations
  if validated and (2) how we went about validating them.
- We supported the strong hypothesis and rejected all of the others.
+ We supported hypothesis 3 and rejected all of the others.
  Along the way, we learned practical lessons about how applications use
  the Java sandbox that are useful to exploit mitigation implementers.
  Our results included two backwards-compatible rules, discussed in section
@@ -5486,8 +5531,9 @@ reference "sec:Rules-for-Fortifying"
 \end_layout
 
 \begin_layout Standard
-In this section, we discuss the implementation and evaluation of runtime
- monitors that implement the Privilege Escalation and Security Manager rules.
+In this section, we realize the strong mitigation through an implementation
+ and evaluation of runtime monitors that enforce the Privilege Escalation
+ and Security Manager rules.
  We collectively call these monitors the 
 \shape italic
 Java Sandbox Fortifier
