@@ -1340,9 +1340,31 @@ key "svoboda_anatomy_blog_2013,svoboda_anatomy_2014"
 
  pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
  a total of six different secure coding rules and four guidelines.
- In the typical case, following just one or two of the broken rules and
- guidelines would have prevented a serious exploit.
  
+\end_layout
+
+\begin_layout Standard
+In the typical case, following just one or two of the broken rules and guideline
+s would have prevented a serious exploit.
+ For example, CVE-2012-4681 resulted from two rule violations in a privileged
+ Abstract Window Toolkit (AWT) class in the 
+\family typewriter
+sun
+\family default
+ package and two rule violations and an ignored guideline in a JavaBean
+ class.
+ The bean class was exploited to access the AWT class.
+ The AWT class contained a method that reflectively fetched any field in
+ any class, made the field public, and returned it.
+ This is a violation of rule SEC05-J because reflection is being used to
+ increase the accessibility of fields.
+ It is also a violation of SEC00-J because the AWT class is privileged and
+ leaks sensitive information (the fields) across trust boundaries.
+ All of the rules and guidelines should be followed, but it would have not
+ been possible to exploit this case to disable the security manager had
+ the fields not been leaked across a trust boundary.
+ To follow SEC00-J, the call to the AWT method in question should have been
+ protected using security manager checks.
 \end_layout
 
 \begin_layout Standard
