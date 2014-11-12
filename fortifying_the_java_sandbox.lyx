@@ -3526,7 +3526,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Weka code snipet that intializes a security manager if one does not already
+Weka code snippet that intializes a security manager if one does not already
  exist.
  This is the only reference to the security manager in the Weka's code base.
 \begin_inset CommandInset label
@@ -5627,11 +5627,10 @@ reference "sec:Security-Manager-Study"
 
  we discussed (1) four hypotheses that could lead to Java exploit mitigations
  if validated and (2) how we went about validating them.
- We also discussed additional information about how applications use the
- Java sandbox that we learned while successfully validating the strong hypothesi
-s and the overall results of our empirical analysis of the open source Java
- landscape.
- The results included two backwards-compatible rules, discussed in section
+ We supported the strong hypothesis and rejected all of the others.
+ Along the way, we learned practical lessons about how applications use
+ the Java sandbox that are useful to exploit mitigation implementers.
+ Our results included two backwards-compatible rules, discussed in section
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5640,35 +5639,76 @@ reference "sec:Rules-for-Fortifying"
 \end_inset
 
 , that can be enforced to stop current exploits.
- In this section we discuss the implementation and evaluation of runtime
- monitors that implement the privilege escalation and Security Manager rules.
+ 
+\end_layout
+
+\begin_layout Standard
+In this section, we discuss the implementation and evaluation of runtime
+ monitors that implement the Privilege Escalation and Security Manager rules.
  We collectively call these monitors the 
 \shape italic
 Java Sandbox Fortifier
 \shape default
  (JSF).
- We evaluated JSF in collaboration with a large aerospace company that is
- currently working on deploying the tool to workstations that belong to
- employees that are often the subject of targeted attacks.
+ We evaluated JSF in collaboration with a large aerospace company.
+ The company is currently working on deploying the tool to employee workstations
+ focusing on those often the subject of attacks.
  
+\end_layout
+
+\begin_layout Standard
+Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Implementation-Using-JVMTI"
+
+\end_inset
+
+ discusses how we implemented our runtime monitors using JVMTI.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Overhead"
+
+\end_inset
+
+ measures and discusses the overhead our monitors introduce to Java application
+ execution.
+ Finally, section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Effectiveness-at-Fortifying"
+
+\end_inset
+
+ explains the methodology behind and results of an experiment we conducted
+ to determine how effective the monitors are at stopping existing exploits.
 \end_layout
 
 \begin_layout Subsection
 Implementation Using JVMTI
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Implementation-Using-JVMTI"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Prior work has made an effort to prevent exploits in the native libraries
- used by language runtimes such as Java's 
+Prior work attemps to prevent exploits in native libraries used by language
+ runtimes such as Java's 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-portable_2012"
 
 \end_inset
 
-, and the machine learning community has put some effort into detecting
- exploits delivered via drive-by-downloads using Java applets and similar
- technologies 
+.
+ The machine learning community has put some effort into detecting exploits
+ delivered via drive-by downloads using Java applets and similar technologies
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_jarhead_2012"
@@ -5696,21 +5736,20 @@ REVIEWERS: INSPECTING THIS GITHUB PROJECT MAY REVEAL THE AUTHORS' IDENTITIES.
 \end_layout
 
 \begin_layout Standard
-JVMTI is a native interface used to access JVM operations that are intended
- to be used to create analysis tools such as profilers, debuggers, monitors,
- and thread analyzers.
- Tools that use JVMTI are called agents and are attached to a running Java
- application at some configuration specific point in the application's lifecycle.
- The interface allows an agent to set capabilities that enable the tool
- to intercept events such as class and thread creation, field access and
- modification, breakpoints, and much more.
+JVMTI is a native interface used to access JVM operations used to create
+ analysis tools such as profilers, debuggers, monitors, and thread analyzers.
+ Tools that use JVMTI are called agents, and are attached to a running Java
+ application at a configuration-specific point in the application's lifecycle.
+ The interface allows an agent to set capabilities, enabling the tool to
+ intercept events such as class or thread creation, field access or modification
+, breakpoints, etc.
  After acquiring the necessary capabilities, a JVMTI agent registers callbacks
- for the events they want to receive.
- JVMTI provides a rich API, hooks for instrumenting the bytecode of loaded
- classes, and access to the JNI, all of which can be used to perform nearly
- any operation on classes, threads, etc.
- that a tool may want to perform at the time when an event occurs.
- Our agent must intercept three events to enforce the privilege escalation
+ for the events the agent requires.
+ 
+\end_layout
+
+\begin_layout Standard
+Our agent must intercept three events to enforce the Privilege Escalation
  and Security Manager rules: 
 \family typewriter
 ClassPrepare
@@ -5729,20 +5768,15 @@ FieldModification
 
 \begin_layout Standard
 Our agent was written in C++.
- 524 lines of code were required to enforce the privilege escalation rule
- while 377 lines of code were required for the Security Manager rule when
- counted using the Linux tool 
-\family typewriter
-wc
-\family default
-.
- This code constitutes the attack surface for our tool because a malicious
+ 524 lines of code were required to enforce the Privilege Escalation rule;
+ 377 lines of code were required for the Security Manager rule.
+ This code constitutes the attack surface for our tool, because a malicious
  class could potentially craft information such as class, field, or method
  names to exploit an issue in the rule enforcement code when the information
  is passed to the appropriate callback.
  The risk here is greatly reduced both by the fact that there is little
- attack surface to inspect and due to the previously cited work that can
- be applied to our tool.
+ attack surface to inspect and because work cited earlier in this section
+ can be applied to our tool.
  For example, the software-based fault isolation subset of Robusta 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -5766,12 +5800,17 @@ key "cappos_retaining_2010"
 \end_layout
 
 \begin_layout Standard
-Our agent may be configured to run in enforce or monitor mode.
- In enforce mode a violation of either rule causes the agent to log the
- offending behavior and terminate the JVM to which the agent is attached.
- A popup is shown to the user to let them know why their Java application
- was terminated when the agent has been configured to show popups (this
- was made configurable to prevent popups on headless servers).
+Our agent may be configured to run in 
+\shape italic
+enforce
+\shape default
+ or 
+\shape italic
+monitor
+\shape default
+ mode.
+ In enforce mode, a violation of either rule causes the agent to log the
+ offending behavior and terminate the JVM to which it is attached.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5781,8 +5820,8 @@ reference "fig:A-popup-from"
 
  shows an example of a popup displayed after an exploit was caught breaking
  the privilege escalation rule.
- In monitor mode the agent logs the offending behavior but leaves the JVM's
- execution of the application untouched.
+ In monitor mode, the agent logs the offending behavior, but leaves the
+ JVM's execution of the application untouched.
 \end_layout
 
 \begin_layout Standard
@@ -6077,6 +6116,13 @@ System
 
 \begin_layout Subsection
 Overhead
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Overhead"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7609,6 +7655,13 @@ url{http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
 
 \begin_layout Subsection
 Effectiveness at Fortifying the Sandbox 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Effectiveness-at-Fortifying"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
