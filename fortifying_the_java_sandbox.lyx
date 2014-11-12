@@ -466,10 +466,17 @@ reference "sub:Java-Exploits"
 
 \begin_layout Itemize
 An empirical study of Java sandbox usage in benign, open-source applications
- (Section 
+ (Sections 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Security-Manager-Study"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Study-results"
 
 \end_inset
 
@@ -680,10 +687,10 @@ defenseless
 , which is the exact opposite of self-protecting.
  A defenseless manager does little to improve the security of a constrained
  application or the host.
- However, we show in section 
+ However, we show in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Research-Questions-and"
+reference "sec:Study-results"
 
 \end_inset
 
@@ -1404,7 +1411,7 @@ In the rest of this paper, we do not concern ourselves with the specifics
 \end_layout
 
 \begin_layout Section
-Security Manager Study
+Introduction to the Security Manager Study
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Security-Manager-Study"
@@ -1542,7 +1549,7 @@ Benign applications do not change the sandbox if a self-protecting security
 .
  If supported, it is possible to implement a mitigation strategy that disallows
  any change to a security manager that is enforcing a strict policy (as
- defined in section 
+ defined in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Background"
@@ -3494,10 +3501,89 @@ http://goo.gl/dtcqTM
 \end_layout
 
 \begin_layout Subsection
-Results
+Limitations
 \begin_inset CommandInset label
 LatexCommand label
-name "sec:Research-Questions-and"
+name "sub:Limitations-Study"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+
+\series bold
+Internal Validity
+\end_layout
+
+\begin_layout Standard
+Our results are dependent on accurately studying the source code of applications
+ and their comments.
+ In most cases, security manager interactions are easily understood, but
+ there are a few particularly complex interactions that may be misdiagnosed.
+ Furthermore, we did not review all of the code the applications, thus we
+ may have taken a comment or some source code out of context in larger applicati
+ons.
+ Finally, using two different reviewers may lead to variations in the interpreta
+tions of some of the data.
+ 
+\end_layout
+
+\begin_layout Standard
+We mitigated these threats by using a FindBugs plugin and JVMTI agent, providing
+ reviewers consistent data about where to look in the code, and a means
+ of validating their understanding of the code.
+ Furthermore, we inspected entire source files when inspecting code that
+ contained security manager operations.
+ Even with this level of review, it is impossible to achieve a perfect understan
+ding in every case in a reasonable period of time without reaching out to
+ the developer that wrote the code.
+ Finally, we tested our tools and processes in a pilot study to find and
+ mitigate sources of inconsistencies.
+ In our pilot study, each reviewer used the same inspection process and
+ the tools listed earlier to ensure they consistently characterized sandbox
+ interactions in the same set of six applications.
+\end_layout
+
+\begin_layout Subsubsection
+
+\series bold
+External Validity
+\end_layout
+
+\begin_layout Standard
+The applications in the study were limited to open source programs, specifically
+ well-known applications included in the Qualitas Corpus and publicly-available
+ applications available on GitHub.
+ It is possible that closed source applications interact with the security
+ manager in ways that we did not see in the open source community.
+ However, we inspected a few small applications with our aerospace collaborators.
+ We did not find any code that suggested this is the case.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Reliability
+\end_layout
+
+\begin_layout Standard
+While the majority of the study is easily replicable, certain aspects of
+ the our results change over time.
+ GitHub search results are constantly changing.
+ Using GitHub to generate a new dataset using our method would likely generate
+ a different dataset.
+ Furthermore, applications on GitHub can become inaccessible.
+ Over the course of our security manager study, two applications either
+ became private repositories or were removed from GitHub (FileManagerFtpHttpServ
+er and Visor).
+\end_layout
+
+\begin_layout Section
+Security Manager Study Results
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Study-results"
 
 \end_inset
 
@@ -3671,12 +3757,19 @@ ons, with few details about the remaining types because they did not have
  a significant bearing on the outcomes of this study.
 \end_layout
 
-\begin_layout Subsubsection
-Evaluation of our Hypotheses
+\begin_layout Subsection
+Evaluation of the Hypotheses
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Evaluation-of-the-hypotheses"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-We only require one counterexample to falsify a hypothesis from section
+We only require one counterexample to falsify a hypothesis from Section
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3703,7 +3796,7 @@ The investigation determined that some benign applications do disable the
  security manager, which turns off the sandbox.
  The applications that explicitly disabled the manager typically were not
  using the sandbox for security purposes; these cases are further explained
- in section 
+ in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Non-security-uses-of"
@@ -3768,7 +3861,7 @@ In short, the strong mitigation is the only proposed mitigation that can
  be implemented without breaking benign applications.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Non-security uses of the Sandbox
 \begin_inset CommandInset label
 LatexCommand label
@@ -3787,7 +3880,7 @@ s when interacting with other applications or forcibly disabled the sandbox
  to reduce development complexity.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsubsection
 Enforcing Architectural Constraints 
 \end_layout
 
@@ -4130,7 +4223,7 @@ In total, we found 3 applications that use a variation of this technique:
  security policy.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsubsection
 Reducing Web Application Development Complexity
 \end_layout
 
@@ -4302,8 +4395,15 @@ name "fig:Eclipse-jws-snippet"
 
 \end_layout
 
-\begin_layout Subsubsection
-Changing the Security Manager for Security Purposes
+\begin_layout Subsection
+Using the Security Manager for Security Purposes
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Using-the-Security"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5321,8 +5421,15 @@ DO_UNCHECKED_PERMISSION
 doPrivileged.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsection
 Security Manager Interactions are Potentially Dangerous
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Security-Manager-Interactions-Dangerous"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5380,78 +5487,6 @@ IntelliJ's concern with developers interacting with the security manager
  are often introduced when working with the sandbox.
 \end_layout
 
-\begin_layout Subsection
-Limitations
-\end_layout
-
-\begin_layout Subsubsection
-
-\series bold
-Internal Validity
-\end_layout
-
-\begin_layout Standard
-Our results are dependent on accurately studying the source code of applications
- and their comments.
- In most cases, security manager interactions are easily understood, but
- there are a few particularly complex interactions that may be misdiagnosed.
- Furthermore, we did not review all of the code the applications, thus we
- may have taken a comment or some source code out of context in larger applicati
-ons.
- Finally, using two different reviewers may lead to variations in the interpreta
-tions of some of the data.
- 
-\end_layout
-
-\begin_layout Standard
-We mitigated these threats by using a FindBugs plugin and JVMTI agent, providing
- reviewers consistent data about where to look in the code, and a means
- of validating their understanding of the code.
- Furthermore, we inspected entire source files when inspecting code that
- contained security manager operations.
- Even with this level of review, it is impossible to achieve a perfect understan
-ding in every case in a reasonable period of time without reaching out to
- the developer that wrote the code.
- Finally, we tested our tools and processes in a pilot study to find and
- mitigate sources of inconsistencies.
- In our pilot study, each reviewer used the same inspection process and
- the tools listed earlier to ensure they consistently characterized sandbox
- interactions in the same set of six applications.
-\end_layout
-
-\begin_layout Subsubsection
-
-\series bold
-External Validity
-\end_layout
-
-\begin_layout Standard
-The applications in the study were limited to open source programs, specifically
- well-known applications included in the Qualitas Corpus and publicly-available
- applications available on GitHub.
- It is possible that closed source applications interact with the security
- manager in ways that we did not see in the open source community.
- However, we inspected a few small applications with our aerospace collaborators.
- We did not find any code that suggested this is the case.
- 
-\end_layout
-
-\begin_layout Subsubsection
-Reliability
-\end_layout
-
-\begin_layout Standard
-While the majority of the study is easily replicable, certain aspects of
- the our results change over time.
- GitHub search results are constantly changing.
- Using GitHub to generate a new dataset using our method would likely generate
- a different dataset.
- Furthermore, applications on GitHub can become inaccessible.
- Over the course of our security manager study, two applications either
- became private repositories or were removed from GitHub (FileManagerFtpHttpServ
-er and Visor).
-\end_layout
-
 \begin_layout Section
 Rules for Fortifying the Sandbox 
 \begin_inset CommandInset label
@@ -5464,14 +5499,14 @@ name "sec:Rules-for-Fortifying"
 \end_layout
 
 \begin_layout Standard
-Given the results of our investigation in section 
+Given the results of our investigation in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Security-Manager-Study"
 
 \end_inset
 
- and the discussion in section 
+ and the discussion in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Java-Exploits"
@@ -5556,7 +5591,7 @@ name "sec:Mitigations"
 \end_layout
 
 \begin_layout Standard
-In section 
+In Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Security-Manager-Study"
@@ -5568,7 +5603,7 @@ reference "sec:Security-Manager-Study"
  We supported hypothesis 3 and rejected all of the others.
  Along the way, we learned practical lessons about how applications use
  the Java sandbox that are useful to exploit mitigation implementers.
- Our results included two backwards-compatible rules, discussed in section
+ Our results included two backwards-compatible rules, discussed in Section
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5622,7 +5657,7 @@ reference "sub:Overhead"
 
  measures and discusses the overhead our monitors introduce to Java application
  execution.
- Finally, section 
+ Finally, Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Related-Work-Mitigation"
@@ -6043,17 +6078,17 @@ monitor
  using defenseless managers.
  Rule enforcement in the presence of a defenseless security manager may
  break benign applications that use a defenseless manager, as shown in several
- examples in section 
+ examples in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Research-Questions-and"
+reference "sec:Study-results"
 
 \end_inset
 
 .
  In any case, future modifications are logged as a violation of the rule,
  and trigger the operation relevant to the agent's current mode, discussed
- in section 
+ in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Implementation-Using-JVMTI"
