@@ -5825,6 +5825,25 @@ reference "fig:A-popup-from"
 \end_layout
 
 \begin_layout Standard
+Setions 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Enforcing-the-Privilege"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Enforcing-the-SecurityManager"
+
+\end_inset
+
+ discuss how the Privilege Escalation and Security Manage rules are enforced
+ respectively.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -5866,8 +5885,15 @@ name "fig:A-popup-from"
 
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsubsection
 Enforcing the Privilege Escalation Rule
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Enforcing-the-Privilege"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5999,8 +6025,15 @@ With both protection domains, the implementation of the agent as of the
  domain to handle cases we are currently not aware of.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsubsection
 Enforcing the SecurityManager Rule
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Enforcing-the-SecurityManager"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
