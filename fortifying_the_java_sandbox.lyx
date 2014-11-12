@@ -210,7 +210,14 @@ Be clear right up front that we are not trying to stop all Java exploits,
 
 \begin_layout Standard
 The Java Runtime Environment (JRE) is widely installed on user endpoints,
- where it executes external code in the form of applets.
+ where it executes external code in the form of applets 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gong1997going,gong2003inside"
+
+\end_inset
+
+.
  These facts, combined with the hundreds of recently discovered vulnerabilities
  in Java, including zero-day vulnerabilities (e.g.
  CVE-2013-0422), have made Java a popular exploit vector (see Figure 
