@@ -5492,6 +5492,15 @@ reference "sub:Implementation-Using-JVMTI"
  Section 
 \begin_inset CommandInset ref
 LatexCommand ref
+reference "sub:Effectiveness-at-Fortifying"
+
+\end_inset
+
+ explains the methodology behind and results of an experiment we conducted
+ to determine how effective the monitors are at stopping existing exploits.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Overhead"
 
 \end_inset
@@ -5501,12 +5510,11 @@ reference "sub:Overhead"
  Finally, section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Effectiveness-at-Fortifying"
+reference "sub:Related-Work-Mitigation"
 
 \end_inset
 
- explains the methodology behind and results of an experiment we conducted
- to determine how effective the monitors are at stopping existing exploits.
+ covers prior work related to our mitigations.
 \end_layout
 
 \begin_layout Subsection
@@ -5521,7 +5529,7 @@ name "sub:Implementation-Using-JVMTI"
 \end_layout
 
 \begin_layout Standard
-Prior work attemps to prevent exploits in native libraries used by language
+Prior work attempts to prevent exploits in native libraries used by language
  runtimes such as Java's 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -5555,7 +5563,7 @@ REVIEWERS: INSPECTING THIS GITHUB PROJECT MAY REVEAL THE AUTHORS' IDENTITIES.
 
 \end_inset
 
- In particular, our tool blocks operations that exploits use without effecting
+ In particular, our tool blocks operations that exploits use without affecting
  the execution of benign applications.
 \end_layout
 
@@ -5587,7 +5595,21 @@ FieldAccess
 FieldModification
 \family default
 .
- Enforcement of these rules is discussed in detail in subsections below.
+ Enforcement of these rules is discussed in detail in subsections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Enforcing-the-Privilege"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Enforcing-the-SecurityManager"
+
+\end_inset
+
+ below.
 \end_layout
 
 \begin_layout Standard
@@ -5649,25 +5671,6 @@ reference "fig:A-popup-from"
 \end_layout
 
 \begin_layout Standard
-Setions 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Enforcing-the-Privilege"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Enforcing-the-SecurityManager"
-
-\end_inset
-
- discuss how the Privilege Escalation and Security Manage rules are enforced
- respectively.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -5721,10 +5724,9 @@ name "sub:Enforcing-the-Privilege"
 \end_layout
 
 \begin_layout Standard
-The privilege escalation rule is enforced by ensuring that, after a self-protect
-ing security manager has been set, classes do not load or cause the loading
- of more privileged classes unless the privileged class is in a restricted-acces
-s package.
+The Privilege Escalation rule is enforced by ensuring that classes can only
+ load or cause the loading of more privileged classes in restricted-access
+ packages after a self-protecting security manager has been set.
  
 \shape italic
 Restricted-access packages
@@ -5740,28 +5742,19 @@ package.access
 java.security.Security
 \family default
  class.
- There are two ways to directly access packages listed in this property:
- (1) exploit a vulnerability in a class that can access them or (2) allow
- access via the 
+ There are two ways to unsafely and directly access packages listed in this
+ property: (1) exploit a vulnerability in a class that can access them or
+ (2) allow access via the 
 \family typewriter
 accessClassInPackage
 \family default
  permission.
- The latter option would ensure the security manager is defenseless, thus
- the application would not be protected by the agent (see table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:defenseless-permissions"
-
-\end_inset
-
-).
 \end_layout
 
 \begin_layout Standard
-We must allow a class to indirectly load a class in a restricted-access
- package because classes in these packages are often used by JRE classes
- that an application is allowed to use.
+Restricted-access package classes are often used by JRE classes that an
+ application is allowed to use.
+ We must allow a class to indirectly load them.
  For example, many of the classes in the 
 \family typewriter
 java.lang.reflect
@@ -5770,15 +5763,15 @@ java.lang.reflect
 \family typewriter
 sun
 \family default
- package, the latter of which is a restricted-access package that contains
- the internal implementations for many Java features.
- However, enforcing this rule prevents exploits from elevating the privileges
- of their payloads because the payloads are not in restricted-access packages
- and cannot be in them with default JRE configurations.
+ package, which is a restricted-access package containing the internal implement
+ations for many Java features.
+ However, enforcing the Privilege Escalation rule prevents exploits from
+ elevating the privileges of their payloads because the payloads can not
+ be in restricted-access packages with default JRE configurations.
 \end_layout
 
 \begin_layout Standard
-To enforce this rule, our agent registers for the 
+To enforce the Privilege Escalation rule, our agent registers for the 
 \family typewriter
 ClassPrepare
 \family default
@@ -5787,8 +5780,9 @@ ClassPrepare
  Assuming the loaded class is not in a restricted-access package, the agent
  inspects the stack frame to determine which class caused the new class
  to be loaded.
- The agent must get the protection domains for both classes, but this can
- not be done by calling the necessary Java methods
+ The agent must get the protection domains for both classes.
+ This can not be done from the agent using the JNI because the required
+ Java calls
 \begin_inset Foot
 status collapsed
 
@@ -5800,11 +5794,9 @@ Class.getProtectionDomain()
 
 \end_inset
 
- via the JNI from the agent because the Java calls will be performed with
- the same permissions as the application the agent is attached to.
+ will be performed with the same permissions as the executing Java application.
  Most applications where this operation is relevant (i.e.
  those that have a self-protecting manager) do not have the necessary permission
- to get a protection domain
 \begin_inset Foot
 status collapsed
 
@@ -5824,11 +5816,12 @@ getProtectionDomain
 
 \end_inset
 
- because it would allow a malicious class to probe the policy to determine
- which, if any, malicious operations it can perform.
- Due to the fact that JVMTI agents are loaded into the JRE as a shared-library,
- we instead load libjvm.so (jvm.dll on Microsoft Windows) to call JVM functions
- without security checks.
+ to get a protection domain because the permission would allow a malicious
+ class to probe the policy to determine which, if any, malicious operations
+ it can perform.
+ Because JVMTI agents are loaded into the JRE as a shared library, we instead
+ load libjvm.so (jvm.dll on Microsoft Windows) to call JVM functions without
+ security checks.
  Our agent leverages this ability to call the 
 \family typewriter
 GetProtectionDomain
@@ -5838,16 +5831,15 @@ GetProtectionDomain
 \end_layout
 
 \begin_layout Standard
-With both protection domains, the implementation of the agent as of the
- time of this writing simply checks to see if the loaded class' protection
- domain has all permissions while the class that caused the loading does
- not.
+With both protection domains, the current agent implementation simply checks
+ to see whether the loaded class's protection domain has all permissions
+ while the class that caused the loading does not.
  If the latter is true, the privilege escalation rule has been violated.
  This specific check was used because it is fast, simple, and all privileged
  classes allow all permissions under known circumstances.
  It would be easy to update this check to instead ensure that every permission
- in the loaded class' protection domain is also implied by the other protection
- domain to handle cases we are currently not aware of.
+ in the loaded class's protection domain is also implied by the other protection
+ domain to handle other cases.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5871,7 +5863,7 @@ security
 \family typewriter
 System
 \family default
- class; this field stores the security manager that is used by protected
+ class: This field stores the security manager that is used by protected
  code.
  The agent implements the read and write monitors by respectively registering
  
@@ -5888,7 +5880,7 @@ System.getSecurityManager()
 System.setSecurityManager()
 \family default
 , but we must monitor the field instead of instrumenting these methods to
- detect type confusion attacks, as discussed later in this section.
+ detect type confusion attacks.
  
 \end_layout
 
@@ -5923,13 +5915,20 @@ null
 \family default
 , the agent knows the manager is being set for the first time and checks
  to see if the new manager is self-protecting.
- If the manager is self-protecting the agent simply updates the shadow copy,
- otherwise the agent will also drop into monitor mode when enforce mode
- is configured because the rules cannot be enforced for applications that
- use defenseless managers.
- We cannot enforce the rules in the presence of a defenseless security manager
- because enforcement may break the function of benign applications that
- utilize a defenseless manager, as in several examples in section 
+ If the manager is self-protecting the agent simply updates the shadow copy.
+ Otherwise the agent drops from 
+\shape italic
+enforce
+\shape default
+ to 
+\shape italic
+monitor
+\shape default
+ mode as applicable because the rules cannot be enforced for applications
+ using defenseless managers.
+ Rule enforcement in the presence of a defenseless security manager may
+ break benign applications that use a defenseless manager, as shown in several
+ examples in section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Research-Questions-and"
@@ -5937,9 +5936,16 @@ reference "sec:Research-Questions-and"
 \end_inset
 
 .
- In any case, future modifications are logged as a violation of the rule
- and trigger the operation relevant to the agents current mode as discussed
- above.
+ In any case, future modifications are logged as a violation of the rule,
+ and trigger the operation relevant to the agent's current mode, discussed
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Implementation-Using-JVMTI"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -5952,24 +5958,452 @@ Access events are used to detect type confusion attacks against the manager.
 System
 \family default
  class, the malicious copy will have different internal JVM identifiers
- for the field that stores the manager, the class itself, and its methods
- even though writing to the field in one version of the class updates the
- same field in the other version.
+ for the class itself and its methods.
+ Even given these differences, updating a field in one version of the class
+ updates the value the JVM stores for the field in both classes because
+\family typewriter
+ System
+\family default
+ is static and both classes appear to have the same type.
  The modification and access events are registered for specific field and
  class identifiers, thus the events are not triggered for operations on
  the malicious version.
  We leverage the mismatch this causes between the set security manager and
- our shadow copy in the access event by checking to see if the manager that
- was just read has the same internal JVM reference as our shadow copy.
- When the two references do not match, the manager has been changed as the
- result of a malicious class masquerading as the 
+ our shadow copy by checking to see if the manager that is read in the access
+ event has the same internal JVM reference as our shadow copy.
+ When the two references do not match, the manager has been changed by a
+ malicious class masquerading as 
 \family typewriter
 System
 \family default
- class.
+.
  Type confusion attacks may also be used to masquerade a class as a privileged
  class loader to elevate the privileges of a payload class that disables
- the manager, but this scenario is detected by the modification event.
+ the manager; this scenario is detected by the modification event.
+\end_layout
+
+\begin_layout Subsection
+Effectiveness at Fortifying the Sandbox 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Effectiveness-at-Fortifying"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We performed an experiment to evaluate how effective our agent is at blocking
+ exploits that disable the sandbox.
+ In our experiment, we ran Java 7 exploits for the browser from Metasploit
+ 4.10.0 on 64-bit Windows 7 against the initial release of version 7 of the
+ JRE.
+ This version of Metasploit contains twelve applets that are intended to
+ exploit JRE 7 or earlier, but two did not successfully run due to Java
+ exceptions we did not debug.
+ Metasploit contains many Java exploits outside of the subset we used, but
+ the excluded exploits either only work against long obsolete versions of
+ the JRE or are not well positioned to be used in drive-by-downloads.
+ 
+\end_layout
+
+\begin_layout Standard
+We ran the ten exploits in our set under the following conditions: (1) without
+ the agent, (2) with the agent but only enforcing the privilege escalation
+ rule, and (3) while enforcing both rules.
+ We ran these conditions to respectively: (1) establish that the exploits
+ succeed against our JRE, (2) test how effective the privilege escalation
+ rule is without the security manager rule, and (3) evaluate how effective
+ the agent is in the strictest configuration currently available.
+ Running the privilege escalation rule alone shows how effective the tool
+ is at stopping applet exploits with low runtime overhead.
+ Overall, all ten of the exploits succeed against our JRE without the agent.
+ Four were stopped by the privilege escalation rule.
+ All ten were stopped when both rules were enforced.
+ The exploits that were not stopped by the privilege escalation rule were
+ either type confusion exploits or exploits that did not need to elevate
+ the privileges of the payload class.
+ The payload class does not need elevated privileges when it can directly
+ access a privileged class to exploit.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Exploit-experiment-summary"
+
+\end_inset
+
+ summarizes our results using the specific CVE's each exploit targeted.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effectiveness test results.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Exploit-experiment-summary"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="3">
+<features rotate="0" booktabs="true" tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top" width="3cm">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+CVE-ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Privilege Escalation Monitor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Both Monitors
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2011-3544
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Succeeded 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2012-0507
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2012-4681
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Succeeded 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2012-5076
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Succeeded 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2013-0422
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2013-0431
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2013-1488
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Succeeded 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2013-2423
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Succeeded 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2013-2460
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2013-2465
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Succeeded 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Attack Blocked
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -5984,8 +6418,8 @@ name "sub:Overhead"
 \end_layout
 
 \begin_layout Standard
-We measured performance overhead using version 9.12-bach of the DaCapo Benchmark
- Suite 
+We measured JSF's performance overhead using version 9.12-bach of the DaCapo
+ Benchmark Suite 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "DaCapo:paper"
@@ -6003,14 +6437,14 @@ The average for each benchmark is the geometric mean of the last benchmark
  execution times from the 5 convergence iterations.
  We ran the benchmarks on an otherwise idle laptop with 8 gigabytes of RAM
  and an 8 core 64-bit Intel i7-3632QM CPU at 2.2 GHz.
- We used the 64-bit version of Java version 1.7.0 update 60.
+ We used the 64-bit version of Java version 1.7.0, update 60.
 \end_layout
 
 \begin_layout Standard
 The DaCapo benchmarks do not set a security manager.
  Thus, to measure JSF's overhead, we used a modified version of the agent
- that always performs rule checks.
- This produces the worst-case overhead because the unmodified version of
+ that always performs JSF's rule checks.
+ This produces the worst-case overhead, because the unmodified version of
  JSF only attempts to monitor for rule violations when a security manager
  has actually been set.
  
@@ -7375,28 +7809,21 @@ total
 \end_layout
 
 \begin_layout Standard
-Our results indicate that the privilege escalation rule causes minimal slowdown
+Our results indicate that the Privilege Escalation rule causes minimal slowdown,
  with an average of -0.8% overhead, which we believe is due to variations
  in the benchmark runs and not the tool.
  On the other hand, the Security Manager rule produced a significant slowdown,
- causing applications to run over 45 times slower on average.
- We investigated the cause of this slowdown and found that read and write
+ causing applications to run >45 times slower, on average.
+ We investigated the cause of this slowdown, and found that read and write
  monitors on fields in JVMTI cause the program to run without the benefit
  of the JIT.
  We measured the benchmarks in interpreted mode to measure how much of this
  extensive slowdown is the result of the JIT being off.
  The tests determined that the interpreted applications runtime increased
  by 14.1 times relative to the JITed version of the application.
- While we do not break the figures down, the rest of the slowdown is likley
- caused by the JRE executing less efficient code paths when certain JVMTI
- capabilities are enabled along with the actual enforcement of our rule.
- 
-\end_layout
-
-\begin_layout Standard
-We also measured performance with a version of the agent that receives the
- required events for both monitors but does nothing with them---the code
- that enforces the rules in events was removed.
+ We also measured performance with a version of the agent that receives
+ the required events for both monitors but does nothing with them---the
+ code that enforces the rules was removed.
  These tests produced results that are nearly identical to the results we
  received when the rule implementations were in place.
  This strongly suggests that the significant performance slowdown is caused
@@ -7408,39 +7835,13 @@ We also measured performance with a version of the agent that receives the
 The security manager rule slowdown can be largely mitigated by advancing
  JVMTI implementations, for example, to enable the JIT in all cases.
  However, JVMTI implementors tend to favor ease of implementation over speed
- because many uses of JVMTI, outside of research, are not performance critical.
+ because many non-research uses of JVMTI are not performance-critical.
  We hypothesize that the security manager rule can be implemented with significa
 ntly less performance overhead if the rule is built into the JVM.
  This approach has the added benefit that the rules would become a permanent
  mitigation for all Java applications.
- At the time of this writing, we are actively communicating with Java developers
- to explore the prototype implementation of these rules in OpenJDK.
-\end_layout
-
-\begin_layout Standard
-The user effort required to use JSF is minimal, and several install options
- are possible which can help counteract the security manager rule's overhead.
- To use the tool in the default configuration, a user either has to compile
- the tool using the provided makefile or download a binary version of the
- tool for their system.
- Once compiled, JSF can be set to fortify all Java applications on a standard
- Oracle JVM in two steps: 1) set the 
-\family typewriter
-JAVA_TOOL_OPTIONS
-\family default
- environment variable to 
-\emph on
--agentpath=path_to_jsf_library
-\emph default
- which causes the JVM to attach the agent to every JVM that is started after
- this point and 2) set the 
-\family typewriter
-JSF_HOME
-\family default
- environment variable to point to the directory containing JSF and its configura
-tion files.
- By default the security manager rule is not enforced due to the overhead.
- However, a user can easily turn on the rule in the JSF configuration file.
+ We are actively communicating with Java developers to explore the prototype
+ implementation of these rules in OpenJDK.
 \end_layout
 
 \begin_layout Standard
@@ -7467,7 +7868,7 @@ Many people could simply turn off the plugin to mitigate this issue, but
 \end_inset
 
  and both are relatively rare.
- A recent study found that less than .1% of websites on the entire Internet
+ A recent study found that less than 0.1% of websites on the entire Internet
  contain an applet.
 \begin_inset Foot
 status collapsed
@@ -7512,431 +7913,14 @@ url{http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
 \end_layout
 
 \begin_layout Subsection
-Effectiveness at Fortifying the Sandbox 
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Effectiveness-at-Fortifying"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We performed an experiment to evaluate how effective our agent is at blocking
- exploits that disable the sandbox.
- In our experiment, we ran Java 7 exploits for the browser from Metasploit
- 4.10.0 on 64-bit Windows 7 against the initial release of version 7 of the
- JRE.
- This version of Metasploit contains twelve applets that are intended to
- exploit JRE 7 or earlier, but two did not successfully run due to Java
- exceptions we did not debug.
- Metasploit contains many Java exploits outside of the subset we used, but
- the excluded exploits either only work against long obsolete versions of
- the JRE or are not well positioned to be used in drive-by-downloads.
- 
-\end_layout
-
-\begin_layout Standard
-We ran the ten exploits in our set under the following conditions: without
- the agent, with the agent but only enforcing the privilege escalation rule,
- and while enforcing both rules.
- We ran these conditions to respectively: establish that the exploits succeed
- against our JRE, test how effective the privilege escalation rule is without
- the security manager rule, and evaluate how effective the agent is in the
- strictest configuration currently available.
- Running the privilege escalation rule alone shows how effective the current
- tool is at stopping applet exploits with low runtime overhead.
- Overall, all ten of the exploits succeed against our JRE without the agent,
- four were stopped by the privilege escalation rule, and all ten were stopped
- when both rules were enforced.
- The exploits that were not stopped by the privilege escalation rule were
- either type confusion exploits or exploits that did not need to elevate
- the privileges of the payload class.
- The payload class does not need elevated privileges when it can directly
- access a privileged class to exploit.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Exploit-experiment-summary"
-
-\end_inset
-
- summarizes our results using the specific CVE's each exploit targeted.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Effectiveness test results.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Exploit-experiment-summary"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="11" columns="3">
-<features rotate="0" booktabs="true" tabularvalignment="middle">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top" width="3cm">
-<column alignment="left" valignment="top" width="0pt">
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-CVE-ID
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Privilege Escalation Monitor
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Both Monitors
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2011-3544
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Succeeded 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2012-0507
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2012-4681
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Succeeded 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2012-5076
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Succeeded 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2013-0422
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2013-0431
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2013-1488
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Succeeded 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2013-2423
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Succeeded 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2013-2460
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2013-2465
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Succeeded 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Attack Blocked
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Related Work
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Related-Work-Mitigation"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
