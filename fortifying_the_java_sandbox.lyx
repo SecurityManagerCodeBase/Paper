@@ -1539,7 +1539,7 @@ We performed a similar process using the GitHub search feature configured
  to search through Java files for the same keyword.
  Initially, we extracted the top six applications from the search results,
  but we came to find this filtering method was producing a high false positive
- rate: four out of six of the applications didn't actually use the 
+ rate: four out of six of the applications did not actually use the 
 \family typewriter
 SecurityManager
 \family default
@@ -5431,182 +5431,6 @@ self-protecting
 \end_layout
 
 \begin_layout Section
-Related Work - Mitigations
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: I'm not sure if this related work section should go before the rules,
- after the rules, or after the mitigations section.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The mitigations in this study increase the security of the sandbox by removing
- unnecessary features.
- Prior work has taken a different approach, instead focusing on re-implementing
- the Java sandbox or adding to the sandbox to increase security.
- Cappos et al.
- created a new sandbox structure.
- They implemented a security isolated kernel to separate sandboxed applications
- from the main system 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cappos_retaining_2010"
-
-\end_inset
-
-.
- This structure was validated by translating past Java CVEs into exploits
- for the new kernel.
- Li and Srisa-an extended the Java sandbox by providing extra protection
- for JNI calls.
- Their implementation, Quarantine, separates JNI accessible objects to a
- heap which contains extra protection mechanisms.
- The authors used the Dacapo Benchmark Suite 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "DaCapo:paper"
-
-\end_inset
-
-, a standard set of real-world Java applications, to measure Quarantine's
- performance effects.
- Siefers et al.
- creates a tool, Robusta, which separates JNI code into another sandbox
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "siefers_robusta:_2010"
-
-\end_inset
-
-.
- Sun and Tan extend Robusta to be JVM independent 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sun_jvm-portable_2012"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-Java applets and Java Web Start applications are currently the most common
- way to transmit a Java exploit, usually using drive-by-downloads.
- Methods have been created to identify drive-by-downloads in JavaScript
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cova_detection_2010"
-
-\end_inset
-
-, and in Adobe Flash 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "ford_analyzing_2009"
-
-\end_inset
-
-.
- Helmer et al.
- used machine learning to identify malicious applets.
- Their approach was to monitor system call traces of applications to identify
- malicious behavior after execution.
- However, this approach can only respond after the malicious system calls
- have been made.
- Our approach terminate exploits when the exploit attempts to break out
- of the sandbox, before the exploit performs its payload.
- Schlumberger et al.
- used machine learning and static analysis of common exploit features to
- identify malicious applets.
- 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: I cannot think of a good sentence to differentiate the their approach
- from ours.
- Probably because its getting late.
- I'll try to think of something tomorrow.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: All sentences with citations in the rest of the paper:
-\end_layout
-
-\begin_layout Plain Layout
-Prior work has made an effort to prevent exploits in the native libraries
- used by language runtimes such as Java's 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-portable_2012"
-
-\end_inset
-
-, and the machine learning community has put some effort into detecting
- exploits delivered via drive-by-downloads using Java applets and similar
- technologies 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_jarhead_2012"
-
-\end_inset
-
-.
- For example, the software-based fault isolation subset of Robusta 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "siefers_robusta:_2010"
-
-\end_inset
-
- can be applied to our tool to isolate the effects of an exploit.
- Using a security kernel for Java similar to Cappo's for Python 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cappos_retaining_2010"
-
-\end_inset
-
-, our tool could be isolated to its own security layer with access only
- to the information it gets from JVMTI.
- We measured performance overhead using version 9.12-bach of the DaCapo Benchmark
- Suite 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "DaCapo:paper"
-
-\end_inset
-
-, a standard set of real-world Java applications used for Java benchmarking.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Mitigations 
 \begin_inset CommandInset label
 LatexCommand label
@@ -5950,14 +5774,14 @@ GetProtectionDomain
 
 \begin_layout Standard
 With both protection domains, the implementation of the agent as of the
- time of this writing simply checks to see if the loaded class's protection
+ time of this writing simply checks to see if the loaded class' protection
  domain has all permissions while the class that caused the loading does
  not.
  If the latter is true, the privilege escalation rule has been violated.
  This specific check was used because it is fast, simple, and all privileged
  classes allow all permissions under known circumstances.
  It would be easy to update this check to instead ensure that every permission
- in the loaded class's protection domain is also implied by the other protection
+ in the loaded class' protection domain is also implied by the other protection
  domain to handle cases we are currently not aware of.
 \end_layout
 
@@ -7555,7 +7379,7 @@ status collapsed
 
 \begin_layout Plain Layout
 Many people could simply turn off the plugin to mitigate this issue, but
- enterprises tend to leave it on because some employees need it: it's cheaper
+ enterprises tend to leave it on because some employees need it: it is cheaper
  to have a standard, enterprise wide configuration than custom configurations
  for the few employees that need applets.
  
@@ -8025,6 +7849,182 @@ Attack Blocked
 
 \end_layout
 
+\begin_layout Subsection
+Related Work
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: I am not sure if this related work section should go before the rules,
+ after the rules, or after the mitigations section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The mitigations in this study increase the security of the sandbox by removing
+ unnecessary features.
+ Prior work has taken a different approach, instead focusing on re-implementing
+ the Java sandbox or adding to the sandbox to increase security.
+ Cappos et al.
+ created a new sandbox structure.
+ They implemented a security isolated kernel to separate sandboxed applications
+ from the main system 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cappos_retaining_2010"
+
+\end_inset
+
+.
+ This structure was validated by translating past Java CVEs into exploits
+ for the new kernel.
+ Li and Srisa-an extended the Java sandbox by providing extra protection
+ for JNI calls.
+ Their implementation, Quarantine, separates JNI accessible objects to a
+ heap which contains extra protection mechanisms.
+ The authors used the Dacapo Benchmark Suite 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DaCapo:paper"
+
+\end_inset
+
+, a standard set of real-world Java applications, to measure Quarantine's
+ performance effects.
+ Siefers et al.
+ creates a tool, Robusta, which separates JNI code into another sandbox
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "siefers_robusta:_2010"
+
+\end_inset
+
+.
+ Sun and Tan extend Robusta to be JVM independent 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sun_jvm-portable_2012"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Java applets and Java Web Start applications are currently the most common
+ way to transmit a Java exploit, usually using drive-by-downloads.
+ Methods have been created to identify drive-by-downloads in JavaScript
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cova_detection_2010"
+
+\end_inset
+
+, and in Adobe Flash 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ford_analyzing_2009"
+
+\end_inset
+
+.
+ Helmer et al.
+ used machine learning to identify malicious applets.
+ Their approach was to monitor system call traces of applications to identify
+ malicious behavior after execution.
+ However, this approach can only respond after the malicious system calls
+ have been made.
+ Our approach terminate exploits when the exploit attempts to break out
+ of the sandbox, before the exploit performs its payload.
+ Schlumberger et al.
+ used machine learning and static analysis of common exploit features to
+ identify malicious applets.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: I cannot think of a good sentence to differentiate the their approach
+ from ours.
+ Probably because its getting late.
+ I will try to think of something tomorrow.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: All sentences with citations in the rest of the paper:
+\end_layout
+
+\begin_layout Plain Layout
+Prior work has made an effort to prevent exploits in the native libraries
+ used by language runtimes such as Java's 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-portable_2012"
+
+\end_inset
+
+, and the machine learning community has put some effort into detecting
+ exploits delivered via drive-by-downloads using Java applets and similar
+ technologies 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_jarhead_2012"
+
+\end_inset
+
+.
+ For example, the software-based fault isolation subset of Robusta 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "siefers_robusta:_2010"
+
+\end_inset
+
+ can be applied to our tool to isolate the effects of an exploit.
+ Using a security kernel for Java similar to Cappo's for Python 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cappos_retaining_2010"
+
+\end_inset
+
+, our tool could be isolated to its own security layer with access only
+ to the information it gets from JVMTI.
+ We measured performance overhead using version 9.12-bach of the DaCapo Benchmark
+ Suite 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DaCapo:paper"
+
+\end_inset
+
+, a standard set of real-world Java applications used for Java benchmarking.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Limitations
 \end_layout
@@ -8064,8 +8064,8 @@ We mitigated these threats by using a FindBugs plugin and JVMTI agent, providing
  of validating their understanding of the code.
  Furthermore, we inspected entire source files when inspecting code that
  contained security manager operations.
- Even with this level of review, it's impossible to achieve a perfect understand
-ing in every case in a reasonable period of time without reaching out to
+ Even with this level of review, it is impossible to achieve a perfect understan
+ding in every case in a reasonable period of time without reaching out to
  the developer that wrote the code.
  Finally, we tested our tools and processes in a pilot study to find and
  mitigate sources of inconsistencies.
