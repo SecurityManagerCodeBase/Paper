@@ -407,12 +407,12 @@ key "DaCapo:paper"
 \end_inset
 
 .
- The privilege escalation monitor resulted in negligible overhead of X%,
- low enough to enable monitoring of any Java application.
+ The privilege escalation monitor resulted in negligible overhead and can
+ therefore be used to monitor any Java application.
  The security manager monitor is implemented as a JVMTI agent that monitors
  a static field, which unfortunately disables just-in-time compilation (JIT).
  Therefore, the security manager monitor resulted in substantial overhead
- of XXX%, which is unacceptable for most Java applications.
+ of 4536%, which is unacceptable for most Java applications.
  However, the greatest threat comes from Java applets, and many of these
  are not performance intensive (e.g.
  web forms), so it may be reasonable to enable the security manager monitor
