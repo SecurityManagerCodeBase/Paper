@@ -1699,7 +1699,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-List of Java applications studied in the security manager study.
+Table of applications included in the security manager study.
 \begin_inset CommandInset label
 LatexCommand label
 name "Table:applications-studied"
@@ -7664,12 +7664,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A summary of CVEs we ran exploits for and how effective the agent was at
- stopping them in the following conditions: (1) just the privilege escalation
- rule enforced and (2) both rules enforced.
- Blocked exploits were stopped by the agent before the malicious payload
- could run, but fully executed exploits were able to complete their malicious
- operations.
+Effectiveness test results.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Exploit-experiment-summary"
@@ -7699,7 +7694,7 @@ name "tab:Exploit-experiment-summary"
 \begin_layout Plain Layout
 
 \series bold
-Exploited CVE
+CVE-ID
 \end_layout
 
 \end_inset
@@ -7710,7 +7705,7 @@ Exploited CVE
 \begin_layout Plain Layout
 
 \series bold
-Privilege Escalation Enforced
+Privilege Escalation Monitor
 \end_layout
 
 \end_inset
@@ -7721,7 +7716,7 @@ Privilege Escalation Enforced
 \begin_layout Plain Layout
 
 \series bold
-Both Rules Enforced
+Both Monitors
 \end_layout
 
 \end_inset
@@ -7741,7 +7736,7 @@ Both Rules Enforced
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7750,7 +7745,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7770,7 +7765,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7779,7 +7774,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7799,7 +7794,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7808,7 +7803,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7828,7 +7823,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7837,7 +7832,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7857,7 +7852,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7866,7 +7861,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7886,7 +7881,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7895,7 +7890,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7915,7 +7910,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7924,7 +7919,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7944,7 +7939,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7953,7 +7948,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7973,7 +7968,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7982,7 +7977,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -8002,7 +7997,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -8011,7 +8006,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
