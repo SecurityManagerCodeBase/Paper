@@ -7,7 +7,7 @@
 \usepackage{fancyvrb}
 \usepackage{url}
 \end_preamble
-\options conference
+\options conference, 10pt
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -130,6 +130,34 @@ IEEEauthorblockA{School of Computer Science
 
 \begin_layout Title
 Fortifying the Java Sandbox
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%JSS: This is to force page numbers.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{plain} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagestyle{plain}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Abstract
