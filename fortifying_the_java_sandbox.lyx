@@ -3634,13 +3634,11 @@ reference "fig:Weka-snippet"
  the user set one on the command line, or Weka is running as an applet or
  web start application).
  One Type 1 application, JTimeLag, did not actually set a security manager,
- but did set the security manager to null as discussed in the section below
- titled 
-\begin_inset Quotes eld
-\end_inset
+ but did set the security manager to null as discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Reducing-Web-Application-Complexity"
 
-Reducing Web Application Development Complexity
-\begin_inset Quotes erd
 \end_inset
 
 .
@@ -3709,7 +3707,21 @@ Type 2 applications are of particular interest in validating our hypotheses
  In other words, the weak, moderate, and ideal mitigations potentially break
  them.
  Due to their effect on our hypotheses, applications of this type are discussed
- in detail below.
+ in Sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Non-security-uses-of"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Using-the-Security"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -4225,6 +4237,13 @@ In total, we found 3 applications that use a variation of this technique:
 
 \begin_layout Subsubsection
 Reducing Web Application Development Complexity
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Reducing-Web-Application-Complexity"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5759,7 +5778,7 @@ reference "sub:Enforcing-the-SecurityManager"
 
 \end_inset
 
- below.
+.
 \end_layout
 
 \begin_layout Standard
