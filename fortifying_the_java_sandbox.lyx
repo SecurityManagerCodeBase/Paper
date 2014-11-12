@@ -7926,9 +7926,9 @@ status collapsed
 
 \begin_layout Plain Layout
 Many people could simply turn off the plugin to mitigate this issue, but
- enterprises tend to leave it on because some employees need it: it is cheaper
- to have a standard, enterprise wide configuration than custom configurations
- for the few employees that need applets.
+ large companies tend to leave it on because some employees need it: it
+ is cheaper to have a standard, enterprise-wide configuration than custom
+ configurations for the few employees that need applets.
  
 \end_layout
 
@@ -7936,17 +7936,14 @@ Many people could simply turn off the plugin to mitigate this issue, but
 
  and both are relatively rare.
  A recent study found that less than 0.1% of websites on the entire Internet
- contain an applet.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-http://trends.builtwith.com/docinfo/Applet
-\end_layout
+ contain an applet 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_applet_usage_stats"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
