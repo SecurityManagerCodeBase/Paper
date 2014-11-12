@@ -292,8 +292,8 @@ name "fig:most-targeted-applications"
 
 \end_inset
 
-Java is the most targeted applications in the enterprise, according to a
- Dec.
+Pie chart showing the most targeted applications on enterprise workstations,
+ according to to a Dec.
  2013 survey of Trusteer customers 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -302,6 +302,7 @@ key "xforceQ12013"
 \end_inset
 
 .
+ Java represented half of all attack-attempts in their sample.
 \end_layout
 
 \end_inset
@@ -705,8 +706,9 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A security manager enforcing a policy that contains any permission in this
- list is defenseless.
+List of sandbox-defeating permissions.
+ A security manager that enforces a policy containing any of these permission
+ is sufficient to result in a defenseless sandbox.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:defenseless-permissions"
@@ -714,11 +716,6 @@ name "tab:defenseless-permissions"
 \end_inset
 
 
-\begin_inset Newline newline
-\end_inset
-
-*Any combination of write or execute in this permission ensures the manager
- is defenseless.
 \end_layout
 
 \end_inset
@@ -1702,7 +1699,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Applications studied 
+List of Java applications studied in the security manager study.
 \begin_inset CommandInset label
 LatexCommand label
 name "Table:applications-studied"
@@ -3123,7 +3120,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Classification of Application Interactions with the Security Manager
+Classification of application interactions with the security manager.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Classification-of-Application"
@@ -3529,8 +3526,9 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-The only location in the Weka code where interaction with a security manager
- occurs.
+Weka code snipet that intializes a security manager if one does not already
+ exist.
+ This is the only reference to the security manager in the Weka's code base.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Weka-snippet"
@@ -3896,8 +3894,8 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-This code snippet from Eclipse shows how it uses the manager to prevent
- Ant from terminating the JVM when an unrecoverable error occurs.
+Snippet of Eclipse code that uses a security manager to prevent Ant from
+ terminating the JVM when Ant encounters an unrecoverable error.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Eclipse-snippet"
@@ -4039,7 +4037,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-The methods in GJMan that enable and disable the sandbox to prevent termination
+Methods in GJMan that enable and disable the sandbox to prevent termination
  of the JVM when select code is running
 \begin_inset CommandInset label
 LatexCommand label
@@ -4547,7 +4545,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-An example Ant build script element to grant all but one permission.
+Example Ant build script element to grant all but one permission.
  This specific permission set leads to a defenseless security manager.
 \begin_inset CommandInset label
 LatexCommand label
@@ -4672,8 +4670,8 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A code snippet showing Ant's custom security manager architecture, used
- to enable build scripts run Java code under a specific set of permissions
+Code snippet showing Ant's custom security manager architecture, used to
+ enable build scripts run Java code under a specific set of permissions
  unique to the instantiated code.
 \begin_inset CommandInset label
 LatexCommand label
@@ -4838,7 +4836,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-This code snippet shows how Freemind's custom security manager selectively
+Code snippet showing how Freemind's custom security manager selectively
  enforces permissions.
  
 \begin_inset CommandInset label
@@ -5245,8 +5243,8 @@ new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Our example exploit that breaks out of the scripting sandbox in Freemind
- to execute arbitrary code.
+Example exploit that breaks out of the scripting sandbox in Freemind to
+ execute arbitrary code.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Example-Exploit-for-Freemind"
@@ -5955,7 +5953,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Performance Test Results.
+Performance test results.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Performance-Test-Results."
