@@ -7994,17 +7994,17 @@ name "sub:Related-Work-Mitigation"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: I am not sure if this related work section should go before the rules,
- after the rules, or after the mitigations section.
-\end_layout
-
-\end_inset
-
-
+There are two main approaches to fixing Java security problems in prior
+ work: strengthening Java security features and identifying exploit attempts.
+ Strengthening the security features of Java stop exploits that execute
+ on the system, however this approach usually has a harder time differentiating
+ between valid executions and malicious executions.
+ Identifying exploit attempts allows a more fine grained approach to stopping
+ exploits, although it does not provide any protection if the exploits are
+ executed.
+ This section discusses the previous works into these two approaches.
+ Our approach focuses on strengthening Java security features in a previously
+ unexplored way.
 \end_layout
 
 \begin_layout Standard
@@ -8023,8 +8023,19 @@ key "cappos_retaining_2010"
 \end_inset
 
 .
- This structure was validated by translating past Java CVEs into exploits
+ They validated this structure by translating past Java CVEs into exploits
  for the new kernel.
+ Provos et al.
+ describe a method of separating privileges to reduce privilege escalation
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Provos-PrivilegeEscalation"
+
+\end_inset
+
+.
+ Their approach is partially implemented in the Java security model .
  Li and Srisa-an extended the Java sandbox by providing extra protection
  for JNI calls.
  Their implementation, Quarantine, separates JNI accessible objects to a
@@ -8048,7 +8059,7 @@ key "siefers_robusta:_2010"
 \end_inset
 
 .
- Sun and Tan extend Robusta to be JVM independent 
+ Sun and Tan extend the Robusta technique to be JVM independent 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sun_jvm-portable_2012"
@@ -8088,35 +8099,31 @@ key "ford_analyzing_2009"
  of the sandbox, before the exploit performs its payload.
  Schlumberger et al.
  used machine learning and static analysis of common exploit features to
- identify malicious applets.
- 
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-ZC: I cannot think of a good sentence to differentiate the their approach
- from ours.
- Probably because its getting late.
- I will try to think of something tomorrow.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Provos et al.
- describe a method of seperating privileges to reduce privilege escalation,
- which is partially employed in the Java security model 
+ identify malicious applets
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Provos-PrivilegeEscalation"
+key "schlumberger_jarhead_2012"
 
 \end_inset
 
 .
+ Blasing et al.
+ used static analysis and dynamic analysis of sandboxed executions to determine
+ malicious Android applications 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Blasing-AndriodSandbox"
+
+\end_inset
+
+ .
+ Unlike these automated approaches, our implementations show that unique
+ mitigation strategies can be created with a better understanding of how
+ applications interact with the sandbox.
  
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Comment
 status collapsed
 
@@ -8173,7 +8180,7 @@ key "DaCapo:paper"
 
 \end_inset
 
-
+ 
 \end_layout
 
 \begin_layout Subsection
