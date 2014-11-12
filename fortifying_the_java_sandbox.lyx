@@ -1437,7 +1437,7 @@ s exploitive and benign applications perform on the security manager.
  enforce its policy in a given execution without having to deal with the
  wide diversity in the manifestations of vulnerabilities within the JRE
  or the subtleties of their exploits.
- In this section we describe the methodology for and results of an empirical
+ In this section we describe the methodology for and limitations of an empirical
  study that validated this strategy.
 \end_layout
 
@@ -3885,7 +3885,9 @@ name "sub:Non-security-uses-of"
 \end_layout
 
 \begin_layout Standard
-We found several cases of applications using the sandbox in ways unrelated
+This section describes applications that violated hypotheses 1, 2 and 4
+ while using the sandbox for reasons that do not satisfy security requirements.
+ We found several cases of applications using the sandbox in ways unrelated
  to system security.
  Most of these applications used the sandbox to enforce architectural constraint
 s when interacting with other applications or forcibly disabled the sandbox
@@ -4426,7 +4428,10 @@ name "sub:Using-the-Security"
 \end_layout
 
 \begin_layout Standard
-We found applications that set a security manager then either explicitly
+This section describes applications that violated hypotheses 1, 2, and 4
+ while using the sandbox in attempts to improve the security posture of
+ the application.
+ We found applications that set a security manager then either explicitly
  changed it or allowed the user to change it.
  Batik, Eclipse, and Spring-modules provide methods that allow the user
  to set and change an existing manager, and Ant, Freemind, and Netbeans
