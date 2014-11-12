@@ -5665,7 +5665,7 @@ reference "fig:A-popup-from"
 \end_inset
 
  shows an example of a popup displayed after an exploit was caught breaking
- the privilege escalation rule.
+ the Privilege Escalation rule.
  In monitor mode, the agent logs the offending behavior, but leaves the
  JVM's execution of the application untouched.
 \end_layout
@@ -5691,8 +5691,8 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A popup from our agent after it caught an exploit breaking the privilege
- escalation rule.
+A popup from our agent after it caught an exploit breaking the Privilege
+ Escalation rule.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:A-popup-from"
@@ -5834,7 +5834,7 @@ GetProtectionDomain
 With both protection domains, the current agent implementation simply checks
  to see whether the loaded class's protection domain has all permissions
  while the class that caused the loading does not.
- If the latter is true, the privilege escalation rule has been violated.
+ If the latter is true, the Privilege Escalation rule has been violated.
  This specific check was used because it is fast, simple, and all privileged
  classes allow all permissions under known circumstances.
  It would be easy to update this check to instead ensure that every permission
@@ -6010,18 +6010,18 @@ We performed an experiment to evaluate how effective our agent is at blocking
 
 \begin_layout Standard
 We ran the ten exploits in our set under the following conditions: (1) without
- the agent, (2) with the agent but only enforcing the privilege escalation
+ the agent, (2) with the agent but only enforcing the Privilege Escalation
  rule, and (3) while enforcing both rules.
  We ran these conditions to respectively: (1) establish that the exploits
- succeed against our JRE, (2) test how effective the privilege escalation
+ succeed against our JRE, (2) test how effective the Privilege Escalation
  rule is without the security manager rule, and (3) evaluate how effective
  the agent is in the strictest configuration currently available.
- Running the privilege escalation rule alone shows how effective the tool
+ Running the Privilege Escalation rule alone shows how effective the tool
  is at stopping applet exploits with low runtime overhead.
  Overall, all ten of the exploits succeed against our JRE without the agent.
- Four were stopped by the privilege escalation rule.
+ Four were stopped by the Privilege Escalation rule.
  All ten were stopped when both rules were enforced.
- The exploits that were not stopped by the privilege escalation rule were
+ The exploits that were not stopped by the Privilege Escalation rule were
  either type confusion exploits or exploits that did not need to elevate
  the privileges of the payload class.
  The payload class does not need elevated privileges when it can directly
