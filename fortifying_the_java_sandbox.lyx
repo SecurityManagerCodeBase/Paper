@@ -5326,6 +5326,78 @@ IntelliJ's concern with developers interacting with the security manager
  are often introduced when working with the sandbox.
 \end_layout
 
+\begin_layout Subsection
+Limitations
+\end_layout
+
+\begin_layout Subsubsection
+
+\series bold
+Internal Validity
+\end_layout
+
+\begin_layout Standard
+Our results are dependent on accurately studying the source code of applications
+ and their comments.
+ In most cases, security manager interactions are easily understood, but
+ there are a few particularly complex interactions that may be misdiagnosed.
+ Furthermore, we did not review all of the code the applications, thus we
+ may have taken a comment or some source code out of context in larger applicati
+ons.
+ Finally, using two different reviewers may lead to variations in the interpreta
+tions of some of the data.
+ 
+\end_layout
+
+\begin_layout Standard
+We mitigated these threats by using a FindBugs plugin and JVMTI agent, providing
+ reviewers consistent data about where to look in the code, and a means
+ of validating their understanding of the code.
+ Furthermore, we inspected entire source files when inspecting code that
+ contained security manager operations.
+ Even with this level of review, it is impossible to achieve a perfect understan
+ding in every case in a reasonable period of time without reaching out to
+ the developer that wrote the code.
+ Finally, we tested our tools and processes in a pilot study to find and
+ mitigate sources of inconsistencies.
+ In our pilot study, each reviewer used the same inspection process and
+ the tools listed earlier to ensure they consistently characterized sandbox
+ interactions in the same set of six applications.
+\end_layout
+
+\begin_layout Subsubsection
+
+\series bold
+External Validity
+\end_layout
+
+\begin_layout Standard
+The applications in the study were limited to open source programs, specifically
+ well-known applications included in the Qualitas Corpus and publicly-available
+ applications available on GitHub.
+ It is possible that closed source applications interact with the security
+ manager in ways that we did not see in the open source community.
+ However, we inspected a few small applications with our aerospace collaborators.
+ We did not find any code that suggested this is the case.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Reliability
+\end_layout
+
+\begin_layout Standard
+While the majority of the study is easily replicable, certain aspects of
+ the our results change over time.
+ GitHub search results are constantly changing.
+ Using GitHub to generate a new dataset using our method would likely generate
+ a different dataset.
+ Furthermore, applications on GitHub can become inaccessible.
+ Over the course of our security manager study, two applications either
+ became private repositories or were removed from GitHub (FileManagerFtpHttpServ
+er and Visor).
+\end_layout
+
 \begin_layout Section
 Rules for Fortifying the Sandbox 
 \begin_inset CommandInset label
@@ -8083,7 +8155,7 @@ key "DaCapo:paper"
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Limitations
 \end_layout
 
@@ -8097,70 +8169,6 @@ Neither of these rules will stop all Java exploits.
  However, our rules substantially improve Java sandbox security, and future
  work will be able to build upon these results to create mitigation techniques
  for additional types of exploits.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Internal Validity
-\series default
-: Our results are dependent on accurately studying the source code of applicatio
-ns and their comments.
- In most cases, security manager interactions are easily understood, but
- there are a few particularly complex interactions that may be misdiagnosed.
- Furthermore, we did not review all of the code the applications, thus we
- may have taken a comment or some source code out of context in larger applicati
-ons.
- Finally, using two different reviewers may lead to variations in the interpreta
-tions of some of the data.
- 
-\end_layout
-
-\begin_layout Standard
-We mitigated these threats by using a FindBugs plugin and JVMTI agent, providing
- reviewers consistent data about where to look in the code, and a means
- of validating their understanding of the code.
- Furthermore, we inspected entire source files when inspecting code that
- contained security manager operations.
- Even with this level of review, it is impossible to achieve a perfect understan
-ding in every case in a reasonable period of time without reaching out to
- the developer that wrote the code.
- Finally, we tested our tools and processes in a pilot study to find and
- mitigate sources of inconsistencies.
- In our pilot study, each reviewer used the same inspection process and
- the tools listed earlier to ensure they consistently characterized sandbox
- interactions in the same set of six applications.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-External Validity:
-\series default
- The applications in the study were limited to open source programs, specificall
-y well-known applications included in the Qualitas Corpus and publicly-available
- applications available on GitHub.
- It is possible that closed source applications interact with the security
- manager in ways that we did not see in the open source community.
- However, we inspected a few small applications with our aerospace collaborators.
- We did not find any code that suggested this is the case.
- 
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Reliability: 
-\series default
-While the majority of the study is easily replicable, certain aspects of
- the our results change over time.
- GitHub search results are constantly changing.
- Using GitHub to generate a new dataset using our method would likely generate
- a different dataset.
- Furthermore, applications on GitHub can become inaccessible.
- Over the course of our security manager study, two applications either
- became private repositories or were removed from GitHub (FileManagerFtpHttpServ
-er and Visor).
 \end_layout
 
 \begin_layout Section
