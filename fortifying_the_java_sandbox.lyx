@@ -189,7 +189,7 @@ Related science probably makes sense to go right before the flag post paragraph.
 
 \begin_layout Plain Layout
 This section should define JVMTI so that we can use it everywhere else but
- don't explain much about what it is here -- shouldn't be hard to do (cite
+ do not explain much about what it is here -- should not be hard to do (cite
  the docs when doing it)
 \end_layout
 
@@ -198,7 +198,7 @@ Needs to mention JVM to define acronym.
 \end_layout
 
 \begin_layout Plain Layout
-Be clear right up front that we aren't trying to stop all Java exploits,
+Be clear right up front that we are not trying to stop all Java exploits,
  we are trying to harden existing foundations to shore up defenses for future
  mitigations.
 \end_layout
@@ -1699,7 +1699,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-List of Java applications studied in the security manager study.
+Table of applications included in the security manager study.
 \begin_inset CommandInset label
 LatexCommand label
 name "Table:applications-studied"
@@ -3479,7 +3479,7 @@ reference "fig:Weka-snippet"
 , unless the environment set one already (e.g.
  the user set one on the command line, or Weka is running as an applet or
  web start application).
- One Type 1 application, JTimeLag, didn't actually set a security manager,
+ One Type 1 application, JTimeLag, did not actually set a security manager,
  but did set the security manager to null as discussed in the section below
  titled 
 \begin_inset Quotes eld
@@ -5112,8 +5112,8 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Freemind's custom security manager overrides permissions checks they aren't
- concerned with, then fails to implement them.
+Freemind's custom security manager overrides permissions checks they are
+ not concerned with, then fails to implement them.
  This effectively grants all permissions associated with the check.
 \begin_inset CommandInset label
 LatexCommand label
@@ -5535,7 +5535,7 @@ key "ford_analyzing_2009"
 status open
 
 \begin_layout Plain Layout
-ZC: I can't think of a good sentence to differentiate the their approach
+ZC: I cannot think of a good sentence to differentiate the their approach
  from ours.
  Probably because its getting late.
  I'll try to think of something tomorrow.
@@ -6016,7 +6016,8 @@ GetProtectionDomain
 \begin_layout Standard
 With both protection domains, the implementation of the agent as of the
  time of this writing simply checks to see if the loaded class's protection
- domain has all permissions while the class that caused the loading doesn't.
+ domain has all permissions while the class that caused the loading does
+ not.
  If the latter is true, the privilege escalation rule has been violated.
  This specific check was used because it is fast, simple, and all privileged
  classes allow all permissions under known circumstances.
@@ -7750,12 +7751,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A summary of CVEs we ran exploits for and how effective the agent was at
- stopping them in the following conditions: (1) just the privilege escalation
- rule enforced and (2) both rules enforced.
- Blocked exploits were stopped by the agent before the malicious payload
- could run, but fully executed exploits were able to complete their malicious
- operations.
+Effectiveness test results.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Exploit-experiment-summary"
@@ -7785,7 +7781,7 @@ name "tab:Exploit-experiment-summary"
 \begin_layout Plain Layout
 
 \series bold
-Exploited CVE
+CVE-ID
 \end_layout
 
 \end_inset
@@ -7796,7 +7792,7 @@ Exploited CVE
 \begin_layout Plain Layout
 
 \series bold
-Privilege Escalation Enforced
+Privilege Escalation Monitor
 \end_layout
 
 \end_inset
@@ -7807,7 +7803,7 @@ Privilege Escalation Enforced
 \begin_layout Plain Layout
 
 \series bold
-Both Rules Enforced
+Both Monitors
 \end_layout
 
 \end_inset
@@ -7827,7 +7823,7 @@ Both Rules Enforced
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7836,7 +7832,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7856,7 +7852,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7865,7 +7861,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7885,7 +7881,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7894,7 +7890,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7914,7 +7910,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -7923,7 +7919,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7943,7 +7939,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7952,7 +7948,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7972,7 +7968,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -7981,7 +7977,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -8001,7 +7997,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -8010,7 +8006,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -8030,7 +8026,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -8039,7 +8035,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -8059,7 +8055,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -8068,7 +8064,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
@@ -8088,7 +8084,7 @@ Blocked
 \begin_inset Text
 
 \begin_layout Plain Layout
-Fully Executed
+Attack Succeeded 
 \end_layout
 
 \end_inset
@@ -8097,7 +8093,7 @@ Fully Executed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Blocked
+Attack Blocked
 \end_layout
 
 \end_inset
