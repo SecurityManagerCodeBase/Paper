@@ -487,7 +487,7 @@ name "sec:Background"
 In this section, we describe components of the Java sandbox that are relevant
  to understanding this work, how they compose to form the sandbox, and their
  functions.
- These points are summarized in figure 
+ These points are summarized in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Sandbox-high-level-summary"
@@ -3464,7 +3464,7 @@ Type 1 applications set a security manager that is not changed during any
 \family typewriter
 RemoteEngine.java
 \family default
- sets a security manager, as shown in figure 
+ sets a security manager, as shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Weka-snippet"
@@ -3911,7 +3911,7 @@ name "fig:Eclipse-snippet"
 \end_layout
 
 \begin_layout Standard
-GJMan also enforces this architectural constraint, as shown in figure 
+GJMan also enforces this architectural constraint, as shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:GJMan-snippet"
@@ -4692,7 +4692,7 @@ Ant uses the code section from
 \family typewriter
 Permissions.java
 \family default
- shown in figure 
+ shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Ant-Permissions-Enforcement"
@@ -5018,7 +5018,7 @@ pFinalSecurityManager
  scripts.
  In this design, all checks to the security manager are ultimately deferred
  to the proxy manager set in this field, as shown in the example permission
- check in figure 
+ check in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Security-Checks-Freemind"
