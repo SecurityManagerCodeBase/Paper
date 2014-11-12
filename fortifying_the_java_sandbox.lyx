@@ -229,11 +229,11 @@ reference "fig:most-targeted-applications"
 \begin_inset Quotes eld
 \end_inset
 
-drive-by download
+drive-by download.
 \begin_inset Quotes erd
 \end_inset
 
-.
+
 \end_layout
 
 \begin_layout Standard
@@ -523,7 +523,7 @@ key "_permissions_2014"
 ).
  Policies written in the Java policy language
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -1235,7 +1235,7 @@ access control
 \shape default
  principle that is part of the Java development culture.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -3567,7 +3567,7 @@ s.
  These applications contain code that either (A) performs permission checks
  if the application is sandboxed or (B) uses privileged actions
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -3926,7 +3926,8 @@ reference "fig:GJMan-snippet"
 \end_inset
 
 .
- A code comment that isn't shown references a blog post
+ A comment in the same source file references a blog post that we believe
+ is the origin of this solution.
 \begin_inset Foot
 status open
 
@@ -3936,7 +3937,6 @@ http://www.jroller.com/ethdsy/entry/disabling_system_exit
 
 \end_inset
 
- that we believe is the origin of this solution.
  The code contains an 
 \family typewriter
 apply
@@ -5288,9 +5288,9 @@ Security Manager Interactions are Potentially Dangerous
 \begin_layout Standard
 We found an interesting reference to the security manager in IntelliJ IDEA
  Community Edition.
- The IntelliJ editor contains static analysis checks
+ The IntelliJ editor contains static analysis checks, called inspections,
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 http://www.jetbrains.com/idea/documentation/inspections.jsp
@@ -5298,8 +5298,7 @@ http://www.jetbrains.com/idea/documentation/inspections.jsp
 
 \end_inset
 
-, called inspections, to warn users of potentially problematic sections
- of code.
+ to warn users of potentially problematic sections of code.
  In the inspections for security issues, the IntelliJ editor contains two
  inspections that directly pertain to interactions with the sandbox: one
  that highlights calls to 
@@ -5504,7 +5503,7 @@ key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_
 
 .
  We implemented a tool in JVMTI to proactively stop exploits written directly
- in the Java programming language to exploit vulnerable Java code
+ in the Java programming language to exploit vulnerable Java code.
 \begin_inset Foot
 status collapsed
 
@@ -5518,7 +5517,6 @@ REVIEWERS: INSPECTING THIS GITHUB PROJECT MAY REVEAL THE AUTHORS' IDENTITIES.
 
 \end_inset
 
-.
  In particular, our tool blocks operations that exploits use without effecting
  the execution of benign applications.
 \end_layout
@@ -7376,9 +7374,9 @@ Since Java exploits are primarily delivered by drive-by-downloads, applets
  This deployment option provides the strongest protection for the riskiest
  applications while allowing other applications to execute without a performance
  penalty.
- Many applets and Java Web Start applications do not require high performance
+ Many applets and Java Web Start applications do not require high performance,
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Many people could simply turn off the plugin to mitigate this issue, but
@@ -7390,11 +7388,11 @@ Many people could simply turn off the plugin to mitigate this issue, but
 
 \end_inset
 
-, and both are relatively rare.
+ and both are relatively rare.
  A recent study found that less than .1% of websites on the entire Internet
- contain an applet
+ contain an applet.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 http://trends.builtwith.com/docinfo/Applet
@@ -7402,17 +7400,16 @@ http://trends.builtwith.com/docinfo/Applet
 
 \end_inset
 
-.
- 
+
 \end_layout
 
 \begin_layout Standard
 Since both applets and Java Web Start applications run inside a browser,
  adjusting the browser plugin settings only effects both application types.
  The user can deploy the tool in only his browsers by configuring the runtime
- parameters of the Java browser plugin with the Java Control Panel 
+ parameters of the Java browser plugin with the Java Control Panel.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -7432,7 +7429,6 @@ url{http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java
 
 \end_inset
 
-.
  The user would set the runtime parameters to the same values used in the
  tool options environment variable in other deployments.
 \end_layout
