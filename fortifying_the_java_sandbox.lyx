@@ -529,26 +529,10 @@ key "_permissions_2014"
 \end_inset
 
 ).
- Policies written in the Java policy language
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-url{http://docs.oracle.com/javase/7/docs/technotes/guides/security/PolicyFiles.html
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
+ Policies written in the Java policy language 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_java_policy_language"
 
 \end_inset
 
@@ -1576,16 +1560,14 @@ System.setSecurityManager
 \family default
 () is called, as well as the lines of code where its arguments were initialized.
  We created a dynamic analysis tool using the Java Virtual Machine Tool
- Interface (JVMTI).
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-http://docs.oracle.com/javase/7/docs/technotes/guides/jvmti/
-\end_layout
+ Interface (JVMTI) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_jvmti"
 
 \end_inset
 
+.
  JVMTI is designed to allow tools to inspect the current state of Java applicati
 ons and control their execution; it is commonly used to create Java debugging
  and profiling tools.
@@ -3558,25 +3540,10 @@ Type 3 applications contain code that enables them to interact with a security
  manager if one is set, but that never actually set a security manager themselve
 s.
  These applications contain code that either (A) performs permission checks
- if the application is sandboxed or (B) uses privileged actions
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-url{http://docs.oracle.com/javase/7/docs/api/java/security/PrivilegedAction.html}
-\end_layout
-
-\end_inset
-
-
-\end_layout
+ if the application is sandboxed or (B) uses privileged actions 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_java_privilegedaction"
 
 \end_inset
 
@@ -4074,25 +4041,10 @@ Reducing Web Application Development Complexity
 
 \begin_layout Standard
 We found that the Java security policies for web applications (applets and
- applications launched via Java Web Start)
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-url{http://www.oracle.com/technetwork/java/javase/javawebstart/index.html}
-\end_layout
-
-\end_inset
-
-
-\end_layout
+ applications launched via Java Web Start) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_java_web_start"
 
 \end_inset
 
@@ -7950,28 +7902,14 @@ key "_applet_usage_stats"
 Since both applets and Java Web Start applications run inside a browser,
  adjusting the browser plugin settings only effects both application types.
  The user can deploy the tool in only his browsers by configuring the runtime
- parameters of the Java browser plugin with the Java Control Panel.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-url{http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/jcp/jcp.html#java}
-\end_layout
+ parameters of the Java browser plugin with the Java Control Panel 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "_java_control_panel"
 
 \end_inset
 
-
-\end_layout
-
-\end_inset
-
+.
  The user would set the runtime parameters to the same values used in the
  tool options environment variable in other deployments.
 \end_layout
