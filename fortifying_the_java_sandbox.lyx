@@ -4268,7 +4268,7 @@ Changing the Security Manager for Security Purposes
 
 \begin_layout Standard
 We found applications that set a security manager then either explicitly
- change it at some later point or allow the user to change it.
+ changed it or allowed the user to change it.
  Batik, Eclipse, and Spring-modules provide methods that allow the user
  to set and change an existing manager, and Ant, Freemind, and Netbeans
  explicitly set then change the manager.
@@ -4424,12 +4424,14 @@ reference "fig:Batik-snippet"
 
 \end_inset
 
- shows an interesting case from Batik copied from ApplicationSecurityEnforcer.jav
-a.
- This method was designed to allow users to optionally constrain the execution
- of an an application that uses the Batik library.
- The method takes one parameter that acts as a switch to turn the sandbox
- on or off.
+ shows an interesting case from Batik copied from 
+\family typewriter
+ApplicationSecurityEnforcer.java
+\family default
+.
+ This method allows users to optionally constrain the execution of an an
+ application that uses the Batik SVG Toolkit.
+ It takes a parameter that acts as a switch to turn the sandbox on or off.
  Batik throws an exception if the user wants to toggle the sandbox while
  a non-Batik manager is set.
  The download page on the Batik website shows several examples of how to
@@ -4449,22 +4451,22 @@ enforceSecurity
 \end_layout
 
 \begin_layout Standard
-As mentioned earlier, Ant, Freemind, and Netbeans explicitly set and then
- change the current manager during runtime.
+Ant, Freemind, and Netbeans explicitly set and then change the manager during
+ runtime.
  Ant allows the users to create build scripts that execute Java classes
- and JAR's during a build under a user specified set of permissions.
- The user specified set of permissions is defined in the permissions element
+ and JAR's during a build under a user specified permissions set.
+ The user-specified permissions set is defined in the permissions element
  of an Ant build file.
- Inside the permissions element, a user can explicitly grant and revoke
- permissions available to the Java code.
- 
+ Inside the permissions element, a user can grant and revoke permissions
+ available to the Java code.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Ant Permissions Example"
 
 \end_inset
 
- shows the first example on the Ant Permissions website
+ shows the first example from the Ant Permissions website.
 \begin_inset Foot
 status collapsed
 
@@ -4474,21 +4476,20 @@ https://ant.apache.org/manual/Types/permissions.html
 
 \end_inset
 
-.
- In this example, the contents of the 
+ The contents of the 
 \family typewriter
 grant
 \family default
  element provide the application all permissions.
- Then the contents of the revoke element restricts the application from
+ Then, the contents of the revoke element restricts the application from
  using all property permissions.
- This permissions snippet means that the application can perform all actions
- except for those that require 
+ The permissions mean that the application can perform all actions except
+ those that require 
 \family typewriter
 PropertyPermissions
 \family default
 .
- This snippet also means that Ant will set a defenseless security manager.
+ This snippet also leads Ant to set a defenseless security manager.
  Malicious code can easily bypass the restrictions in this example by executing
  the line 
 \family typewriter
@@ -4694,21 +4695,27 @@ name "fig:Ant-Permissions-Enforcement"
 \end_layout
 
 \begin_layout Standard
-To provide the user the ability to grant and revoke permissions, Ant uses
- the code section from Permissions.java shown in 
+Ant uses the code section from 
+\family typewriter
+Permissions.java
+\family default
+ shown in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Ant-Permissions-Enforcement"
 
 \end_inset
 
-.
- When Ant is about to execute the restricted application, Ant calls the
- 
+ to provide the user the ability to grant and revoke permissions.
+ Ant calls the 
 \family typewriter
 setSecurityManager
 \family default
- method of the Permissions class.
+ method of the 
+\family typewriter
+Permissions
+\family default
+ class when it is about to execute the restricted application.
  This method starts by saving the current security manager to a temporary
  variable.
  Then the 
@@ -4759,7 +4766,7 @@ MySM
 \begin_layout Standard
 With this implementation, Ant catches applications that perform actions
  restricted by the user, since the security manager is active when the applicati
-on is executing.
+on executes.
  Ant is also able to revert to the original security manager after executing
  the application.
  However, we are not sure that this implementation is free of vulnerabilities.
@@ -4767,30 +4774,30 @@ on is executing.
 
 \begin_layout Standard
 Netbeans similarly sets a security manager around a separate application.
- In both of these cases a defenseless security manager is required, otherwise
- the application would not be able to change the current security manager.
- However, this technique may cause problems if Ant or Netbeans is used in
- a security critical setting, since a security critical setting would need
- a self-protecting security manager.
+ Both of these cases require a defenseless security manager, otherwise the
+ application would not be able to change the current security manager.
+ However, this technique may cause problems if Ant or Netbeans are used
+ in security critical settings, which require a self-protecting security
+ manager.
  A better implementation would use a custom class loader to load the untrusted
  classes into a constrained protection domain.
- This approach would be in line with the way the sandbox is intended to
- be used and would be more clearly correct and trustworthy while allowing
+ This approach would align with the intended usage of the sandbox.
+ Additionally, it would be more clearly correct and trustworthy while allowing
  Ant and Netbeans to run inside of a self-protecting sandbox.
 \end_layout
 
 \begin_layout Standard
-Freemind 0.9.0 tried to solve a similar problem and ended up illustrating
+Freemind 0.9.0 tried to solve a similar problem but ended up illustrating
  the dangers of a defenseless manager.
  Freemind is a mind mapping tool that allows users to execute Groovy scripts
- on a map opened in the editor.
+ on an opened map.
  The scripts are written by the creator of the mind map.
- Groovy is a scripting language that is built on top of the JRE, where a
- Java application that executes a script typically allows the script to
- execute in the same JVM as the application itself.
+ Groovy is a scripting language that is built on top of the JRE: A Java
+ application that executes a script typically allows the script to execute
+ in the same JVM as the application itself.
  As a result, a mind map could potentially be crafted to exploit a user
  that opens the map and runs its scripts, but while limited by the sandbox
- that encapsulates the hosting application.
+ that encapsulates the Java application.
 \begin_inset Float figure
 wide false
 sideways false
@@ -5046,7 +5053,11 @@ reference "fig:Freemind-Security-Manager"
 \family typewriter
  
 \family default
-field in the file FreemindSecurityManager.java.
+field in the file 
+\family typewriter
+FreemindSecurityManager.java
+\family default
+.
  Initially, the
 \family typewriter
  setFinalSecurityManager
@@ -5057,21 +5068,21 @@ field in the file FreemindSecurityManager.java.
 \family typewriter
  SecurityException
 \family default
- is thrown, but calling the method with a reference to the same manager
+ is thrown, but calling the method with a reference to the set manager
 \family typewriter
  
 \family default
-the field already contains disables the sandbox.
+disables the sandbox.
  The comment implies this specific sequence of operations was implemented
  to prevent malicious applications from changing the settings of the sandbox.
 \end_layout
 
 \begin_layout Standard
 The Freemind code responsible for initiating the execution of the Groovy
- scripts sets a proxy security manager that does not allow scripts to create
- network sockets, access the file-system, or execute programs on the machine
- if the script is unsigned.
- The manager in this case explicitly allows all other permissions.
+ scripts sets a proxy security manager that does not allow unsigned scripts
+ to create network sockets, access the file-system, or execute programs
+ on the machine.
+ The manager explicitly allows all other permissions.
  
 \begin_inset Float figure
 wide false
@@ -5129,27 +5140,28 @@ reference "fig:Permission-Check-Groovy-Freemind"
 
 \end_inset
 
- shows a sample permission check from the custom manager in ScriptingSecurityMan
-ager.java that is set as the proxy manager.
+ shows a sample permission check from the proxy manager in 
+\family typewriter
+ScriptingSecurityManager.java
+\family default
+.
  
 \family typewriter
 checkSecurityAccess
 \family default
- is a security manager method that checks if the sandbox may be changed.
- Due to the empty implementation of this method, all checks will succeed
- as if permission to re-configure the sandbox was granted.
+ typically checks if the sandbox may be changed but due to the its empty
+ implementation the check will always succeed.
  A malicious script can call 
 \family typewriter
 System.setSecurityManger(null)
 \family default
- to turn off the sandbox at any point, and then perform the previously restricte
-d actions.
+ to turn off the sandbox at any point.
 \end_layout
 
 \begin_layout Standard
-To show that the problem with the current implementation was more complex
- than fixing this permission check alone, we demonstrated that the custom
- security manager can easily be removed using reflection.
+We demonstrated that the custom security manager can easily be removed using
+ reflection to show that the problem is more complex than simply fixing
+ this permission check.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5157,15 +5169,17 @@ reference "fig:Example-Exploit-for-Freemind"
 
 \end_inset
 
- shows an exploit written as a Groovy script for a mind map that turns off
- the manager.
- The script gets a reference to the system's manager, then the class of
- the custom security manager.
- With the class of the manager, the exploit gets a reference to the proxy
- manager field.
- Next, the field's modifier is flipped from private to public before the
- exploit reflectively nulls it, thus effectively turning off the sandbox.
- Finally, the exploit creates a file to demonstrate that a 
+ shows an exploit to turn off the manager written as a Groovy script in
+ a mind map.
+ The script gets a reference to the system's manager and its class.
+ The class has the same type as the custom security manager, thus the exploit
+ gets a reference to the proxy manager field.
+ The field is made public to allow the exploit to reflectively 
+\family typewriter
+null
+\family default
+ it, disabling the sandbox.
+ Finally, a file is cre to demonstrate that a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -5323,7 +5337,8 @@ While not necessarily representing a security hole, such classes should
 
 \begin_layout Standard
 IntelliJ's concern with developers interacting with the security manager
- in these ways is warranted given our findings above.
+ in these ways is warranted given our findings that suggest vulnerabilities
+ are often introduced when working with the sandbox.
 \end_layout
 
 \begin_layout Section
