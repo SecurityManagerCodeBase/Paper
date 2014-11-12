@@ -1398,9 +1398,9 @@ Methodology
 \end_layout
 
 \begin_layout Standard
-As discussed in previous sections, it is widely known within the Java security
- community that current exploits that operate on the security manager perform
- one operation: They disable it.
+As discussed in the previous sections, it is widely known within the Java
+ security community that current exploits that operate on the security manager
+ perform one operation: They disable it.
  To understand the operations benign applications perform on the manager,
  we undertook an empirical analysis consisting of static, dynamic, and manual
  inspections of the open source Java application landscape.
@@ -1536,33 +1536,21 @@ reference "sec:Applications-Studied"
 
 \begin_layout Standard
 We performed a similar process using the GitHub search feature configured
- to search through Java files for the same keyword.
- Initially, we extracted the top six applications from the search results,
- but we came to find this filtering method was producing a high false positive
- rate: four out of six of the applications did not actually use the 
-\family typewriter
-SecurityManager
-\family default
- class (e.g.
- the keyword appeared in a code comment).
- To counteract these false positives, we refined our search to more precisely
- include applications that set a manager by using the keyword 
+ to search through Java files for the same keyword, 
 \shape italic
 System.setSecurityManager(
 \shape default
-.
- We selected the top seven applications from these search results while
- keeping the true positives from the previous search.
- To ensure we included applications that disable the security manager, we
- repeated this process using the keyword 
+, and 
 \shape italic
 System.setSecurityManager(null)
 \shape default
 .
- From this starting point of 20 applications, we excluded two that were
- already covered in the Qualitas Corpus and a Ruby application that mistakenly
- made it into the set because it contained Java files.
- We always downloaded the latest commit of each application.
+ We added two keywords to reduce false positives and to include applications
+ that disable the manager.
+ We ended up with 17 applications after selecting the top seven applications
+ from the results for each keyword and removing false positives and duplicates
+ found in QC.
+ Our dataset includes the latest commit of each project.
 \end_layout
 
 \begin_layout Standard
