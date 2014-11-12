@@ -5364,9 +5364,9 @@ reference "sub:Java-Exploits"
 
 \end_inset
 
-, we can fortify the sandbox for applications that set 
+, we can fortify the sandbox for applications that set a
 \emph on
-a self-protecting
+ self-protecting
 \emph default
  security manager.
  In this section, we define two rules to stop exploits from disabling the
@@ -5428,6 +5428,24 @@ self-protecting
  security manager has been set by the application.
  This rule is violated when code causes a change in the sandbox's configuration,
  the goal of many exploits.
+\end_layout
+
+\begin_layout Section
+Related Work - Mitigations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+ZC: I'm not sure if this related work section should go before or after
+ the rules.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
