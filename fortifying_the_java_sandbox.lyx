@@ -5725,14 +5725,12 @@ key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_
  We implemented a tool in JVMTI to proactively stop exploits written directly
  in the Java programming language to exploit vulnerable Java code.
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
-Our tool, Java Sandbox Fortifier, is open source and hosted on GitHub at
- https://github.com/SecurityManagerCodeBase/JavaSandboxFortifier.
- 
-\series bold
-REVIEWERS: INSPECTING THIS GITHUB PROJECT MAY REVEAL THE AUTHORS' IDENTITIES.
+Our tool, Java Sandbox Fortifier, is open source.
+ An author-anonymous version of the tool can be found at https://drive.google.com/
+file/d/0B8zTuj7QbLVLSXU3OW0zS2JjWjQ/view?usp=sharing
 \end_layout
 
 \end_inset
@@ -5958,7 +5956,7 @@ ClassPrepare
  This can not be done from the agent using the JNI because the required
  Java calls
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -5972,7 +5970,7 @@ Class.getProtectionDomain()
  Most applications where this operation is relevant (i.e.
  those that have a self-protecting manager) do not have the necessary permission
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
