@@ -24,7 +24,7 @@
 @inproceedings{QualitasCorpus:APSEC:2010,
   author = {Tempero, Ewan and Anslow, Craig and Dietrich, Jens and Han, Ted and Li, Jing and Lumpe, Markus and Melton, Hayden and Noble, James},
   title = {Qualitas Corpus: A Curated Collection of Java Code for Empirical Studies},
-  booktitle = {2010 Asia Pacific Software Engineering Conference (APSEC2010)},
+  booktitle = {Asia Pacific Software Engineering Conference (APSEC)},
   pages = {336--345},
   month = dec,
   year = {2010},
@@ -46,15 +46,13 @@
 }
 
 @inproceedings{cappos_retaining_2010,
-	address = {New York, {NY}, {USA}},
-	series = {{CCS} '10},
 	title = {Retaining Sandbox Containment Despite Bugs in Privileged Memory-safe Code},
 	isbn = {978-1-4503-0245-6},
 	url = {http://doi.acm.org/10.1145/1866307.1866332},
 	doi = {10.1145/1866307.1866332},
 	abstract = {Flaws in the standard libraries of secure sandboxes represent a major security threat to billions of devices worldwide. The standard libraries are hard to secure because they frequently need to perform low-level operations that are forbidden in untrusted application code. Existing designs have a single, large trusted computing base that contains security checks at the boundaries between trusted and untrusted code. Unfortunately, flaws in the standard library often allow an attacker to escape the security protections of the sandbox. In this work, we construct a Python-based sandbox that has a small, security-isolated kernel. Using a mechanism called a security layer, we migrate privileged functionality into memory-safe code on top of the sandbox kernel while retaining isolation. For example, significant portions of module import, file I/O, serialization, and network communication routines can be provided in security layers. By moving these routines out of the kernel, we prevent attackers from leveraging bugs in these routines to evade sandbox containment. We demonstrate the effectiveness of our approach by studying past bugs in Java's standard libraries and show that most of these bugs would likely be contained in our sandbox},
 	urldate = {2014-10-10},
-	booktitle = {Conference on Computer and Communications Security },
+	booktitle = {ACM Conference on Computer and Communications Security (CCS)},
 	publisher = {{ACM}},
 	author = {Cappos, Justin and Dadgar, Armon and Rasley, Jeff and Samuel, Justin and Beschastnikh, Ivan and Barsan, Cosmin and Krishnamurthy, Arvind and Anderson, Thomas},
 	year = {2010},
@@ -63,8 +61,6 @@
 }
 
 @inproceedings{cova_detection_2010,
-	address = {New York, {NY}, {USA}},
-	series = {{WWW} '10},
 	title = {Detection and {A}nalysis of {D}rive-by-download {A}ttacks and {M}alicious {JavaScript} {C}ode},
 	isbn = {978-1-60558-799-8},
 	url = {http://doi.acm.org/10.1145/1772690.1772720},
@@ -94,7 +90,7 @@
 	title = {{IRM} {E}nforcement of {J}ava {S}tack {I}nspection},
 	doi = {10.1109/SECPRI.2000.848461},
 	abstract = {Two implementations are given for Java's stack inspection access-control policy. Each implementation is obtained by generating an inlined reference monitor ({IRM}) for a different formulation of the policy. Performance of the implementations is evaluated, and one is found to be competitive with Java's less flexible, {JVM}-resident implementation. The exercise illustrates the power of the {IRM} approach for enforcing security policies},
-	booktitle = {2000 {IEEE} Symposium on Security and Privacy, 2000. S P 2000. Proceedings},
+	booktitle = {{IEEE} Symposium on Security and Privacy},
 	author = {{Erlingsson} and Schneider, F.B.},
 	year = {2000},
 	keywords = {authorisation, Binary codes, Computerized monitoring, Computer science, Decoding, distributed programming, Genetics, inlined reference monitor, Inspection, {IRM} approach, {IRM} enforcement, Java, Java stack inspection, {JVM}-resident implementation, Power system security, Runtime, security policy enforcement, stack inspection access-control policy, virtual machines, Virtual machining},
@@ -110,8 +106,6 @@
 }
 
 @inproceedings{ford_analyzing_2009,
-	address = {Washington, {DC}, {USA}},
-	series = {{ACSAC} '09},
 	title = {Analyzing and {D}etecting {M}alicious {F}lash {A}dvertisements},
 	isbn = {978-0-7695-3919-5},
 	url = {http://dx.doi.org/10.1109/ACSAC.2009.41},
@@ -126,7 +120,6 @@
 }
 
 @inproceedings{fournet_stack_2002,
-	address = {New York, {NY}, {USA}},
 	series = {{POPL} '02},
 	title = {{S}tack {I}nspection: {T}heory and {V}ariants},
 	isbn = {1-58113-450-9},
@@ -135,7 +128,7 @@
 	doi = {10.1145/503272.503301},
 	abstract = {Stack inspection is a security mechanism implemented in runtimes such as the {JVM} and the {CLR} to accommodate components with diverse levels of trust. Although stack inspection enables the fine-grained expression of access control policies, it has rather a complex and subtle semantics. We present a formal semantics and an equational theory to explain how stack inspection affects program behaviour and code optimisations. We discuss the security properties enforced by stack inspection, and also consider variants with stronger, simpler properties.},
 	urldate = {2014-10-09},
-	booktitle = {Proceedings of the 29th {ACM} {SIGPLAN}-{SIGACT} Symposium on Principles of Programming Languages},
+	booktitle = {Principles of Programming Languages (POPL)},
 	publisher = {{ACM}},
 	author = {Fournet, Cédric and Gordon, Andrew D.},
 	year = {2002},
@@ -225,8 +218,6 @@
 }
 
 @inproceedings{li_quarantine:_2011,
-	address = {New York, {NY}, {USA}},
-	series = {{PPPJ} '11},
 	title = {Quarantine: {A} {F}ramework to {M}itigate {M}emory {E}rrors in {JNI} {A}pplications},
 	isbn = {978-1-4503-0935-6},
 	shorttitle = {Quarantine},
@@ -275,15 +266,13 @@
 }
 
 @inproceedings{schlumberger_jarhead_2012,
-	address = {New York, {NY}, {USA}},
-	series = {{ACSAC} '12},
 	title = {Jarhead {A}nalysis and {D}etection of {M}alicious {J}ava {A}pplets},
 	isbn = {978-1-4503-1312-4},
 	url = {http://doi.acm.org/10.1145/2420950.2420988},
 	doi = {10.1145/2420950.2420988},
 	abstract = {Java applets have increasingly been used as a vector to deliver drive-by download attacks that bypass the sandboxing mechanisms of the browser's Java Virtual Machine and compromise the user's environment. Unfortunately, the research community has not given to this problem the attention it deserves, and, as a consequence, the state-of-the-art approaches to the detection of malicious Java applets are based either on simple signatures or on the use of honey-clients, which are both easily evaded. Therefore, we propose a novel approach to the detection of malicious Java applets based on static code analysis. Our approach extracts a number of features from Java applets, and then uses supervised machine learning to produce a classifier. We implemented our approach in a tool, called Jarhead, and we tested its effectiveness on a large, real-world dataset. The results of the evaluation show that, given a sufficiently large training dataset, this approach is able to reliably detect both known and previously-unseen real-world malicious applets.},
 	urldate = {2014-10-13},
-	booktitle = {Computer Security Applications Conference},
+	booktitle = {Computer Security Applications Conference (ACSAC)},
 	publisher = {{ACM}},
 	author = {Schlumberger, Johannes and Kruegel, Christopher and Vigna, Giovanni},
 	year = {2012},
@@ -308,8 +297,6 @@
 }
 
 @inproceedings{siefers_robusta:_2010,
-	address = {New York, {NY}, {USA}},
-	series = {{CCS} '10},
 	title = {Robusta: {T}aming the {N}ative {B}east of the {JVM}},
 	isbn = {978-1-4503-0245-6},
 	shorttitle = {Robusta},
@@ -317,7 +304,7 @@
 	doi = {10.1145/1866307.1866331},
 	abstract = {Java applications often need to incorporate native-code components for efficiency and for reusing legacy code. However, it is well known that the use of native code defeats Java's security model. We describe the design and implementation of Robusta, a complete framework that provides safety and security to native code in Java applications. Starting from software-based fault isolation ({SFI}), Robusta isolates native code into a sandbox where dynamic linking/loading of libraries in supported and unsafe system modification and confidentiality violations are prevented. It also mediates native system calls according to a security policy by connecting to Java's security manager. Our prototype implementation of Robusta is based {onNative} Client and {OpenJDK}. Experiments in this prototype demonstrate Robusta is effective and efficient, with modest runtime overhead on a set of {JNI} benchmark programs. Robusta can be used to sandbox native libraries used in Java's system classes to prevent attackers from exploiting bugs in the libraries. It can also enable trustworthy execution of mobile Java programs with native libraries. The design of Robusta should also be applicable when other type-safe languages (e.g., C\#, Python) want to ensure safe interoperation with native libraries},
 	urldate = {2014-10-10},
-	booktitle = {Conference on Computer and Communications Security},
+	booktitle = {ACM Conference on Computer and Communications Security (CCS)},
 	publisher = {{ACM}},
 	author = {Siefers, Joseph and Tan, Gang and Morrisett, Greg},
 	year = {2010},
@@ -404,11 +391,10 @@
 	title = {{T}ype annotations to improve stack-based access control},
 	doi = {10.1109/CSFW.2005.27},
 	abstract = {Java security architecture uses stack-based access control to protect security-sensitive resources. The architecture implements access control checks by inspecting the call stack to compute permission levels, which are used to decide whether to grant access to these resources. This implementation only considers the direct and indirect callers of sensitive methods that directly accesses the resources. However, it does not check the integrity of the variables used in the calls to these methods, nor does it help protect confidential values that might be returned by these calls. This paper proposes a type-based approach to strengthen stack-based access control. We use type annotations to track values originated from untrusted code such that these values will not be inputs to the sensitive methods when they are executed with high level of trust. We also use the annotations to protect confidential values from being accidentally revealed by trusted code. We give a static type system that checks these properties and augments existing dynamic stack-based checks. The hybrid approach is similar to so-called "history-based access control" without its run-time burden.},
-	booktitle = {Computer Security Foundations, 2005. {CSFW}-18 2005. 18th {IEEE} Workshop},
+	booktitle = {Computer Security Foundations Workshop},
 	author = {Zhao, Tian and Boyland, J.},
 	month = jun,
 	year = {2005},
-	keywords = {Access Control, authorisation, Computer architecture, data encapsulation, history-based access control, Inspection, Java, Java security architecture, Permission, Programming profession, Protection, Runtime, Security, security-sensitive resources, stack-based access control, type annotations, Virtual machining},
 	pages = {197--210}
 }
 
@@ -425,9 +411,7 @@
   year = {2006},
   pages = {169--190},
   location = {Portland, OR, USA},
-  doi = {http://doi.acm.org/10.1145/1167473.1167488},
-  publisher = {ACM Press},
-  address = {New York, NY, USA},
+  doi = {http://doi.acm.org/10.1145/1167473.1167488}
 }
 
 @MISC{xforceQ12013,
@@ -449,14 +433,14 @@
 @inproceedings{Provos-PrivilegeEscalation,
   title={Preventing {P}rivilege {E}scalation},
   author={Provos, Niels and Friedl, Markus and Honeyman, Peter },
-  booktitle={12th USENIX Security Symposium},
+  booktitle={USENIX Security},
   year={2003}
 }
 
 @inproceedings{Blasing-AndriodSandbox,
   title={Blasing, Thomas and Batyuk, Leonid and Schmidt, Aubrey-Derrick and Camtepe, Seyit Ahmet  and Albayrak, Sahin },
   author={Blasing},
-  booktitle={2010 5th International Conference on Malicious and Unwanted Software},
+  booktitle={Conference on Malicious and Unwanted Software},
   pages={55--62},
   year={2010}
 }
@@ -469,12 +453,10 @@
 }
 
 @inproceedings{georgiev12most-dangerous,
-	Acmid = {2382204},
-	Address = {New York, NY, USA},
 	Author = {Georgiev, Martin and Iyengar, Subodh and Jana, Suman and Anubhai, Rishita and Boneh, Dan and Shmatikov, Vitaly},
 	Bdsk-Oldurl-1 = {http://OldDoi.acm.org/10.1145/2382196.2382204},
 	Bdsk-Oldurl-2 = {http://dx.OldDoi.org/10.1145/2382196.2382204},
-	Booktitle = {Proceedings of the 2012 ACM Conference on Computer and Communications Security},
+	Booktitle = {ACM Conference on Computer and Communications Security (CCS)},
 	Date-Added = {2013-11-18 02:30:09 +0000},
 	Date-Modified = {2013-12-23 22:11:16 +0000},
 	Keywords = {https, public-key certificates, public-key infrastructure, security vulnerabilities, ssl, tls},
@@ -485,13 +467,12 @@
 	Oldurl = {http://OldDoi.acm.org/10.1145/2382196.2382204},
 	Pages = {38--49},
 	Publisher = {ACM},
-	Series = {CCS '12},
 	Title = {The Most Dangerous Code in the World: Validating {SSL} Certificates in Non-browser Software},
 	Year = {2012}}
 	
 @inproceedings{somorovsky12breaking,
 	Author = {Somorovsky, Juraj and Mayer, Andreas and Schwenk, J{\"o}rg and Kampmann, Marco and Jensen, Meiko},
-	Booktitle = {Proceedings of the 21st USENIX conference on Security symposium, Security},
+	Booktitle = {USENIX Security},
 	Date-Added = {2013-11-18 02:54:33 +0000},
 	Date-Modified = {2013-11-18 02:54:48 +0000},
 	Pages = {21--21},
@@ -502,14 +483,14 @@
 @inproceedings{li2014emperor,
   title={The emperor's new password manager: Security analysis of web-based password managers},
   author={Li, Zhiwei and He, Warren and Akhawe, Devdatta and Song, Dawn},
-  booktitle={23rd USENIX Security Symposium (USENIX Security 14)},
+  booktitle={USENIX Security},
   year={2014}
 }
 
 @inproceedings{gong2009java,
   title={Java security: a ten year retrospective},
   author={Gong, Li},
-  booktitle={Computer Security Applications Conference, 2009. ACSAC'09. Annual},
+  booktitle={Computer Security Applications Conference (ACSAC)},
   pages={395--405},
   year={2009},
   organization={IEEE}

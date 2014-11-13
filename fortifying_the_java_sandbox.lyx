@@ -189,54 +189,6 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Related science:
-\end_layout
-
-\begin_layout Plain Layout
-1.
- Most Dangerous Code in the World
-\end_layout
-
-\begin_layout Plain Layout
-2.
- Zero Day Vulnerabilities (Before We Knew It)
-\end_layout
-
-\begin_layout Plain Layout
-3.
- Password Manager insecurity paper (from Sep 2014)
-\end_layout
-
-\begin_layout Plain Layout
-Related science probably makes sense to go right before the flag post paragraph.
-\end_layout
-
-\begin_layout Plain Layout
-This section should define JVMTI so that we can use it everywhere else but
- do not explain much about what it is here -- should not be hard to do (cite
- the docs when doing it)
-\end_layout
-
-\begin_layout Plain Layout
-Needs to mention JVM to define acronym.
-\end_layout
-
-\begin_layout Plain Layout
-Be clear right up front that we are not trying to stop all Java exploits,
- we are trying to harden existing foundations to shore up defenses for future
- mitigations.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 The Java Runtime Environment (JRE) is widely installed on user endpoints,
  where it executes external code in the form of applets 
 \begin_inset CommandInset citation
@@ -924,7 +876,7 @@ write, execute
 \begin_inset Text
 
 \begin_layout Plain Layout
-Write to or execute any file*
+Write to or execute any file
 \end_layout
 
 \end_inset
@@ -1040,7 +992,7 @@ reference "fig:A-typical-exploit-payload"
 
  shows a typical payload class whose privileges have been elevated by an
  exploit to allow it to disable the sandbox.
- This example exploit uses 
+ This example payload uses 
 \family typewriter
 doPrivileged
 \family default
@@ -1397,7 +1349,7 @@ sun
  increase the accessibility of fields.
  It is also a violation of SEC00-J because the AWT class is privileged and
  leaks sensitive information (the fields) across trust boundaries.
- All of the rules and guidelines should be followed, but it would have not
+ All of the rules and guidelines should be followed, but it would not have
  been possible to exploit this case to disable the security manager had
  the fields not been leaked across a trust boundary.
  To follow SEC00-J, the call to the AWT method in question should have been
@@ -1623,7 +1575,7 @@ reference "sec:Background"
 
 \end_inset
 
-) is disallowed.
+).
  To implement this 
 \series bold
 strong mitigation
@@ -1679,15 +1631,6 @@ SecurityManager
  When any instance of the keyword was found, we included the application
  in our dataset.
  This filtering reduced the set of applications to inspect from 112 to 29.
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Applications-Studied"
-
-\end_inset
-
- lists the versions of the applications used in this study.
- 
 \end_layout
 
 \begin_layout Standard
@@ -1816,8 +1759,7 @@ Finally, the reviewer summarized the operations the application performed
 \begin_layout Standard
 To ensure the reviewers understood the analysis steps and produced consistent
  results, we undertook a pilot study where each reviewer independently inspected
- the same 6 applications.
- This pilot study ensured the inspections were performed consistently.
+ the same six applications then compared their results.
 \end_layout
 
 \begin_layout Subsection
@@ -3247,9 +3189,6 @@ The Qualitas Corpus is a curated collection of open source Java applications
  for use in reproducible software studies.
  We investigated the sandbox usage of 29 applications from QC version 20130901
  that we use in this study.
- 11 of the 29 applications are developed by the Apache Software Foundation
- (ASF), which may increase the homogeneity of their operations on the manager.
- 
 \end_layout
 
 \begin_layout Standard
@@ -3544,16 +3483,15 @@ http://qualitascorpus.com/docs/criteria.html
 \end_inset
 
  leads to the inclusion of large, popular applications and frameworks.
- Given this point and the emphasis on ASF applications in our filtered set,
- we diversified our dataset by turning to GitHub.
- The full list of applications studied are listed in Table 
+ We diversified our dataset by turning to GitHub.
+ Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "Table:applications-studied"
 
 \end_inset
 
-.
+ lists all studied applications.
  Version numbers and Git commit hashes are available in an online supplement.
 \begin_inset Foot
 status open
@@ -3589,9 +3527,8 @@ Our results are dependent on accurately studying the source code of applications
  and their comments.
  In most cases, security manager interactions are easily understood, but
  there are a few particularly complex interactions that may be misdiagnosed.
- Furthermore, we did not review all of the code the applications, thus we
- may have taken a comment or some source code out of context in larger applicati
-ons.
+ Furthermore, we did not review all application code, thus we may have taken
+ a comment or some source code out of context in larger applications.
  Finally, using two different reviewers may lead to variations in the interpreta
 tions of some of the data.
  
@@ -3745,7 +3682,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Weka code snippet that intializes a security manager if one does not already
+Weka code snippet that initializes a security manager if one does not already
  exist.
  This is the only reference to the security manager in the Weka's code base.
 \begin_inset CommandInset label
@@ -3954,8 +3891,8 @@ name "sub:Non-security-uses-of"
 \begin_layout Standard
 This section describes applications that violated hypotheses 1, 2 and 4
  while using the sandbox for reasons that do not satisfy security requirements.
- We found several cases of applications using the sandbox in ways unrelated
- to system security.
+ We found several applications using the sandbox in ways unrelated to system
+ security.
  Most of these applications used the sandbox to enforce architectural constraint
 s when interacting with other applications or forcibly disabled the sandbox
  to reduce development complexity.
@@ -3972,7 +3909,7 @@ System.exit()
 \family default
  when a non-recoverable error condition occurs.
  This error handling strategy causes problems when an application uses another
- application as a library that implements this strategy.
+ application that implements this strategy as a library.
  When the library application executes 
 \family typewriter
 System.exit()
@@ -4006,7 +3943,7 @@ This case appears in Eclipse, which uses Ant as a library.
  When an unrecoverable error condition occurs, Ant kills the JVM to terminate
  execution of the build script currently running.
  However, Eclipse should continue executing and report an error to the user
- when Ant runs into an error condition.
+ when Ant terminates with an error code.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4155,8 +4092,8 @@ reference "fig:GJMan-snippet"
 \end_inset
 
 .
- A comment in the same source file references a blog post that we believe
- is the origin of this solution.
+ A code comment (not shown) references a blog post that we believe is the
+ origin of this solution.
 \begin_inset Foot
 status open
 
@@ -4316,15 +4253,16 @@ name "sub:Reducing-Web-Application-Complexity"
 \end_layout
 
 \begin_layout Standard
-We found that the Java security policies for web applications (applets and
- applications launched via Java Web Start) 
+We found applications that were complicated by the Java security policies
+ for web applications (applets and applications launched via Java Web Start)
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_java_web_start"
 
 \end_inset
 
- created complexity for certain applications.
+.
  In the latest versions of the JRE (1.7.72 and 1.8.25), users are prompted to
  allow the execution of Java web applications originating from a source
  other than the host machine.
@@ -4338,15 +4276,13 @@ key "_java_web_start"
 \begin_layout Standard
 For some applications, required behaviors may be prevented by the restrictive
  sandbox.
- Thus, Java provides a way to run applications outside the restrictive sandbox.
  To avoid executing the applet in a restrictive sandbox, a developer must
  first get the application digitally signed by a recognized certificate
  authority.
  Once the application has been properly signed, the developer may specify
  that the application should run outside of the sandbox.
- Before running this kind of application outside of the sandbox, the use
- must accept two prompts: one to run the application, and a second to run
- outside the sandbox.
+ Before running this kind of application, the user must accept two prompts:
+ one to run the application, and a second to run outside the sandbox.
  
 \end_layout
 
@@ -4359,16 +4295,15 @@ If an application is executed inside a restrictive sandbox and uses permissions
 SecurityException
 \family default
 .
- The first option would require the application to recognize the restrictive
- sandbox and then avoid using restricted permissions.
+ The first option would require the application to recognize the sandbox
+ and then avoid using restricted permissions.
  Thus, the application would only be able to execute a subset of the full
  application.
  This requires more development effort because the application is essentially
  implemented twice, once as the restricted version and again as the full
  version.
- The other option does not allow the application to execute the application
- inside a restrictive sandbox.
- This option forces the user to run the application outside the sandbox.
+ The second option does not allow the application to execute inside a restrictiv
+e sandbox: The the application must run outside the sandbox.
  We found that applications using this method attempted to set the security
  manager to 
 \family typewriter
@@ -4380,7 +4315,7 @@ null
 \end_layout
 
 \begin_layout Standard
-We found two applications that used this method: Eclipse and Timelag.
+We found two applications that use the second option: Eclipse and Timelag.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4498,8 +4433,6 @@ name "sub:Using-the-Security"
 This section describes applications that violated hypotheses 1, 2, and 4
  while using the sandbox in attempts to improve the security posture of
  the application.
- We found applications that set a security manager then either explicitly
- changed it or allowed the user to change it.
  Batik, Eclipse, and Spring-modules provide methods that allow the user
  to set and change an existing manager, and Ant, Freemind, and Netbeans
  explicitly set then change the manager.
@@ -4663,12 +4596,10 @@ ApplicationSecurityEnforcer.java
  This method allows users to optionally constrain the execution of an an
  application that uses the Batik SVG Toolkit.
  It takes a parameter that acts as a switch to turn the sandbox on or off.
- Batik throws an exception if the user wants to toggle the sandbox while
- a non-Batik manager is set.
  The download page on the Batik website shows several examples of how to
  use the library.
- Two of the examples show ways to set a security manager at start up: the
- squiggle browser demo and the rasterizer demo.
+ Two set a security manager at start up: the squiggle browser demo and the
+ rasterizer demo.
  While the squiggle browser demo sets a manager and never changes it, the
  rasterizer demo can be set to call 
 \family typewriter
@@ -4686,10 +4617,11 @@ Ant, Freemind, and Netbeans explicitly set and then change the manager during
  runtime.
  Ant allows the users to create build scripts that execute Java classes
  and JAR's during a build under a user specified permissions set.
- The user-specified permissions set is defined in the permissions element
- of an Ant build file.
- Inside the permissions element, a user can grant and revoke permissions
- available to the Java code.
+ The permissions set is defined in the 
+\family typewriter
+permissions
+\family default
+ element of an Ant build file.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4711,30 +4643,26 @@ https://ant.apache.org/manual/Types/permissions.html
 \family typewriter
 grant
 \family default
- element provide the application all permissions.
- Then, the contents of the revoke element restricts the application from
- using all property permissions.
- The permissions mean that the application can perform all actions except
- those that require 
+ element provide the application all permissions, but the contents of the
+ 
 \family typewriter
-PropertyPermissions
+revoke
 \family default
-.
- This snippet also leads Ant to set a defenseless security manager.
- Malicious code can easily bypass the restrictions in this example by executing
- the line 
+ element restrict the application from using all property permissions.
+ Due the use a defenseless security manager, malicious code can easily bypass
+ the restrictions in this example by executing the line 
 \family typewriter
 System.setSecurityManager(null)
 \family default
-, which turns off the sandbox.
- Once the sandbox has been turned off, the malicious code can perform all
- actions which require 
+.
+ Once the sandbox is disabled, the malicious code can perform all actions
+ including those requiring 
 \family typewriter
 PropertyPermissions
 \family default
 .
  The Ant Permissions website does not mention that an implementation of
- this example would be vulnerable.
+ this example is vulnerable.
  The site also does not mention that allowing certain permissions will potential
 ly enable the restricted application to bypass any user specified restrictions.
  
@@ -4904,8 +4832,8 @@ status open
 
 \begin_layout Plain Layout
 Code snippet showing Ant's custom security manager architecture, used to
- enable build scripts run Java code under a specific set of permissions
- unique to the instantiated code.
+ allow builds to run Java code under a specific set of permissions unique
+ to the instantiated code.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Ant-Permissions-Enforcement"
@@ -4963,41 +4891,31 @@ setSecurityManager
 MySM
 \family default
 , which enforces the permissions specified by the user.
- When the security manager is initially set, the security manager allows
- all permission checks to succeed, making it a defenseless security manager.
+ When the security manager is initially set, it allows all permission checks
+ to succeed, making it a defenseless security manager.
  Once the 
 \family typewriter
 setSecurityManager
 \family default
- method changes altered to true, 
+ method changes 
+\family typewriter
+active
+\family default
+ to true, 
 \family typewriter
 MySM
 \family default
  enforces the specified permissions.
- 
-\end_layout
-
-\begin_layout Standard
-When Ant has finished executing the application, it calls the method 
+ When Ant has finished executing the application, it calls the method 
 \family typewriter
 restoreSecurityManager
 \family default
- to remove the security manager.
- This method sets active to false, which turns off all permission checks
- performed by 
-\family typewriter
-MySM
-\family default
-.
- Once the permission checks of the current security manager are turned off,
- the method restores the original security manager.
- 
+ to restore the original security manager.
 \end_layout
 
 \begin_layout Standard
 With this implementation, Ant catches applications that perform actions
- restricted by the user, since the security manager is active when the applicati
-on executes.
+ restricted by the user while typically protecting sandbox settings.
  Ant is also able to revert to the original security manager after executing
  the application.
  However, we are not sure that this implementation is free of vulnerabilities.
@@ -5027,8 +4945,7 @@ Freemind 0.9.0 tried to solve a similar problem but ended up illustrating
  application that executes a script typically allows the script to execute
  in the same JVM as the application itself.
  As a result, a mind map could potentially be crafted to exploit a user
- that opens the map and runs its scripts, but while limited by the sandbox
- that encapsulates the Java application.
+ that opens the map and runs its scripts.
 \begin_inset Float figure
 wide false
 sideways false
@@ -5222,7 +5139,7 @@ status open
 
 \begin_layout Plain Layout
 Initialization of the field in Freemind's custom security manager that stores
- the active security manager.
+ the proxy security manager.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Freemind-Security-Manager"
@@ -5250,7 +5167,7 @@ Freemind attempted to implement an architecture that would allow the sandbox
  set as the system manager in the usual manner.
  This custom manager contains a field, 
 \family typewriter
-pFinalSecurityManager
+mFinalSecurityManager
 \family default
 , that specifies the manager that should be used during the execution of
  scripts.
@@ -5289,13 +5206,11 @@ field in the file
 FreemindSecurityManager.java
 \family default
 .
- Initially, the
+ Once a manager is set, if 
 \family typewriter
- setFinalSecurityManager
+setFinalSecurityManager
 \family default
- method sets the field to the method argument.
- Once set, if the method is called again with a different security manager,
- a
+ is called again with a different security manager, a
 \family typewriter
  SecurityException
 \family default
@@ -5390,7 +5305,7 @@ System.setSecurityManger(null)
 \end_layout
 
 \begin_layout Standard
-We demonstrated that the custom security manager can easily be removed using
+We demonstrated that the custom security manager is easily removed using
  reflection to show that the problem is more complex than simply fixing
  this permission check.
  Figure 
@@ -5410,7 +5325,7 @@ reference "fig:Example-Exploit-for-Freemind"
 null
 \family default
  it, disabling the sandbox.
- Finally, a file is cre to demonstrate that a 
+ Finally, a file is created to demonstrate that a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -5497,21 +5412,6 @@ name "fig:Example-Exploit-for-Freemind"
 
 \end_layout
 
-\begin_layout Standard
-As a final example of security manager interactions that are for security
- purposes, we very briefly look at WildFlySecurityManager, a custom security
- manager that does not cleanly fit into our categories.
- WildFlySecurityManager allows permission checks to be disabled for classes
- granted a custom permission called 
-\family typewriter
-DO_UNCHECKED_PERMISSION
-\family default
-.
- This strategy is equivalent to running a privileged action with 
-\family typewriter
-doPrivileged.
-\end_layout
-
 \begin_layout Subsection
 Security Manager Interactions are Potentially Dangerous
 \begin_inset CommandInset label
@@ -5537,9 +5437,8 @@ http://www.jetbrains.com/idea/documentation/inspections.jsp
 \end_inset
 
  to warn users of potentially problematic sections of code.
- In the inspections for security issues, the IntelliJ editor contains two
- inspections that directly pertain to interactions with the sandbox: one
- that highlights calls to 
+ There are two security inspections that directly pertain to interactions
+ with the sandbox: one that highlights calls to 
 \family typewriter
 System.setSecurityManager()
 \family default
@@ -5573,9 +5472,8 @@ While not necessarily representing a security hole, such classes should
 \end_layout
 
 \begin_layout Standard
-IntelliJ's concern with developers interacting with the security manager
- in these ways is warranted given our findings that suggest vulnerabilities
- are often introduced when working with the sandbox.
+IntelliJ's concerns with these types of security manager interactions are
+ warranted given our findings in the previous section.
 \end_layout
 
 \begin_layout Section
@@ -5691,7 +5589,14 @@ reference "sec:Security-Manager-Study"
 
  we discussed (1) four hypotheses that could lead to Java exploit mitigations
  if validated and (2) how we went about validating them.
- We supported hypothesis 3 and rejected all of the others.
+ In Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Study-results"
+
+\end_inset
+
+, we supported hypothesis 3 and rejected all of the others.
  Along the way, we learned practical lessons about how applications use
  the Java sandbox that are useful to exploit mitigation implementers.
  Our results included two backwards-compatible rules, discussed in Section
@@ -5819,7 +5724,7 @@ url{http://goo.gl/In6Di0}
 \end_layout
 
 \begin_layout Standard
-JVMTI is a native interface used to access JVM operations used to create
+JVMTI is a native interface for accessing JVM operations used to create
  analysis tools such as profilers, debuggers, monitors, and thread analyzers.
  Tools that use JVMTI are called agents, and are attached to a running Java
  application at a configuration-specific point in the application's lifecycle.
@@ -6150,7 +6055,7 @@ The agent stores a shadow copy of the application's most recent security
 \family typewriter
 System.getSecurityManager()
 \family default
- when the agent is loaded by a JVM.
+ when a JVM loads the agent.
  After this point, the shadow copy is only updated by the modification event,
  which receives the new manager as a parameter from JVMTI whenever the event
  is triggered.
@@ -6255,7 +6160,7 @@ We performed an experiment to evaluate how effective our agent is at blocking
  exceptions we did not debug.
  Metasploit contains many Java exploits outside of the subset we used, but
  the excluded exploits either only work against long obsolete versions of
- the JRE or are not well positioned to be used in drive-by-downloads.
+ the JRE or are not well positioned to be used in drive-by downloads.
  
 \end_layout
 
@@ -6284,7 +6189,7 @@ reference "tab:Exploit-experiment-summary"
 
 \end_inset
 
- summarizes our results using the specific CVE's each exploit targeted.
+ summarizes our results using the specific CVEs each exploit targeted.
 \end_layout
 
 \begin_layout Standard
@@ -6698,7 +6603,7 @@ The DaCapo benchmarks do not set a security manager.
  This produces the worst-case overhead, because the unmodified version of
  JSF only attempts to monitor for rule violations when a security manager
  has actually been set.
- 
+ Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Performance-Test-Results."
@@ -8745,9 +8650,9 @@ Our results indicate that the Privilege Escalation rule causes minimal slowdown,
  code that enforces the rules was removed.
  The results are nearly identical to the results we received when the rule
  implementations were in place.
- This strongly suggests that the significant performance slowdown is caused
- by JVMTI's implementation of the events we register for to enforce the
- Security Manager rule.
+ This strongly suggests that about 75% of the significant performance slowdown
+ is caused by JVMTI's implementation of the events we register for to enforce
+ the Security Manager rule.
 \end_layout
 
 \begin_layout Standard
@@ -8799,7 +8704,7 @@ key "_applet_usage_stats"
 \end_layout
 
 \begin_layout Standard
-Adjusting the browser plugin settings only effects applets and Java Web
+Adjusting the browser plugin settings only affects applets and Java Web
  Start applications.
  Users can deploy the tool in only their browsers by configuring the runtime
  parameters of the Java browser plugin with the Java Control Panel 
@@ -8823,20 +8728,6 @@ name "sub:Related-Work-Mitigation"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-There are two main approaches to fixing Java security problems in prior
- work: strengthening Java security features and identifying exploit attempts.
- Strengthening the security features of Java stop exploits that execute
- on the system, however this approach usually has a harder time differentiating
- between valid executions and malicious executions.
- Identifying exploit attempts allows a more fine grained approach to stopping
- exploits, although it does not provide any protection if the exploits are
- executed.
- This section discusses the previous works into these two approaches.
- Our approach focuses on strengthening Java security features in a previously
- unexplored way.
 \end_layout
 
 \begin_layout Standard
@@ -8867,22 +8758,14 @@ key "Provos-PrivilegeEscalation"
 \end_inset
 
 .
- Their approach is partially implemented in the Java security model .
+ Their approach is partially implemented in the Java security model.
  Li and Srisa-an extended the Java sandbox by providing extra protection
  for JNI calls.
  Their implementation, Quarantine, separates JNI accessible objects to a
  heap which contains extra protection mechanisms.
- The authors used the Dacapo Benchmark Suite 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "DaCapo:paper"
-
-\end_inset
-
-, a standard set of real-world Java applications, to measure Quarantine's
- performance effects.
+ The performance of their mechanism is also measured using DaCapo.
  Siefers et al.
- creates a tool, Robusta, which separates JNI code into another sandbox
+ created a tool, Robusta, which separates JNI code into another sandbox
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -8903,9 +8786,8 @@ key "sun_jvm-portable_2012"
 \end_layout
 
 \begin_layout Standard
-Java applets and Java Web Start applications are currently the most common
- way to transmit a Java exploit, usually using drive-by-downloads.
- Methods have been created to identify drive-by-downloads in JavaScript
+Java applets are the most common ways to transmit Java exploits.
+ Detectors have been created to identify drive-by downloads in JavaScript
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -8923,15 +8805,14 @@ key "ford_analyzing_2009"
 .
  Helmer et al.
  used machine learning to identify malicious applets.
- Their approach was to monitor system call traces of applications to identify
- malicious behavior after execution.
- However, this approach can only respond after the malicious system calls
- have been made.
- Our approach terminate exploits when the exploit attempts to break out
- of the sandbox, before the exploit performs its payload.
+ Their approach monitored system call traces to identify malicious behavior
+ after execution.
+ However, this approach is entirely reactive.
+ Our approach terminates exploits when they attempt to break out of the
+ sandbox, before the exploit performs its payload.
  Schlumberger et al.
- used machine learning and static analysis of common exploit features to
- identify malicious applets
+ used machine learning and static analysis to identify common exploit features
+ in malicious applets 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "schlumberger_jarhead_2012"
@@ -8940,7 +8821,7 @@ key "schlumberger_jarhead_2012"
 
 .
  Blasing et al.
- used static analysis and dynamic analysis of sandboxed executions to determine
+ used static analysis and dynamic analysis of sandboxed executions to detect
  malicious Android applications 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -8948,70 +8829,10 @@ key "Blasing-AndriodSandbox"
 
 \end_inset
 
- .
- Unlike these automated approaches, our implementations show that unique
+.
+ Unlike these automated approaches, our implementation shows that unique
  mitigation strategies can be created with a better understanding of how
  applications interact with the sandbox.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status collapsed
-
-\begin_layout Plain Layout
-ZC: All sentences with citations in the rest of the paper:
-\end_layout
-
-\begin_layout Plain Layout
-Prior work has made an effort to prevent exploits in the native libraries
- used by language runtimes such as Java's 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-portable_2012"
-
-\end_inset
-
-, and the machine learning community has put some effort into detecting
- exploits delivered via drive-by-downloads using Java applets and similar
- technologies 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_jarhead_2012"
-
-\end_inset
-
-.
- For example, the software-based fault isolation subset of Robusta 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "siefers_robusta:_2010"
-
-\end_inset
-
- can be applied to our tool to isolate the effects of an exploit.
- Using a security kernel for Java similar to Cappo's for Python 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cappos_retaining_2010"
-
-\end_inset
-
-, our tool could be isolated to its own security layer with access only
- to the information it gets from JVMTI.
- We measured performance overhead using version 9.12-bach of the DaCapo Benchmark
- Suite 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "DaCapo:paper"
-
-\end_inset
-
-, a standard set of real-world Java applications used for Java benchmarking.
-\end_layout
-
-\end_inset
-
  
 \end_layout
 
@@ -9082,8 +8903,8 @@ We indirectly observed many developers struggling to understand and use
 defenseless
 \emph default
  sandbox.
- These sandbox-defeating permissions should be packaged and segregated to
- prevent accidental creation of defenseless sanboxes.
+ In general, sandbox-defeating permissions should be packaged and segregated
+ to prevent accidental creation of defenseless sanboxes.
  More generally, some developers appear to believe the sandbox functions
  as a blacklist when, in reality, it is a whitelist.
  These observations suggest that more resources---tool support, improved
