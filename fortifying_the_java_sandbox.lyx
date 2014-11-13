@@ -924,7 +924,7 @@ write, execute
 \begin_inset Text
 
 \begin_layout Plain Layout
-Write to or execute any file*
+Write to or execute any file
 \end_layout
 
 \end_inset
@@ -1040,7 +1040,7 @@ reference "fig:A-typical-exploit-payload"
 
  shows a typical payload class whose privileges have been elevated by an
  exploit to allow it to disable the sandbox.
- This example exploit uses 
+ This example payload uses 
 \family typewriter
 doPrivileged
 \family default
@@ -1397,7 +1397,7 @@ sun
  increase the accessibility of fields.
  It is also a violation of SEC00-J because the AWT class is privileged and
  leaks sensitive information (the fields) across trust boundaries.
- All of the rules and guidelines should be followed, but it would have not
+ All of the rules and guidelines should be followed, but it would not have
  been possible to exploit this case to disable the security manager had
  the fields not been leaked across a trust boundary.
  To follow SEC00-J, the call to the AWT method in question should have been
@@ -1558,7 +1558,7 @@ reference "sec:Background"
 
 \end_inset
 
-) is disallowed.
+).
  To implement this 
 \series bold
 strong mitigation
@@ -1614,15 +1614,6 @@ SecurityManager
  When any instance of the keyword was found, we included the application
  in our dataset.
  This filtering reduced the set of applications to inspect from 112 to 29.
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Applications-Studied"
-
-\end_inset
-
- lists the versions of the applications used in this study.
- 
 \end_layout
 
 \begin_layout Standard
@@ -1751,8 +1742,7 @@ Finally, the reviewer summarized the operations the application performed
 \begin_layout Standard
 To ensure the reviewers understood the analysis steps and produced consistent
  results, we undertook a pilot study where each reviewer independently inspected
- the same 6 applications.
- This pilot study ensured the inspections were performed consistently.
+ the same six applications then compared their results.
 \end_layout
 
 \begin_layout Subsection
@@ -3182,9 +3172,6 @@ The Qualitas Corpus is a curated collection of open source Java applications
  for use in reproducible software studies.
  We investigated the sandbox usage of 29 applications from QC version 20130901
  that we use in this study.
- 11 of the 29 applications are developed by the Apache Software Foundation
- (ASF), which may increase the homogeneity of their operations on the manager.
- 
 \end_layout
 
 \begin_layout Standard
@@ -3479,16 +3466,15 @@ http://qualitascorpus.com/docs/criteria.html
 \end_inset
 
  leads to the inclusion of large, popular applications and frameworks.
- Given this point and the emphasis on ASF applications in our filtered set,
- we diversified our dataset by turning to GitHub.
- The full list of applications studied are listed in Table 
+ We diversified our dataset by turning to GitHub.
+ Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "Table:applications-studied"
 
 \end_inset
 
-.
+ lists all studied applications.
  Version numbers and Git commit hashes are available in an online supplement.
 \begin_inset Foot
 status open
@@ -3524,9 +3510,8 @@ Our results are dependent on accurately studying the source code of applications
  and their comments.
  In most cases, security manager interactions are easily understood, but
  there are a few particularly complex interactions that may be misdiagnosed.
- Furthermore, we did not review all of the code the applications, thus we
- may have taken a comment or some source code out of context in larger applicati
-ons.
+ Furthermore, we did not review all application code, thus we may have taken
+ a comment or some source code out of context in larger applications.
  Finally, using two different reviewers may lead to variations in the interpreta
 tions of some of the data.
  
@@ -3889,8 +3874,8 @@ name "sub:Non-security-uses-of"
 \begin_layout Standard
 This section describes applications that violated hypotheses 1, 2 and 4
  while using the sandbox for reasons that do not satisfy security requirements.
- We found several cases of applications using the sandbox in ways unrelated
- to system security.
+ We found several applications using the sandbox in ways unrelated to system
+ security.
  Most of these applications used the sandbox to enforce architectural constraint
 s when interacting with other applications or forcibly disabled the sandbox
  to reduce development complexity.
@@ -3907,7 +3892,7 @@ System.exit()
 \family default
  when a non-recoverable error condition occurs.
  This error handling strategy causes problems when an application uses another
- application as a library that implements this strategy.
+ application that implements this strategy as a library.
  When the library application executes 
 \family typewriter
 System.exit()
@@ -3941,7 +3926,7 @@ This case appears in Eclipse, which uses Ant as a library.
  When an unrecoverable error condition occurs, Ant kills the JVM to terminate
  execution of the build script currently running.
  However, Eclipse should continue executing and report an error to the user
- when Ant runs into an error condition.
+ when Ant terminates with an error code.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4090,8 +4075,8 @@ reference "fig:GJMan-snippet"
 \end_inset
 
 .
- A comment in the same source file references a blog post that we believe
- is the origin of this solution.
+ A code comment (not shown) references a blog post that we believe is the
+ origin of this solution.
 \begin_inset Foot
 status open
 
@@ -4251,15 +4236,16 @@ name "sub:Reducing-Web-Application-Complexity"
 \end_layout
 
 \begin_layout Standard
-We found that the Java security policies for web applications (applets and
- applications launched via Java Web Start) 
+We found applications that were complicated by the Java security policies
+ for web applications (applets and applications launched via Java Web Start)
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_java_web_start"
 
 \end_inset
 
- created complexity for certain applications.
+.
  In the latest versions of the JRE (1.7.72 and 1.8.25), users are prompted to
  allow the execution of Java web applications originating from a source
  other than the host machine.
