@@ -439,6 +439,8 @@ key "DaCapo:paper"
  therefore be used to monitor any Java application.
  The security manager monitor is implemented as a JVMTI agent that monitors
  a static field, which unfortunately disables just-in-time compilation (JIT).
+ Additionally, JVMTI implementations reduce performance by nearly 30x for
+ some events we depend on.
  Therefore, the security manager monitor resulted in substantial overhead
  of 4536%, which is unacceptable for most Java applications.
  However, the greatest threat comes from Java applets, and many of these
@@ -6599,14 +6601,14 @@ key "DaCapo:paper"
 \end_inset
 
 , a standard set of real-world Java applications used for Java benchmarking.
- Performance was measured by running DaCapo 5 times using the converge switch
- 
+ Performance was measured by running DaCapo five times using the converge
+ switch 
 \emph on
 --converge --max-iterations 30 --window 3.
  
 \emph default
 The average for each benchmark is the geometric mean of the last benchmark
- execution times from the 5 convergence iterations.
+ execution times from the five convergence iterations.
  We ran the benchmarks on an otherwise idle laptop with 8 gigabytes of RAM
  and an 8 core 64-bit Intel i7-3632QM CPU at 2.2 GHz.
  We used the 64-bit version of Java version 1.7.0, update 60.
@@ -8659,16 +8661,16 @@ Our results indicate that the Privilege Escalation rule causes minimal slowdown,
  of the JIT.
  We measured the benchmarks in interpreted mode to measure how much of this
  extensive slowdown is the result of the JIT being off.
- The tests determined that the interpreted applications runtime increased
- by 14.1 times relative to the JITed version of the application.
+ The experiment determined that the interpreted applications run 14.1 times
+ slower relative to the JITed version of the application.
  We also measured performance with a version of the agent that receives
  the required events for both monitors but does nothing with them---the
  code that enforces the rules was removed.
- These tests produced results that are nearly identical to the results we
- received when the rule implementations were in place.
+ The results are nearly identical to the results we received when the rule
+ implementations were in place.
  This strongly suggests that the significant performance slowdown is caused
  by JVMTI's implementation of the events we register for to enforce the
- security manager rule.
+ Security Manager rule.
 \end_layout
 
 \begin_layout Standard
@@ -8676,7 +8678,7 @@ The security manager rule slowdown can be largely mitigated by advancing
  JVMTI implementations, for example, to enable the JIT in all cases.
  However, JVMTI implementors tend to favor ease of implementation over speed
  because many non-research uses of JVMTI are not performance-critical.
- We hypothesize that the security manager rule can be implemented with significa
+ We hypothesize that the Security Manager rule can be implemented with significa
 ntly less performance overhead if the rule is built into the JVM.
  This approach has the added benefit that the rules would become a permanent
  mitigation for all Java applications.
@@ -8685,7 +8687,7 @@ ntly less performance overhead if the rule is built into the JVM.
 \end_layout
 
 \begin_layout Standard
-Since Java exploits are primarily delivered by drive-by-downloads, applets
+Since Java exploits are primarily delivered by drive-by downloads, applets
  and Java Web Start applications are the greatest security security risk
  to most systems.
  With this in mind, a user can deploy JSF to only monitor applets and Java
@@ -8720,9 +8722,9 @@ key "_applet_usage_stats"
 \end_layout
 
 \begin_layout Standard
-Since both applets and Java Web Start applications run inside a browser,
- adjusting the browser plugin settings only effects both application types.
- The user can deploy the tool in only his browsers by configuring the runtime
+Adjusting the browser plugin settings only effects applets and Java Web
+ Start applications.
+ Users can deploy the tool in only their browsers by configuring the runtime
  parameters of the Java browser plugin with the Java Control Panel 
 \begin_inset CommandInset citation
 LatexCommand cite
