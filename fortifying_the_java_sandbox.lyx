@@ -3682,7 +3682,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Weka code snippet that intializes a security manager if one does not already
+Weka code snippet that initializes a security manager if one does not already
  exist.
  This is the only reference to the security manager in the Weka's code base.
 \begin_inset CommandInset label
