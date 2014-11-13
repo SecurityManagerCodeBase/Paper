@@ -363,7 +363,7 @@ key "QualitasCorpus:APSEC:2010"
 \end_inset
 
  and the GitHub repository that make use of the security manager.
- We analyzed the resulting 47 projects using a custom FindBugs 
+ We analyzed the resulting 46 projects using a custom FindBugs 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hovemeyer_finding_2004"
