@@ -9051,6 +9051,9 @@ System.exit()
  for constraining access to global resources.
  This is supported by our findings that show developers attempting to make
  non-trivial use of the sandbox often do so incorrectly.
+ One intriguing possibility is to allow programmers to strengthen the policy
+ temporarily (e.g.
+ by adding a permission).
  
 \end_layout
 
@@ -9067,11 +9070,14 @@ We indirectly observed many developers struggling to understand and use
 defenseless
 \emph default
  sandbox.
- In general, developers appear to believe the sandbox functions as a blacklist
- when, in reality, it is a whitelist.
+ These sandbox-defeating permissions should be packaged and segregated to
+ prevent accidental creation of defenseless sanboxes.
+ More generally, some developers appear to believe the sandbox functions
+ as a blacklist when, in reality, it is a whitelist.
  These observations suggest that more resources---tool support, improved
  documentation, or better error messages---should be dedicated to helping
  developers correctly use the sandbox.
+ 
 \end_layout
 
 \begin_layout Standard
