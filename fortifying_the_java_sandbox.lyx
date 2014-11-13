@@ -518,7 +518,11 @@ key "_permissions_2014"
 \end_inset
 
 ).
- Policies written in the Java policy language 
+ 
+\emph on
+Policies
+\emph default
+ written in the Java policy language 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "_java_policy_language"
@@ -595,8 +599,8 @@ java.io.FileOutputStream
 \end_layout
 
 \begin_layout Standard
-To perform a permission check, the security manager walks the stack to ensure
- each class in the current stack frame has the required permission.
+To perform a permission check, the security manager walks the call stack
+ to ensure each class in the current stack frame has the required permission.
  However, privileged code can stop stack walking before the entire frame
  has been walked by wrapping code inside a 
 \family typewriter
@@ -1349,11 +1353,10 @@ sun
  increase the accessibility of fields.
  It is also a violation of SEC00-J because the AWT class is privileged and
  leaks sensitive information (the fields) across trust boundaries.
- All of the rules and guidelines should be followed, but it would not have
- been possible to exploit this case to disable the security manager had
- the fields not been leaked across a trust boundary.
+ Violating SEC00-J made this specific case vulnerable, although all of the
+ rules and guidelines should be followed.
  To follow SEC00-J, the call to the AWT method in question should have been
- protected using security manager checks.
+ protected with security manager checks.
 \end_layout
 
 \begin_layout Standard
@@ -1583,9 +1586,9 @@ strong mitigation
 , a runtime monitor must determine if a security manager is self-protecting
  at the time the manager is set.
  This can be easily achieved.
- While this mitigation has the same outcome as the mitigation enabled by
- successful validation of the moderate hypothesis, it is significantly easier
- to implement and is therefore stronger.
+ While this mitigation provides a similar protection level as the moderate
+ mitigation, the strong mitigation is significantly easier to implement
+ and is therefore stronger.
 \end_layout
 
 \begin_layout Standard
@@ -1647,8 +1650,8 @@ System.setSecurityManager(null)
  We added two keywords to reduce false positives and to include applications
  that disable the manager.
  We ended up with 17 applications after selecting the top seven applications
- from the results for each keyword and removing false positives and duplicates
- found in QC.
+ from the results for each keyword, removing duplicates found in QC, and
+ removing applications in other languages.
  Our dataset includes the latest commit of each project.
 \end_layout
 
@@ -3684,7 +3687,7 @@ status open
 \begin_layout Plain Layout
 Weka code snippet that initializes a security manager if one does not already
  exist.
- This is the only reference to the security manager in the Weka's code base.
+ This is the only reference to the security manager in the Weka code base.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Weka-snippet"
@@ -3708,8 +3711,8 @@ name "fig:Weka-snippet"
 Type 2 applications are of particular interest in validating our hypotheses
  because they change a set security manager at some point in the application's
  execution.
- In other words, the weak, moderate, and ideal mitigations potentially break
- them.
+ In other words, these applications potentially break the weak, moderate,
+ strong and ideal mitigations.
  Due to their effect on our hypotheses, applications of this type are discussed
  in Sections 
 \begin_inset CommandInset ref
@@ -3730,8 +3733,7 @@ reference "sub:Using-the-Security"
 
 \begin_layout Standard
 Type 3 applications contain code that enables them to interact with a security
- manager if one is set, but that never actually set a security manager themselve
-s.
+ manager if one is set, but never actually set a security manager themselves.
  These applications contain code that either (A) performs permission checks
  if the application is sandboxed or (B) uses privileged actions 
 \begin_inset CommandInset citation
@@ -4601,9 +4603,9 @@ ApplicationSecurityEnforcer.java
  Two set a security manager at start up: the squiggle browser demo and the
  rasterizer demo.
  While the squiggle browser demo sets a manager and never changes it, the
- rasterizer demo can be set to call 
+ rasterizer demo 
 \family typewriter
-enforceSecurity
+calls enforceSecurity
 \family default
  with a true argument the first time and a false argument the second time,
  which enables then disables the sandbox.
@@ -5169,8 +5171,7 @@ Freemind attempted to implement an architecture that would allow the sandbox
 \family typewriter
 mFinalSecurityManager
 \family default
-, that specifies the manager that should be used during the execution of
- scripts.
+, that specifies the proxy manager to be used during the execution of scripts.
  In this design, all checks to the security manager are ultimately deferred
  to the proxy manager set in this field, as shown in the example permission
  check in Figure 
@@ -5307,7 +5308,7 @@ System.setSecurityManger(null)
 \begin_layout Standard
 We demonstrated that the custom security manager is easily removed using
  reflection to show that the problem is more complex than simply fixing
- this permission check.
+ a single permission check.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5444,7 +5445,7 @@ System.setSecurityManager()
 \family default
  and another that highlights the definition of custom security manager classes.
  The descriptions for these inspections respectively contain warnings that
- imply that interaction with the manager can create security issues:
+ imply interactions with the manager can create security issues:
 \end_layout
 
 \begin_layout Itemize
@@ -5533,7 +5534,7 @@ Privilege Escalation rule
 
 \begin_layout Standard
 If all classes in the Java Virtual Machine (JVM) instance were loaded at
- the start of an application, this rule would never be broken.
+ the start of an application, this rule would not need exceptions.
  However, the JVM loads certain classes on demand, and some of the JVM classes
  have the full privileges.
  The rule makes exceptions for classes in packages that are listed in the
@@ -5566,6 +5567,7 @@ self-protecting
  security manager has been set by the application.
  This rule is violated when code causes a change in the sandbox's configuration,
  the goal of many exploits.
+ This rule is an implementation of the strong mitigation.
 \end_layout
 
 \begin_layout Section
@@ -5580,25 +5582,8 @@ name "sec:Mitigations"
 \end_layout
 
 \begin_layout Standard
-In Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Security-Manager-Study"
-
-\end_inset
-
- we discussed (1) four hypotheses that could lead to Java exploit mitigations
- if validated and (2) how we went about validating them.
- In Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Study-results"
-
-\end_inset
-
-, we supported hypothesis 3 and rejected all of the others.
- Along the way, we learned practical lessons about how applications use
- the Java sandbox that are useful to exploit mitigation implementers.
+Along the way, we learned practical lessons about how applications use the
+ Java sandbox that are useful to exploit mitigation implementers.
  Our results included two backwards-compatible rules, discussed in Section
  
 \begin_inset CommandInset ref
@@ -5612,9 +5597,9 @@ reference "sec:Rules-for-Fortifying"
 \end_layout
 
 \begin_layout Standard
-In this section, we realize the strong mitigation through an implementation
- and evaluation of runtime monitors that enforce the Privilege Escalation
- and Security Manager rules.
+In this section, we realize the rules through an implementation and evaluation
+ of runtime monitors that enforce the Privilege Escalation and Security
+ Manager rules.
  We collectively call these monitors the 
 \shape italic
 Java Sandbox Fortifier
@@ -5811,8 +5796,12 @@ enforce
 monitor
 \shape default
  mode.
- In enforce mode, a violation of either rule causes the agent to log the
- offending behavior and terminate the JVM to which it is attached.
+ In 
+\emph on
+enforce
+\emph default
+ mode, a violation of either rule causes the agent to log the offending
+ behavior and terminate the JVM to which it is attached.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5822,8 +5811,12 @@ reference "fig:A-popup-from"
 
  shows an example of a popup displayed after an exploit was caught breaking
  the Privilege Escalation rule.
- In monitor mode, the agent logs the offending behavior, but leaves the
- JVM's execution of the application untouched.
+ In 
+\emph on
+monitor
+\emph default
+ mode, the agent logs the offending behavior, but leaves the JVM's execution
+ of the application untouched.
 \end_layout
 
 \begin_layout Standard
@@ -5908,9 +5901,8 @@ accessClassInPackage
 \end_layout
 
 \begin_layout Standard
-Restricted-access package classes are often used by JRE classes that an
- application is allowed to use.
- We must allow a class to indirectly load them.
+Applications use JRE classes which call restricted access package classes.
+ Thus, we must allow JRE to load restricted-access packages at runtime.
  For example, many of the classes in the 
 \family typewriter
 java.lang.reflect
@@ -5921,9 +5913,10 @@ sun
 \family default
  package, which is a restricted-access package containing the internal implement
 ations for many Java features.
- However, enforcing the Privilege Escalation rule prevents exploits from
- elevating the privileges of their payloads because the payloads can not
- be in restricted-access packages with default JRE configurations.
+ However, this exception does not provide an exception for exploits.
+ Enforcing the Privilege Escalation rule prevents exploits from elevating
+ the privileges of their payloads because the payloads can not be in restricted-
+access packages with default JRE configurations.
 \end_layout
 
 \begin_layout Standard
@@ -5931,8 +5924,8 @@ To enforce the Privilege Escalation rule, our agent registers for the
 \family typewriter
 ClassPrepare
 \family default
- event, which allows it to inspect a class after it is fully loaded but
- just before any of its code is executed.
+ event, which allows the agent to inspect a class after it is fully loaded
+ but just before any of its code is executed.
  Assuming the loaded class is not in a restricted-access package, the agent
  inspects the stack frame to determine which class caused the new class
  to be loaded.
@@ -8651,7 +8644,7 @@ Our results indicate that the Privilege Escalation rule causes minimal slowdown,
  The results are nearly identical to the results we received when the rule
  implementations were in place.
  This strongly suggests that about 75% of the significant performance slowdown
- is caused by JVMTI's implementation of the events we register for to enforce
+ is caused by JVMTI's implementation of the registered events to enforce
  the Security Manager rule.
 \end_layout
 
@@ -8804,7 +8797,14 @@ key "ford_analyzing_2009"
 
 .
  Helmer et al.
- used machine learning to identify malicious applets.
+ used machine learning to identify malicious applets 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "helmer_anomalous_2001"
+
+\end_inset
+
+.
  Their approach monitored system call traces to identify malicious behavior
  after execution.
  However, this approach is entirely reactive.
@@ -8858,7 +8858,7 @@ Conclusion
 
 \begin_layout Standard
 Our study of Java sandbox usage in open-source applications found that the
- majority of such applications do not change the security manager.
+ majority of studied applications do not change the security manager.
  Some of the remaining applications use the security manager only for non-securi
 ty purposes.
  The final set of applications use the sandbox for security and either initializ
@@ -8904,7 +8904,7 @@ defenseless
 \emph default
  sandbox.
  In general, sandbox-defeating permissions should be packaged and segregated
- to prevent accidental creation of defenseless sanboxes.
+ to prevent accidental creation of defenseless sandboxes.
  More generally, some developers appear to believe the sandbox functions
  as a blacklist when, in reality, it is a whitelist.
  These observations suggest that more resources---tool support, improved
