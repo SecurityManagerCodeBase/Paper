@@ -1444,6 +1444,71 @@ s exploitive and benign applications perform on the security manager.
 \end_layout
 
 \begin_layout Subsection
+Prior work
+\end_layout
+
+\begin_layout Standard
+Several recent studies have examined the use of security libraries and discovere
+d rampant library misuse, which caused severe vulnerabilities.
+ Georgiev et al.
+ uncovered vulnerabilities in dozens of security critical applications caused
+ by SSL library protocol violations 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "georgiev12most-dangerous"
+
+\end_inset
+
+.
+ These applications misconfigured high-level libraries such that the high-level
+ libraries misused low-level SSL libraries which in turn failed silently.
+ Somorovsky et al.
+ demonstrate vulnerabilities in 11 security frameworks such that Security
+ Assertion Markup Language (SAML) assertions are not checked properly when
+ certain API mis-orderings are triggered 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "somorovsky12breaking"
+
+\end_inset
+
+.
+ Li et al.
+ examined browser-based password managers and found that many of their features
+ relied on an incorrect version of the same-origin policy, which could allow
+ attackers to steal user credentials 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "li2014emperor"
+
+\end_inset
+
+.
+ As far as we are aware no study has examined Java applications use of the
+ sandbox.
+ Li Gong, the main designer of the Java security architecture, admitted
+ in a ten year retrospective on Java Security that he didn't now how or
+ how extensively the 
+\begin_inset Quotes eld
+\end_inset
+
+fine grained access control mechanism
+\begin_inset Quotes erd
+\end_inset
+
+ is used 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gong2009java"
+
+\end_inset
+
+.
+ We fill in that gap.
+ 
+\end_layout
+
+\begin_layout Subsection
 Methodology
 \end_layout
 
