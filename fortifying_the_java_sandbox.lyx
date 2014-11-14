@@ -1353,10 +1353,10 @@ sun
  increase the accessibility of fields.
  It is also a violation of SEC00-J because the AWT class is privileged and
  leaks sensitive information (the fields) across trust boundaries.
- Violating SEC00-J made this specific case vulnerable, although all of the
- rules and guidelines should be followed.
- To follow SEC00-J, the call to the AWT method in question should have been
- protected with security manager checks.
+ The AWT class should have followed all of the secure coding guidelines,
+ but its violation of SEC00-J is especially problematic---the exploits use
+ the leaked fields to disable the security manager.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1586,9 +1586,10 @@ strong mitigation
 , a runtime monitor must determine if a security manager is self-protecting
  at the time the manager is set.
  This can be easily achieved.
- While this mitigation provides a similar protection level as the moderate
- mitigation, the strong mitigation is significantly easier to implement
- and is therefore stronger.
+ While this mitigation has the same outcome as the moderate mitigation,
+ it is significantly easier to implement soundly and it is therefore more
+ likely to be effective in practice.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1651,8 +1652,8 @@ System.setSecurityManager(null)
  that disable the manager.
  We ended up with 17 applications after selecting the top seven applications
  from the results for each keyword, removing duplicates found in QC, and
- removing applications in other languages.
- Our dataset includes the latest commit of each project.
+ removing false positives.
+ Our dataset includes the latest commit of each project at the time .
 \end_layout
 
 \begin_layout Standard
@@ -3711,8 +3712,8 @@ name "fig:Weka-snippet"
 Type 2 applications are of particular interest in validating our hypotheses
  because they change a set security manager at some point in the application's
  execution.
- In other words, these applications potentially break the weak, moderate,
- strong and ideal mitigations.
+ In other words, the weak, moderate, and ideal mitigations break these applicati
+ons.
  Due to their effect on our hypotheses, applications of this type are discussed
  in Sections 
 \begin_inset CommandInset ref
@@ -4305,7 +4306,7 @@ SecurityException
  implemented twice, once as the restricted version and again as the full
  version.
  The second option does not allow the application to execute inside a restrictiv
-e sandbox: The the application must run outside the sandbox.
+e sandbox: The application must run outside the sandbox.
  We found that applications using this method attempted to set the security
  manager to 
 \family typewriter
@@ -4603,9 +4604,9 @@ ApplicationSecurityEnforcer.java
  Two set a security manager at start up: the squiggle browser demo and the
  rasterizer demo.
  While the squiggle browser demo sets a manager and never changes it, the
- rasterizer demo 
+ rasterizer demo calls 
 \family typewriter
-calls enforceSecurity
+enforceSecurity
 \family default
  with a true argument the first time and a false argument the second time,
  which enables then disables the sandbox.
@@ -5308,7 +5309,7 @@ System.setSecurityManger(null)
 \begin_layout Standard
 We demonstrated that the custom security manager is easily removed using
  reflection to show that the problem is more complex than simply fixing
- a single permission check.
+ this permission check.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5534,7 +5535,7 @@ Privilege Escalation rule
 
 \begin_layout Standard
 If all classes in the Java Virtual Machine (JVM) instance were loaded at
- the start of an application, this rule would not need exceptions.
+ the start of an application, this rule would never be broken.
  However, the JVM loads certain classes on demand, and some of the JVM classes
  have the full privileges.
  The rule makes exceptions for classes in packages that are listed in the
@@ -5582,17 +5583,27 @@ name "sec:Mitigations"
 \end_layout
 
 \begin_layout Standard
-Along the way, we learned practical lessons about how applications use the
- Java sandbox that are useful to exploit mitigation implementers.
- Our results included two backwards-compatible rules, discussed in Section
- 
+In Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Rules-for-Fortifying"
+reference "sec:Security-Manager-Study"
 
 \end_inset
 
-, that can be enforced to stop current exploits.
+, we discussed four alternative hypotheses about security manager usage
+ in benign applications, each of which, if validated, leads to a distinct
+ mitigation.
+ In Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Study-results"
+
+\end_inset
+
+, we gave empirical evidence in support of Hypothesis 3 and rejected all
+ of the others.
+ Along the way, we learned practical lessons about how applications use
+ the Java sandbox that are useful to exploit mitigation implementers.
  
 \end_layout
 
@@ -5913,10 +5924,10 @@ sun
 \family default
  package, which is a restricted-access package containing the internal implement
 ations for many Java features.
- However, this exception does not provide an exception for exploits.
- Enforcing the Privilege Escalation rule prevents exploits from elevating
- the privileges of their payloads because the payloads can not be in restricted-
-access packages with default JRE configurations.
+ However, enforcing the Privilege Escalation rule prevents exploits from
+ elevating the privileges of their payloads because the payloads can not
+ be in restricted-access packages with default JRE configurations.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -6567,8 +6578,8 @@ name "sub:Overhead"
 \end_layout
 
 \begin_layout Standard
-We measured JSF's performance overhead using version 9.12-bach of the DaCapo
- Benchmark Suite 
+We measured JSF's performance overhead using version 9.12 of the DaCapo Benchmark
+ Suite 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "DaCapo:paper"
