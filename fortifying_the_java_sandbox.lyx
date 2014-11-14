@@ -8764,7 +8764,14 @@ key "Provos-PrivilegeEscalation"
 .
  Their approach is partially implemented in the Java security model.
  Li and Srisa-an extended the Java sandbox by providing extra protection
- for JNI calls.
+ for JNI calls 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "li_quarantine:_2011"
+
+\end_inset
+
+.
  Their implementation, Quarantine, separates JNI accessible objects to a
  heap which contains extra protection mechanisms.
  The performance of their mechanism is also measured using DaCapo.
