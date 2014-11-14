@@ -67,8 +67,7 @@
 	doi = {10.1145/1772690.1772720},
 	abstract = {{JavaScript} is a browser scripting language that allows developers to create sophisticated client-side interfaces for web applications. However, {JavaScript} code is also used to carry out attacks against the user's browser and its extensions. These attacks usually result in the download of additional malware that takes complete control of the victim's platform, and are, therefore, called "drive-by downloads." Unfortunately, the dynamic nature of the {JavaScript} language and its tight integration with the browser make it difficult to detect and block malicious {JavaScript} code. This paper presents a novel approach to the detection and analysis of malicious {JavaScript} code. Our approach combines anomaly detection with emulation to automatically identify malicious {JavaScript} code and to support its analysis. We developed a system that uses a number of features and machine-learning techniques to establish the characteristics of normal {JavaScript} code. Then, during detection, the system is able to identify anomalous {JavaScript} code by emulating its behavior and comparing it to the established profiles. In addition to identifying malicious code, the system is able to support the analysis of obfuscated code and to generate detection signatures for signature-based systems. The system has been made publicly available and has been used by thousands of analysts.},
 	urldate = {2014-10-13},
-	booktitle = {Conference on World Wide Web},
-	publisher = {{ACM}},
+	booktitle = {International World Wide Web Conference (WWW)},
 	author = {Cova, Marco and Kruegel, Christopher and Vigna, Giovanni},
 	year = {2010},
 	keywords = {Anomaly Detection, drive-by-download attacks, web client exploits},
@@ -81,7 +80,7 @@
 	issn = {1081-6011},
 	doi = {10.1109/SECPRI.1998.674823},
 	booktitle = {{IEEE} Symposium on Security and Privacy},
-	author = {D. S. Wallach, E. W. Felten},
+	author = {Dan S. Wallach and Edward W. Felten},
 	year = {1998},
 	pages = {52--63}
 }
@@ -112,15 +111,13 @@
 	doi = {10.1109/ACSAC.2009.41},
 	abstract = {The amount of dynamic content on the web has been steadily increasing. Scripting languages such as {JavaScript} and browser extensions such as Adobe's Flash have been instrumental in creating web-based interfaces that are similar to those of traditional applications. Dynamic content has also become popular in advertising, where Flash is used to create rich, interactive ads that are displayed on hundreds of millions of computers per day. Unfortunately, the success of Flash-based advertisements and applications attracted the attention of malware authors, who started to leverage Flash to deliver attacks through advertising networks. This paper presents a novel approach whose goal is to automate the analysis of Flash content to identify malicious behavior. We designed and implemented a tool based on the approach, and we tested it on a large corpus of real-world Flash advertisements. The results show that our tool is able to reliably detect malicious Flash ads with limited false positives. We made our tool available publicly and it is routinely used by thousands of users.},
 	urldate = {2014-10-13},
-	booktitle = {Computer Security Applications Conference},
-	publisher = {{IEEE} Computer Society},
+	booktitle = {Annual Computer Security Applications Conference (ACSAC)},
 	author = {Ford, Sean and Cova, Marco and Kruegel, Christopher and Vigna, Giovanni},
 	year = {2009},
 	pages = {363--372}
 }
 
 @inproceedings{fournet_stack_2002,
-	series = {{POPL} '02},
 	title = {{S}tack {I}nspection: {T}heory and {V}ariants},
 	isbn = {1-58113-450-9},
 	shorttitle = {Stack Inspection},
@@ -128,8 +125,7 @@
 	doi = {10.1145/503272.503301},
 	abstract = {Stack inspection is a security mechanism implemented in runtimes such as the {JVM} and the {CLR} to accommodate components with diverse levels of trust. Although stack inspection enables the fine-grained expression of access control policies, it has rather a complex and subtle semantics. We present a formal semantics and an equational theory to explain how stack inspection affects program behaviour and code optimisations. We discuss the security properties enforced by stack inspection, and also consider variants with stronger, simpler properties.},
 	urldate = {2014-10-09},
-	booktitle = {Principles of Programming Languages (POPL)},
-	publisher = {{ACM}},
+	booktitle = {ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL)},
 	author = {Fournet, Cédric and Gordon, Andrew D.},
 	year = {2002},
 	pages = {307--318}
@@ -225,8 +221,7 @@
 	doi = {10.1145/2093157.2093159},
 	abstract = {By using Java Native Interface ({JNI}), programmers can integrate Java programs with legacy applications or third-party libraries written in other languages (e.g., C, C++, and Pascal). However, the use of {JNI} can bypass the Java boundary checking and exception-handling mechanisms. Furthermore, its use can violate Java's type-safety feature because of the type-mismatches between native programs and Java programs. As a result, such integration can cause various security issues including heap errors that can be dangerous and difficult to detect. In this paper, we introduce Quarantine, a runtime system that can identify objects accessible by native methods and then migrate these objects to a quarantine area, which is used specifically to host this type of object. The goal of Quarantine is to create a runtime platform that allows programmers to apply existing heap protection techniques that have been designed for native languages but do not work well in the Java domain. We implemented Quarantine in Jikes {RVM} and evaluated its performance using the optimizing compiler. Our results using nine benchmark programs indicate that Quarantine, on average, incurs execution overhead of 14\% and 13\% when the heap is two and five times larger than the minimum heap requirement for an application, respectively.},
 	urldate = {2014-10-10},
-	booktitle = {Conference on Principles and Practice of Programming in Java},
-	publisher = {{ACM}},
+	booktitle = {Conference on Principles and Practice of Programming in Java (PPPJ)},
 	author = {Li, Du and Srisa-an, Witawas},
 	year = {2011},
 	keywords = {heap protection, Java, {JNI}, virtual machine},
@@ -257,9 +252,8 @@
 	shorttitle = {Beyond Stack Inspection},
 	doi = {10.1109/SP.2007.10},
 	abstract = {Modern component-based systems, such as Java and Microsoft .{NET} common language runtime ({CLR}), have adopted stack-based access control ({SBAC}). Its purpose is to use stack inspection to verify that all the code responsible for a security-sensitive action is sufficiently authorized to perform that action. Previous literature has shown that the security model enforced by {SBAC} is flawed in that stack inspection may allow unauthorized code no longer on the stack to influence the execution of security-sensitive code. A different approach, history-based access control ({HBAC}), is safe but may prevent authorized code from executing a security-sensitive operation if less trusted code was previously executed. In this paper, we formally introduce information-based access control ({IBAC}), a novel security model that verifies that all and only the code responsible for a security-sensitive operation is sufficiently authorized. Given an access-control policy a, we present a mechanism to extract from it an implicit integrity policy i, and we prove that {IBAC} enforces i. Furthermore, we discuss large-scale application code scenarios to which {IBAC} can be successfully applied.},
-	booktitle = {{IEEE} Symposium on Security and Privacy, 2007},
+	booktitle = {{IEEE} Symposium on Security and Privacy},
 	author = {Pistoia, M. and Banerjee, A. and Naumann, D.A.},
-	month = may,
 	year = {2007},
 	keywords = {Access Control, authorisation, authorization, code verification, component-based system, data flow analysis, data integrity, history-based access control, information-flow security model, Information security, Inspection, Java, large-scale systems, Microsoft .{NET} common language runtime, object-oriented programming, Permission, program verification, Runtime, stack inspection, Testing, unified access-control},
 	pages = {149--163}
@@ -272,8 +266,7 @@
 	doi = {10.1145/2420950.2420988},
 	abstract = {Java applets have increasingly been used as a vector to deliver drive-by download attacks that bypass the sandboxing mechanisms of the browser's Java Virtual Machine and compromise the user's environment. Unfortunately, the research community has not given to this problem the attention it deserves, and, as a consequence, the state-of-the-art approaches to the detection of malicious Java applets are based either on simple signatures or on the use of honey-clients, which are both easily evaded. Therefore, we propose a novel approach to the detection of malicious Java applets based on static code analysis. Our approach extracts a number of features from Java applets, and then uses supervised machine learning to produce a classifier. We implemented our approach in a tool, called Jarhead, and we tested its effectiveness on a large, real-world dataset. The results of the evaluation show that, given a sufficiently large training dataset, this approach is able to reliably detect both known and previously-unseen real-world malicious applets.},
 	urldate = {2014-10-13},
-	booktitle = {Computer Security Applications Conference (ACSAC)},
-	publisher = {{ACM}},
+	booktitle = {Annual Computer Security Applications Conference (ACSAC)},
 	author = {Schlumberger, Johannes and Kruegel, Christopher and Vigna, Giovanni},
 	year = {2012},
 	pages = {249--257}
@@ -290,10 +283,10 @@
 
 @techreport{blackhat_2012,
 	author = {Jeong Wook Oh},
-	type = {Technical Report},
 	title = {Recent {J}ava exploitation trends and malware},
-	howpublished = {\url{https://media.blackhat.com/bh-us-12/Briefings/Oh/BH_US_12_Oh_Recent_Java_Exploitation_Trends_and_Malware_WP.pdf}},
+	url = {\url{https://media.blackhat.com/bh-us-12/Briefings/Oh/BH_US_12_Oh_Recent_Java_Exploitation_Trends_and_Malware_WP.pdf}},
 	institution = {Black Hat},
+	number = {BH-US-12},
 	year = {2012}
 }
 
@@ -306,32 +299,18 @@
 	abstract = {Java applications often need to incorporate native-code components for efficiency and for reusing legacy code. However, it is well known that the use of native code defeats Java's security model. We describe the design and implementation of Robusta, a complete framework that provides safety and security to native code in Java applications. Starting from software-based fault isolation ({SFI}), Robusta isolates native code into a sandbox where dynamic linking/loading of libraries in supported and unsafe system modification and confidentiality violations are prevented. It also mediates native system calls according to a security policy by connecting to Java's security manager. Our prototype implementation of Robusta is based {onNative} Client and {OpenJDK}. Experiments in this prototype demonstrate Robusta is effective and efficient, with modest runtime overhead on a set of {JNI} benchmark programs. Robusta can be used to sandbox native libraries used in Java's system classes to prevent attackers from exploiting bugs in the libraries. It can also enable trustworthy execution of mobile Java programs with native libraries. The design of Robusta should also be applicable when other type-safe languages (e.g., C\#, Python) want to ensure safe interoperation with native libraries},
 	urldate = {2014-10-10},
 	booktitle = {ACM Conference on Computer and Communications Security (CCS)},
-	publisher = {{ACM}},
 	author = {Siefers, Joseph and Tan, Gang and Morrisett, Greg},
 	year = {2010},
 	keywords = {{JNI}, {JVM}, Sandboxing, {SFI}},
 	pages = {201--211}
 }
 
-@incollection{sun_jvm-portable_2012,
-	series = {Lecture Notes in Computer Science},
-	title = {{JVM}-{P}ortable {S}andboxing of {J}ava's {N}ative {L}ibraries},
-	copyright = {(c)2012 Springer-Verlag Berlin Heidelberg},
-	isbn = {978-3-642-33166-4, 978-3-642-33167-1},
-	url = {http://link.springer.com/chapter/10.1007/978-3-642-33167-1_48},
-	abstract = {Although Java provides strong support for safety and security, native libraries used in a Java application can open security holes. Previous work, Robusta, puts native libraries in a sandbox to protect the integrity and security of Java. However, Robusta’s implementation modifies the internals of {OpenJDK}, a particular implementation of a Java Virtual Machine ({JVM}). As such, it is not portable to other {JVM} implementations. This paper shows how to make the idea of sandboxing native libraries {JVM}-portable. We present a two-layer approach for sandboxing without modifying the internals of a {JVM}. We also discuss our experience of sandboxing Java’s core native libraries. Experiments show that our approach of {JVM}-portable sandboxing incurs modest performance overhead on {SPECjvm} 2008 benchmark programs.},
-	language = {en},
-	number = {7459},
-	urldate = {2014-10-10},
-	booktitle = {Computer Security - {ESORICS} 2012},
-	publisher = {Springer Berlin Heidelberg},
+@inproceedings{sun_jvm-portable_2012,
 	author = {Sun, Mengtao and Tan, Gang},
-	editor = {Foresti, Sara and Yung, Moti and Martinelli, Fabio},
-	month = jan,
+	title = {{JVM}-{P}ortable {S}andboxing of {J}ava's {N}ative {L}ibraries},
+	booktitle = {European Symposium on Research in Computer Security (ESORICS)},
 	year = {2012},
-	keywords = {Data Encryption, e-Commerce/e-business, Information Systems Applications (incl. Internet), Management of Computing and Information Systems, software engineering, Systems and Data Security},
 	pages = {842--858},
-	file = {Snapshot:/home/mmaass/.mozilla/firefox/4lnfai0n.default/zotero/storage/VNT5GXRP/978-3-642-33167-1_48.html:text/html}
 }
 
 @misc{svoboda_anatomy_2014,
@@ -429,9 +408,9 @@
 }
 
 @inproceedings{Blasing-AndriodSandbox,
-  title={Blasing, Thomas and Batyuk, Leonid and Schmidt, Aubrey-Derrick and Camtepe, Seyit Ahmet  and Albayrak, Sahin },
-  author={Blasing},
-  booktitle={Conference on Malicious and Unwanted Software},
+  title={An Android Application Sandbox system for suspicious software detection},
+  author={Blasing, Thomas and Batyuk, Leonid and Schmidt, Aubrey-Derrick and Camtepe, Seyit Ahmet  and Albayrak, Sahin},
+  booktitle={Conference on Malicious and Unwanted Software (MALWARE)},
   pages={55--62},
   year={2010}
 }
@@ -468,7 +447,6 @@
 	Date-Modified = {2013-11-18 02:54:48 +0000},
 	Pages = {21--21},
 	Title = {On breaking {SAML}: Be whoever you want to be},
-	Volume = {12},
 	Year = {2012}}
 
 @inproceedings{li2014emperor,
@@ -481,8 +459,7 @@
 @inproceedings{gong2009java,
   title={Java security: a ten year retrospective},
   author={Gong, Li},
-  booktitle={Computer Security Applications Conference (ACSAC)},
+  booktitle={Annual Computer Security Applications Conference (ACSAC)},
   pages={395--405},
-  year={2009},
-  organization={IEEE}
+  year={2009}
 }
