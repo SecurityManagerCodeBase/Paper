@@ -1383,7 +1383,7 @@ We intend to proactively stop exploits that disable the Java sandbox.
  We focus our efforts on the security manager, as it is the means by which
  applications interact with the sandbox.
  To successfully stop even zero-day exploits, we must understand which operation
-s exploitive and benign applications perform on the security manager.
+s both exploitive and benign applications perform on the security manager.
  Assuming there is a difference between the set of operations performed
  by exploits and those performed by benign applications, we can exclude
  the operations on which exploits depend, that are not of use to benign
@@ -1439,10 +1439,10 @@ key "li2014emperor"
 \end_inset
 
 .
- As far as we are aware no study has examined Java applications use of the
- sandbox.
+ As far as we are aware no study has examined Java applications' use of
+ the sandbox.
  Li Gong, the main designer of the Java security architecture, admitted
- in a ten year retrospective on Java Security that he didn't now how or
+ in a ten year retrospective on Java Security that he didn't know how or
  how extensively the 
 \begin_inset Quotes eld
 \end_inset
@@ -1451,7 +1451,8 @@ fine grained access control mechanism
 \begin_inset Quotes erd
 \end_inset
 
- is used 
+ (i.e.
+ the Java sandbox) is used 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gong2009java"
@@ -5509,8 +5510,8 @@ reference "sub:Java-Exploits"
  self-protecting
 \emph default
  security manager.
- In this section, we define two rules to stop exploits from disabling the
- manager.
+ In this section, we define two rules to stop Java exploits from disabling
+ the manager.
  These rules are backwards-compatible with benign applications: the Privilege
  Escalation rule and the Security Manager rule.
  
