@@ -27,15 +27,9 @@
 
 \begin{document}
 
+%\author{BLINDED FOR SUBMISSION}
 
-\author{BLINDED FOR SUBMISSION}
-%\author{\IEEEauthorblockN{Zack Coker, Michael Maass, Tianyuan Ding, and Joshua Sunshine}
-%\IEEEauthorblockA{School of Computer Science\\
-%Carnegie Mellon University, Pittsburgh, PA\\
-%\{zfc, mmaass\}@cs.cmu.edu, tding@andrew.cmu.edu, sunshine@cs.cmu.edu}}
-
-
-\title{Fortifying the Java Sandbox}
+\title{Give 'em less rope: Open Source Evidence of Java Sandbox Perversions}
 
 \numberofauthors{1} 
 \author{\alignauthor Zack Coker, Michael Maass, Tianyuan Ding, Claire Le Goues, and Joshua Sunshine \\
@@ -59,19 +53,13 @@ applications and compared their use of the sandbox to the usage present
 in recent exploits. We found that benign applications with secured
 sandboxes do not modify the security manager, the security policy
 enforcement mechanism, after it is first set and do not attempt to
-directly use privileged classes. Exploits routinely do both. We used
-these results to develop two runtime monitors: the first prevents
-security manager modification, and the second prevents privilege escalation.
-The privilege escalation monitor stops four of ten Metasploit Java
-exploits with negligible overhead. The combination of both monitors
-stops all ten exploits, but incurs significant overhead, suggesting
-that it is best applied to risky settings like running applets.
+directly use privileged classes. Exploits routinely do both. We derive two rules from these results to prevent (1) security manager modifications and (2) privilege escalation. We evaluated their protection merits in a case study using runtime monitors to enforce the rules during the execution of exploits and benign applications. The rules stop all ten Metasploit Java 7 exploits without breaking backwards compatibility with benign applications. These practical rules should be enforced in the JRE to fortify the Java sandbox.
 \end{abstract}
 
 \section{Introduction}
 
 The Java Runtime Environment (JRE) is widely installed on user endpoints,
-where it executes external code in the form of applets \cite{gong1997going,gong2003inside}.
+where it executes external code in the form of applets and Java Web Start (JWS) applications \cite{gong1997going,gong2003inside}.
 These facts, combined with the hundreds of recently discovered vulnerabilities
 in Java, including zero-day vulnerabilities (e.g. CVE-2013-0422),
 have made Java a popular exploit vector (see Figure \ref{fig:most-targeted-applications}).
@@ -128,34 +116,15 @@ sometimes modified or disabled the security manager during program
 execution. Some of these applications use the security manager to
 enforce policies unrelated to security. On the other hand, we found
 that applications with self-protecting security managers, a category
-which includes all applets, do not change sandbox settings during
-program execution. 
+which includes all applets and JWS applications, do not change sandbox settings during program execution. 
 
-Based on our analysis of benign and malicious applications, we implemented
-two runtime monitors to fortify the Java sandbox. The first monitor
-prevents privilege escalation by preventing restricted classes inside
-a sandbox from loading classes with fewer restrictions. The second
-monitor prevents changes to the sandbox when a self-protecting security
-manager is initialized. We evaluated the effectiveness of our monitors
-against the ten applets in Metasploit 4.10.0%
+Based on our analysis of benign and malicious applications, we propose two runtime rules to fortify the Java sandbox. The first rule mitigates privilege escalation by preventing restricted classes inside a sandbox from loading classes with fewer restrictions. The second prevents changes to the sandbox when a self-protecting security manager is initialized. We evaluated the protection merits of our rules by implementing each in runtime monitors used against ten applets in Metasploit 4.10.0%
 \footnote{http://www.metasploit.com/%
-} that successfully exploit unpatched versions of Java 7. The privilege
-escalation monitor detected and stopped four of the ten exploits.
-Using both monitors together detected and stopped all ten exploits. 
+} that successfully exploit unpatched versions of Java 7. The monitor for the privilege
+escalation rule detected and stopped four of the ten exploits.
+Using both monitors together detected and stopped all ten exploits. Neither monitor produces false-positives for a corpus of benign JWS applications.
 
-We evaluated the performance of our monitors using the DaCapo benchmark
-suite \cite{DaCapo:paper}. The privilege escalation monitor resulted
-in negligible overhead and can therefore be used to monitor any Java
-application. The security manager monitor is implemented as a JVMTI
-agent that monitors a static field, which unfortunately disables just-in-time
-compilation (JIT). Additionally, JVMTI implementations reduce performance
-by nearly 30x for some events we depend on. Therefore, the security
-manager monitor resulted in substantial overhead of 4536\%, which
-is unacceptable for most Java applications. However, the greatest
-threat comes from Java applets, and many of these are not performance
-intensive (e.g. web forms), so it may be reasonable to enable the
-security manager monitor only for untrusted applets and use only the
-privilege escalation monitor for all other applications.
+Our results suggest that the rules are effective and should be enforced in the Java Virtual Machine (JVM) itself. This implementation strategy is motivated by two concerns: Existing mechanisms for monitoring the execution of Java applications are either (1) insufficient to securely enforce the rules (e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade performance by disabling the just-in-time compiler (JIT). We are engaged in an on-going discussion on the security-dev mailing list for OpenJDK about implementing runtime enforcement of these rules in the JVM.
 
 The contributions of this papers are as follows:
 \begin{itemize}
@@ -165,8 +134,7 @@ recent Java exploits (Section \ref{sub:Java-Exploits}).
 (Sections \ref{sec:Security-Manager-Study} and \ref{sec:Study-results}).
 \item Two novel rules for distinguishing between benign and malicious Java
 programs (Section \ref{sec:Rules-for-Fortifying}).
-\item Implementations of the two rules as runtime monitors, with accompanying
-security and performance evaluations (Section \ref{sec:Mitigations}).
+\item A case study evaluation of the protection merits of our rules with a discussion of practical implementation considerations (Section \ref{sec:Mitigations}).
 \end{itemize}
 
 \section{Background on the Java Sandbox\label{sec:Background}}
