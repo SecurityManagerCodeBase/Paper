@@ -87,10 +87,11 @@ can be exploited to prevent future attacks.
 \includegraphics[width=2in]{most_targeted_apps_ibm_xforce}
 \par\end{centering}
 
-\protect\caption{\label{fig:most-targeted-applications}Pie chart showing the most
+\caption{Pie chart showing the most
 targeted applications on enterprise workstations, according to to
 a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
 represented half of all attack-attempts in their sample.}
+\label{fig:most-targeted-applications}
 \end{figure}
 
 
@@ -137,7 +138,7 @@ programs (Section \ref{sec:Rules-for-Fortifying}).
 \item A case study evaluation of the protection merits of our rules with a discussion of practical implementation considerations (Section \ref{sec:Mitigations}).
 \end{itemize}
 
-\section{Background on the Java Sandbox\label{sec:Background}}
+\section{Background on the Java Sandbox}\label{sec:Background}
 
 In this section, we describe components of the Java sandbox that are
 relevant to understanding this work, how they compose to form the
@@ -163,8 +164,9 @@ from executing malicious operations on the host system.
 \begin{figure}
 \includegraphics[scale=0.3]{sandbox_overview}
 
-\protect\caption{A summary of the components of the Java sandbox that are relevant
-to understanding this work.\label{fig:Sandbox-high-level-summary}}
+\caption{A summary of the components of the Java sandbox that are relevant
+to understanding this work.}
+\label{fig:Sandbox-high-level-summary}
 \end{figure}
 
 
@@ -211,9 +213,10 @@ that contains even one of the listed permissions to be defenseless.
 A subset of the permissions in this list were identified in \cite{security_explorations_2012}. 
 
 \begin{table*}
-\protect\caption{List of sandbox-defeating permissions. A security manager that enforces
+\caption{List of sandbox-defeating permissions. A security manager that enforces
 a policy containing any of these permission is sufficient to result
-in a defenseless sandbox.\label{tab:defenseless-permissions}}
+in a defenseless sandbox.}
+\label{tab:defenseless-permissions}
 
 
 \centering{}%
@@ -235,7 +238,7 @@ SecurityPermission(``setProperty.package.access'') & Make privileged internal cl
 
 
 
-\section{Exploiting Java Code\label{sub:Java-Exploits}}
+\section{Exploiting Java Code} \label{sub:Java-Exploits}
 
 This section provides an analysis of privilege escalation in the Java
 security model and recent Java exploits. Between 2011 and 2013, drive-by
@@ -278,7 +281,8 @@ public class Payload implements PrivilegedExceptionAction {
 
 \par\end{centering}
 
-\protect\caption{A typical sandbox-disabling Java exploit payload from http://pastebin.com/QWU1rqjf.\label{fig:A-typical-exploit-payload}}
+\caption{A typical sandbox-disabling Java exploit payload from http://pastebin.com/QWU1rqjf.}
+\label{fig:A-typical-exploit-payload}
 \end{figure}
 
 
@@ -363,7 +367,7 @@ of particular exploits. We will now explore ways to fortify the Java
 sandbox without breaking backwards compatibility. 
 
 
-\section{Introduction to the Security Manager Study\label{sec:Security-Manager-Study}}
+\section{Introduction to the Security Manager Study}\label{sec:Security-Manager-Study}
 
 We intend to proactively stop exploits that disable the Java sandbox.
 We focus our efforts on the security manager, as it is the means by
@@ -534,10 +538,11 @@ independently inspected the same six applications then compared their
 results.
 
 
-\subsection{The Security Manager Dataset\label{sec:Applications-Studied}}
+\subsection{The Security Manager Dataset}\label{sec:Applications-Studied}
 
 \begin{table}
-\protect\caption{Table of applications included in the security manager study.\label{Table:applications-studied}}
+\caption{Table of applications included in the security manager study.}
+\label{Table:applications-studied}
 
 
 \centering{}%
@@ -602,8 +607,8 @@ usage of 29 applications from QC version 20130901 that we use in this
 study.
 
 \begin{table}
-\protect\caption{Classification of application interactions with the security manager.\label{tab:Classification-of-Application}}
-
+\caption{Classification of application interactions with the security manager.}
+\label{tab:Classification-of-Application}
 
 \centering{}%
 \begin{tabular}{lrrr}
@@ -631,7 +636,7 @@ are available in an online supplement.%
 }
 
 
-\subsection{Limitations\label{sub:Limitations-Study}}
+\subsection{Limitations}\label{sub:Limitations-Study}
 
 
 \subsubsection{Internal Validity}
@@ -680,7 +685,7 @@ manager study, two applications either became private repositories
 or were removed from GitHub (FileManagerFtpHttpServer and Visor).
 
 
-\section{Security Manager Study Results\label{sec:Study-results}}
+\section{Security Manager Study Results}\label{sec:Study-results}
 
 We divided the security manager dataset into categories based on the
 operations each application performed on the security manager. The
@@ -713,9 +718,10 @@ manager to null as discussed in Section \ref{sub:Reducing-Web-Application-Comple
         if (System.getSecurityManager() == null) {       
             System.setSecurityManager(new RMISecurityManager());   
 \end{lstlisting}
-\protect\caption{Weka code snippet that initializes a security manager if one does
+\caption{Weka code snippet that initializes a security manager if one does
 not already exist. This is the only reference to the security manager
-in the Weka code base.\label{fig:Weka-snippet}}
+in the Weka code base.}
+\label{fig:Weka-snippet}
 \end{figure}
 
 
@@ -747,7 +753,7 @@ The remainder of this section provides details about Type 1 and Type
 they did not have a significant bearing on the outcomes of this study.
 
 
-\subsection{Evaluation of the Hypotheses\label{sub:Evaluation-of-the-hypotheses}}
+\subsection{Evaluation of the Hypotheses}\label{sub:Evaluation-of-the-hypotheses}
 
 We only require one counterexample to falsify a hypothesis from Section
 \ref{sec:Security-Manager-Study}. This section summarizes how our
@@ -784,7 +790,7 @@ In short, the strong mitigation is the only proposed mitigation that
 can be implemented without breaking benign applications.
 
 
-\subsection{Non-security uses of the Sandbox\label{sub:Non-security-uses-of}}
+\subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
 This section describes applications that violated hypotheses 1, 2
 and 4 while using the sandbox for reasons that do not satisfy security
@@ -853,7 +859,7 @@ are handled, the original manager is restored.
 
 
 \protect\caption{Snippet of Eclipse code that uses a security manager to prevent Ant
-from terminating the JVM when Ant encounters an unrecoverable error.\label{fig:Eclipse-snippet}}
+from terminating the JVM when Ant encounters an unrecoverable error.}\label{fig:Eclipse-snippet}
 \end{figure}
 
 
@@ -884,8 +890,9 @@ these methods itself, but applications that use it could.
 \end{lstlisting}
 
 
-\protect\caption{Methods in GJMan that enable and disable the sandbox to prevent termination
-of the JVM when select code is running\label{fig:GJMan-snippet}.}
+\caption{Methods in GJMan that enable and disable the sandbox to prevent termination
+of the JVM when select code is running.}
+\label{fig:GJMan-snippet}
 \end{figure}
 
 
@@ -901,7 +908,7 @@ the manager or the policy it enforces. Defenseless security managers
 are not capable of reliably enforcing a serious security policy.
 
 
-\subsubsection{Reducing Web Application Development Complexity\label{sub:Reducing-Web-Application-Complexity}}
+\subsubsection{Reducing Web Application Development Complexity}\label{sub:Reducing-Web-Application-Complexity}
 
 We found applications that were complicated by the Java security policies
 for web applications (applets and applications launched via Java Web
@@ -961,13 +968,14 @@ behind turning off the sandbox.
 \end{lstlisting}
 
 
-\protect\caption{A snippet from Eclipse that disables the sandbox when Java Web Start
-is used to run the IDE.\label{fig:Eclipse-jws-snippet}}
+\caption{A snippet from Eclipse that disables the sandbox when Java Web Start
+is used to run the IDE.}
+\label{fig:Eclipse-jws-snippet}
 \end{figure}
 
 
 
-\subsection{Using the Security Manager for Security Purposes\label{sub:Using-the-Security}}
+\subsection{Using the Security Manager for Security Purposes}\label{sub:Using-the-Security}
 
 This section describes applications that violated hypotheses 1, 2,
 and 4 while using the sandbox in attempts to improve the security
@@ -1004,7 +1012,7 @@ and Ant, Freemind, and Netbeans explicitly set then change the manager.
 \end{lstlisting}
 
 
-\protect\caption{Security manager interactions in Batik.\label{fig:Batik-snippet}}
+\protect\caption{Security manager interactions in Batik.}\label{fig:Batik-snippet}
 \end{figure}
 
 
@@ -1049,8 +1057,9 @@ specified restrictions.
 \end{lstlisting}
 
 
-\protect\caption{Example Ant build script element to grant all but one permission.
-This specific permission set leads to a defenseless security manager.\label{fig:Ant Permissions Example}}
+\caption{Example Ant build script element to grant all but one permission.
+This specific permission set leads to a defenseless security manager.}
+\label{fig:Ant Permissions Example}
 \end{figure}
 
 
@@ -1076,7 +1085,8 @@ This specific permission set leads to a defenseless security manager.\label{fig:
 \end{lstlisting}
 \protect\caption{Code snippet showing Ant's custom security manager architecture, used
 to allow builds to run Java code under a specific set of permissions
-unique to the instantiated code.\label{fig:Ant-Permissions-Enforcement}}
+unique to the instantiated code.}
+\label{fig:Ant-Permissions-Enforcement}
 \end{figure}
 
 
@@ -1130,8 +1140,9 @@ be crafted to exploit a user that opens the map and runs its scripts.
 \end{lstlisting}
 
 
-\protect\caption{Code snippet showing how Freemind's custom security manager selectively
-enforces permissions. \label{fig:Security-Checks-Freemind}}
+\caption{Code snippet showing how Freemind's custom security manager selectively
+enforces permissions.}
+\label{fig:Security-Checks-Freemind}
 \end{figure}
 \begin{figure}
 \begin{lstlisting}[numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=30,xrightmargin={0.1cm},numbersep={-10pt}]
@@ -1159,8 +1170,9 @@ enforces permissions. \label{fig:Security-Checks-Freemind}}
 \end{lstlisting}
 
 
-\protect\caption{Initialization of the field in Freemind's custom security manager
-that stores the proxy security manager.\label{fig:Freemind-Security-Manager}}
+\caption{Initialization of the field in Freemind's custom security manager
+that stores the proxy security manager.}
+\label{fig:Freemind-Security-Manager}
 \end{figure}
 
 
@@ -1196,9 +1208,10 @@ programs on the machine. The manager explicitly allows all other permissions.
 \end{lstlisting}
 
 
-\protect\caption{Freemind's custom security manager overrides permissions checks they
+\caption{Freemind's custom security manager overrides permissions checks they
 are not concerned with, then fails to implement them. This effectively
-grants all permissions associated with the check.\label{fig:Permission-Check-Groovy-Freemind}}
+grants all permissions associated with the check.}
+\label{fig:Permission-Check-Groovy-Freemind}
 \end{figure}
 Figure \ref{fig:Permission-Check-Groovy-Freemind} shows a sample
 permission check from the proxy manager in \texttt{ScriptingSecurityManager.java}.
@@ -1232,13 +1245,14 @@ new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 \end{lstlisting}
 
 
-\protect\caption{Example exploit that breaks out of the scripting sandbox in Freemind
-to execute arbitrary code.\label{fig:Example-Exploit-for-Freemind}}
+\caption{Example exploit that breaks out of the scripting sandbox in Freemind
+to execute arbitrary code.}
+\label{fig:Example-Exploit-for-Freemind}
 \end{figure}
 
 
 
-\subsection{Security Manager Interactions are Potentially Dangerous\label{sub:Security-Manager-Interactions-Dangerous}}
+\subsection{Security Manager Interactions are Potentially Dangerous}\label{sub:Security-Manager-Interactions-Dangerous}
 
 We found an interesting reference to the security manager in IntelliJ
 IDEA Community Edition. The IntelliJ editor contains static analysis
@@ -1262,7 +1276,7 @@ IntelliJ's concerns with these types of security manager interactions
 are warranted given our findings in the previous section.
 
 
-\section{Rules for Fortifying the Sandbox \label{sec:Rules-for-Fortifying}}
+\section{Rules for Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
 Given the results of our investigation in Section \ref{sec:Security-Manager-Study}
 and the discussion in Section \ref{sub:Java-Exploits}, we can fortify
@@ -1300,7 +1314,7 @@ in the sandbox's configuration, the goal of many exploits. This rule
 is an implementation of the strong mitigation.
 
 
-\section{Mitigations \label{sec:Mitigations}}
+\section{Mitigations}\label{sec:Mitigations}
 
 In Section \ref{sec:Security-Manager-Study}, we discussed four alternative
 hypotheses about security manager usage in benign applications, each
@@ -1328,7 +1342,7 @@ monitors introduce to Java application execution. Finally, Section
 mitigations.
 
 
-\subsection{Implementation Using JVMTI\label{sub:Implementation-Using-JVMTI}}
+\subsection{Implementation Using JVMTI}\label{sub:Implementation-Using-JVMTI}
 
 Prior work attempts to prevent exploits in native libraries used by
 language runtimes such as Java's \cite{cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-portable_2012}.
@@ -1389,13 +1403,14 @@ behavior, but leaves the JVM's execution of the application untouched.
 \includegraphics[width=3.25in]{rule_violation_popup}
 \par\end{centering}
 
-\protect\caption{A popup from our agent after it caught an exploit breaking the Privilege
-Escalation rule.\label{fig:A-popup-from}}
+\caption{A popup from our agent after it caught an exploit breaking the Privilege
+Escalation rule.}
+\label{fig:A-popup-from}
 \end{figure}
 
 
 
-\subsubsection{Enforcing the Privilege Escalation Rule\label{sub:Enforcing-the-Privilege}}
+\subsubsection{Enforcing the Privilege Escalation Rule}\label{sub:Enforcing-the-Privilege}
 
 The Privilege Escalation rule is enforced by ensuring that classes
 can only load or cause the loading of more privileged classes in restricted-access
@@ -1451,7 +1466,7 @@ in the loaded class's protection domain is also implied by the other
 protection domain to handle other cases.
 
 
-\subsubsection{Enforcing the SecurityManager Rule\label{sub:Enforcing-the-SecurityManager}}
+\subsubsection{Enforcing the SecurityManager Rule}\label{sub:Enforcing-the-SecurityManager}
 
 The SecurityManager rule is enforced by monitoring every read from
 and write to the \texttt{security} field of the \texttt{System} class:
@@ -1513,7 +1528,7 @@ a payload class that disables the manager; this scenario is detected
 by the modification event.
 
 
-\subsection{Effectiveness at Fortifying the Sandbox \label{sub:Effectiveness-at-Fortifying}}
+\subsection{Effectiveness at Fortifying the Sandbox}\label{sub:Effectiveness-at-Fortifying}
 
 We performed an experiment to evaluate how effective our agent is
 at blocking exploits that disable the sandbox. In our experiment,
@@ -1545,7 +1560,7 @@ can directly access a privileged class to exploit. Table \ref{tab:Exploit-experi
 summarizes our results using the specific CVEs each exploit targeted.
 
 \begin{table}
-\protect\caption{Effectiveness test results.\label{tab:Exploit-experiment-summary}}
+\protect\caption{Effectiveness test results.}\label{tab:Exploit-experiment-summary}
 
 
 \centering{}%
@@ -1569,7 +1584,7 @@ summarizes our results using the specific CVEs each exploit targeted.
 
 
 
-\subsection{Overhead\label{sub:Overhead}}
+\subsection{Overhead}\label{sub:Overhead}
 
 We measured JSF's performance overhead using version 9.12 of the DaCapo
 Benchmark Suite \cite{DaCapo:paper}, a standard set of real-world
@@ -1591,7 +1606,7 @@ rule violations when a security manager has actually been set. Table
 from these tests.
 
 \begin{table*}
-\protect\caption{Performance test results.\label{tab:Performance-Test-Results.}}
+\protect\caption{Performance test results.}\label{tab:Performance-Test-Results.}
 
 
 \centering{}%
@@ -1674,7 +1689,7 @@ set the runtime parameters to the same values used in the tool options
 environment variable in other deployments.
 
 
-\subsection{Related Work\label{sub:Related-Work-Mitigation}}
+\subsection{Related Work}\label{sub:Related-Work-Mitigation}
 
 The mitigations in this study increase the security of the sandbox
 by removing unnecessary features. Prior work has taken a different
