@@ -247,19 +247,20 @@ import java.lang.reflect.Method;
 import java.security.AccessController; 
 import java.security.PrivilegedExceptionAction;   
 
-public class Payload implements PrivilegedExceptionAction {         
+public class Payload 
+        implements PrivilegedExceptionAction {         
     public Payload() {
         try {
             AccessController.doPrivileged(this);
         } catch(Exception exception) { }     
     }
 
-    public void run() throws Exception {
+    public void run()\documentclass[10pt]{•} {
         // Disable sandbox
         System.setSecurityManager(null);
     }
 
-    public static void outSandbox() throws Exception {
+    public static void outSandbox() {
         // Do malicious operations
     }
 }
@@ -354,22 +355,20 @@ of particular exploits. We will now explore how benign applications interact wit
 
 \section{Introduction to the Security Manager Study}\label{sec:Security-Manager-Study}
 
-We intend to proactively stop exploits that disable the Java sandbox.
+The nature of recent Java exploits caused us to ask the question: Do applications need access to any facility for disabling or weakening the sandbox? This study aims to answer this question and provide data in support of JVM enhancements to fortify the Java sandbox.
 We focus our efforts on the security manager, as it is the means by
-which applications interact with the sandbox. To successfully stop
-even zero-day exploits, we must understand which operations both exploitive
+which applications interact with the sandbox. 
+
+Any JVM enhancements that are to stop even zero-day exploits while maintaining backwards compatibility with benign applications must be designed with an understanding of which operations both exploitive
 and benign applications perform on the security manager. Assuming
 there is a difference between the set of operations performed by exploits
-and those performed by benign applications, we can exclude the operations
-on which exploits depend, that are not of use to benign applications.
-This outcome could narrow the range of operations on the manager to
-stop exploits, while maintaining backwards compatibility for benign
-applications. Additionally, this strategy would help ensure the sandbox
+and those performed by benign applications, one can exclude the operations
+on which exploits depend, that are not of use to benign applications. This strategy would help ensure the sandbox
 continues to enforce its policy in a given execution without having
 to deal with the wide diversity in the manifestations of vulnerabilities
 within the JRE or the subtleties of their exploits. In this section
 we describe the methodology for and limitations of an empirical study
-that validated this strategy.
+that validated this strategy and answers our motivating question.
 
 
 \subsection{Prior work}
@@ -413,7 +412,7 @@ stops a small number of in-scope exploits and is easily bypassed.
 An ``ideal'' mitigation stops all in-scope exploits and can never
 be bypassed. Our hypotheses and their accompanying mitigations follow: 
 
-\textbf{Hypothesis 1:} \textit{Benign applications do not disable
+\textbf{Hypothesis 1:} \emph{Benign applications do not disable
 the security manager.} If this hypothesis holds, exploits can be differentiated
 from benign applications by any attempt to disable the current security
 manager. This \textbf{weak mitigation} would be easy to implement,
@@ -424,18 +423,18 @@ or they could replace the current manager with one that never throws
 a \texttt{SecurityException}.
 
 \textbf{Hypothesis 2:} \emph{Benign applications do not weaken the
-s}\textit{ecurity manager}. Validation of this hypothesis would enable
+security manager}. Validation of this hypothesis would enable
 mitigations that prevent attackers from weakening or disabling the
 sandbox. However, an implementation of this \textbf{moderate mitigation}
 would require differentiating between changes which weaken the sandbox
-and those that do not. Classifying changes in this manner is difficult
+and those that do not. Classifying changes in this manner autonomously is difficult
 because it requires context specific information that a general mitigation
 strategy may not have. For example, if a permission to write to a
 file is replaced by a permission to write to a different file, is
 the sandbox weakened, strengthened, or exactly as secure as it was
 before?
 
-\textbf{Hypothesis 3:} \textit{Benign applications do not change the
+\textbf{Hypothesis 3:} \emph{Benign applications do not change the
 sandbox if a self-protecting security manager has been set}. If supported,
 it is possible to implement a mitigation strategy that disallows any
 change to a security manager that is enforcing a strict policy (as
@@ -450,8 +449,7 @@ is therefore more likely to be effective in practice.
 set security manager.} If the study supports this hypothesis, any
 attempted change to an already established security manager can be
 considered malicious. The \textbf{ideal mitigation} could easily be
-implemented in the JVM or an external tool to ensure the sandbox can
-never be turned off or weakened. 
+implemented in the JVM. 
 
 Our empirical analysis used applications from the Qualitas Corpus
 (QC) \cite{QualitasCorpus:APSEC:2010} and GitHub to form a dataset
@@ -460,16 +458,9 @@ applications out of the 112 applications in QC, we performed a simple
 \texttt{grep} of each application's source code to find instances
 of the keyword \textit{SecurityManager}. When any instance of the
 keyword was found, we included the application in our dataset. This
-filtering reduced the set of applications to inspect from 112 to 29.
+filtering reduced the set of applications to inspect from 112 to 29. 
 
-We performed a similar process using the GitHub search feature configured
-to search through Java files for the same keyword, \textit{System.setSecurityManager(},
-and \textit{System.setSecurityManager(null)}. We added two keywords
-to reduce false positives and to include applications that disable
-the manager. We ended up with 17 applications after selecting the
-top seven applications from the results for each keyword, removing
-duplicates found in QC, and removing false positives. Our dataset
-includes the latest commit of each project at the time .
+We performed a similar process on GitHub while searching only Java files. The keyword \textit{System.setSecurityManager(} was added to remove false positives. To include applications that disable the manager we also searched for \textit{System.setSecurityManager(null)}. We picked the top seven applications from the results for each keyword, removed false positives, and ended up with an additional 17 applications that were not already in QC. We only looked at the latest commit.
 
 With the dataset in hand, we created static and dynamic analysis tools
 to assist in the manual inspection of each application. Our static
@@ -489,39 +480,30 @@ printed when the field is set to \texttt{null}.
 
 We split the dataset between two reviewers. The reviewers both analyzed
 applications using the following steps:
+
 \begin{enumerate}
-\item The reviewer ran grep on all Java source files in the application
-to output the lines which contain the keyword \textsl{SecurityManager}
-and the 5 lines before and after these lines.
-\item When it was clear from the grep output that the keyword was used in
-comments or in ways that were unrelated to the security manage class,
-the reviewer labeled the application as a false positive.
-\item For true positives that compiled, the reviewer ran FindBugs on the
-application with only our plugin enabled. 
-\item The reviewer manually inspected code specified in the FindBugs findings,
+\item Run grep on all Java source files in the application
+to output every line containing the keyword \textsl{SecurityManager} and the 5 lines before and after it.
+\item Reject any application where it is clear from the grep output that the keyword is used in ways that are unrelated to the security manager class.
+\item Run the static analysis on retained applications. 
+\item Manually inspect code specified in step 3's findings,
 starting with the line where the manager was set and tracing the code
-back to the various locations the findings said potential security
+back to locations where potential security
 managers were initialized. 
-\item The reviewer manually inspected all of the lines mentioned in the
-grep results from step 1 to see how the application interacted with
+\item Manually inspect all of the lines returned in step 1, looking for how the application interacts with
 the sandbox. 
-\item For true positives that compiled and affected the security manager
-during the execution of the application, the application was executed,
-while being monitored by our dynamic analysis tool, using parameters
-and actions the reviewer determined in steps 4 and 5 affect the security
-manager. For example, we often learned in earlier steps that the manager
-was only effected if the user ran the program from the command line
-with a particular parameter or used a specific feature of the application.
-This step verified the conclusions from previous steps.
-\item Finally, the reviewer summarized the operations the application performed
+\item Execute the application with the dynamic analysis using parameters
+and actions steps 4 and 5 show affect the security
+manager to verify conclusions from previous steps.
+\item Summarize the operations performed
 on the security manager with an emphasis on points that support or
 reject each hypothesis.
 \end{enumerate}
-To ensure the reviewers understood the analysis steps and produced
-consistent results, we undertook a pilot study where each reviewer
-independently inspected the same six applications then compared their
-results.
 
+We undertook a pilot study where each reviewer
+independently inspected the same six applications and compared their
+results. This ensured reviewers understood the analysis steps and produced
+consistent results.
 
 \subsection{The Security Manager Dataset}\label{sec:Applications-Studied}
 
@@ -535,47 +517,47 @@ results.
 \toprule 
 Application Name & Description & Repo\tabularnewline
 \midrule
-(Apache) Ant & Java Project Builder & Qualitas\tabularnewline
-(Apache) Batik & SVG Image Toolkit & Qualitas\tabularnewline
-C-JDBC & DB Clustering Middleware & Qualitas\tabularnewline
-Compiere & Business Tools & Qualitas\tabularnewline
-(Apache) Derby & Relational Database & Qualitas\tabularnewline
-DrJava & IDE & Qualitas\tabularnewline
-Eclipse  & IDE & Qualitas\tabularnewline
-FreeMind & Mind-Mapping Tool & Qualitas\tabularnewline
-Galleon & Media Server & Qualitas\tabularnewline
-(Apache) Hadoop & Distributed Computing Frwk. & Qualitas\tabularnewline
-Hibernate & Obj.-Rel. Mapping Tool & Qualitas\tabularnewline
-HyperSQL & SQL Relational Database & Qualitas\tabularnewline
-JBoss & Application Middleware & Qualitas\tabularnewline
-JRuby & Ruby Interpreter & Qualitas\tabularnewline
-(Apache) Lucene & Search Software & Qualitas\tabularnewline
-(Apache) MyFaces & Server Software & Qualitas\tabularnewline
-NekoHTML & HTML Parser & Qualitas\tabularnewline
-Netbeans & IDE & Qualitas\tabularnewline
-OpenJMS & Messaging Service & Qualitas\tabularnewline
-Quartz  & Job Scheduler & Qualitas\tabularnewline
-QuickServer & TCP Server Framework & Qualitas\tabularnewline
-Spring Framework & Web Development Library & Qualitas\tabularnewline
-(Apache) Struts & Web Development Library & Qualitas\tabularnewline
-(Apache) Tapestry & Web Development Library & Qualitas\tabularnewline
-(Apache) Tomcat & Web Server & Qualitas\tabularnewline
-Vuze & File Sharing Application & Qualitas\tabularnewline
-Weka & Machine Learning Algs. & Qualitas\tabularnewline
-(Apache) Xalan & XML Transforming Library & Qualitas\tabularnewline
-(Apache) Xerces & XML Parsing Library & Qualitas\tabularnewline
+(Apache) Ant & Java Project Builder & QC\tabularnewline
+(Apache) Batik & SVG Image Toolkit & QC\tabularnewline
+C-JDBC & DB Cluster Middleware & QC\tabularnewline
+Compiere & Business Tools & QC\tabularnewline
+(Apache) Derby & Relational Database & QC\tabularnewline
+DrJava & IDE & QC\tabularnewline
+Eclipse  & IDE & QC\tabularnewline
+FreeMind & Mind-Mapping Tool & QC\tabularnewline
+Galleon & Media Server & QC\tabularnewline
+(Apache) Hadoop & Distrib. Comp. Frwk. & QC\tabularnewline
+Hibernate & Obj.-Rel. Mapper & QC\tabularnewline
+HyperSQL & SQL DB & QC\tabularnewline
+JBoss & Application Middleware & QC\tabularnewline
+JRuby & Ruby Interpreter & QC\tabularnewline
+(Apache) Lucene & Search Software & QC\tabularnewline
+(Apache) MyFaces & Server Software & QC\tabularnewline
+NekoHTML & HTML Parser & QC\tabularnewline
+Netbeans & IDE & QC\tabularnewline
+OpenJMS & Messaging Service & QC\tabularnewline
+Quartz  & Job Scheduler & QC\tabularnewline
+QuickServer & TCP Server Frwk. & QC\tabularnewline
+Spring Framework & Web Dev. Library & QC\tabularnewline
+(Apache) Struts & Web Dev. Library & QC\tabularnewline
+(Apache) Tapestry & Web Dev. Library & QC\tabularnewline
+(Apache) Tomcat & Web Server & QC\tabularnewline
+Vuze & File Sharing App. & QC\tabularnewline
+Weka & Machine Learning Algs. & QC\tabularnewline
+(Apache) Xalan & XML Trans. Library & QC\tabularnewline
+(Apache) Xerces & XML Parsing Library & QC\tabularnewline
 AspectJ & Java Extension & Github\tabularnewline
 DemoPermissions & Spring Extension & Github\tabularnewline
 driveddoc & Application Connector & Github\tabularnewline
-FileManagerFtpHttpServer & FTP Server & Github\tabularnewline
+FileManager- & FTP Server & Github \\ FtpHttpServer\tabularnewline
 Gjman & Development Toolkit & Github\tabularnewline
 IntelliJ IDEA & IDE & Github\tabularnewline
 Jmin & Lightweight JDK & Github\tabularnewline
-MCVersion-Control & Minecraft Version Changer & Github\tabularnewline
+MCVersion-Control & Minecraft Utility & Github\tabularnewline
 NGOMS & Business Tools & Github\tabularnewline
 oxygen-libcore & Android Dev. Lib. & Github\tabularnewline
 refact4j & Meta-model Prog. Frwk. & Github\tabularnewline
-Security-Manager & Alternate Security Manager & Github\tabularnewline
+Security-Manager & Alt. Security Manager & Github\tabularnewline
 Spring-Modules & Spring Extension & Github\tabularnewline
 System Rules & JUnit Extension & Github\tabularnewline
 TimeLag & Sound Application & Github\tabularnewline
@@ -587,9 +569,8 @@ Visor & Closure Library & Github\tabularnewline
 
 
 The Qualitas Corpus is a curated collection of open source Java applications
-for use in reproducible software studies. We investigated the sandbox
-usage of 29 applications from QC version 20130901 that we use in this
-study.
+for use in reproducible software studies. We investigated sandbox
+interactions in 29 applications from QC version 20130901.
 
 \begin{table}
 \caption{Classification of application interactions with the security manager.}
@@ -600,11 +581,11 @@ study.
 \toprule 
 Type of Interaction & QC & GitHub & Total\tabularnewline
 \midrule
-1. Set a manager without later changing it & 6 & 1 & 7\tabularnewline
-2. Change a set security manager & 5 & 3 & 8\tabularnewline
-3. Interact with manager in production code & 10 & 3 & 13\tabularnewline
-4. Interact with manager only in unit tests & 3 & 5 & 8\tabularnewline
-5. Do not interact (false positive) & 5 & 5 & 10\tabularnewline
+1. Sets manager, nothing else & 6 & 1 & 7\tabularnewline
+2. Changes set security manager & 5 & 3 & 8\tabularnewline
+3. Interactions in production code & 10 & 3 & 13\tabularnewline
+4. Interactions only in unit tests & 3 & 5 & 8\tabularnewline
+5. No interactions (false positive) & 5 & 5 & 10\tabularnewline
 \bottomrule
 \end{tabular}
 \end{table}
@@ -620,9 +601,7 @@ are available in an online supplement.%
 \footnote{http://goo.gl/dtcqTM%
 }
 
-
 \subsection{Limitations}\label{sub:Limitations-Study}
-
 
 \subsubsection{Internal Validity}
 
@@ -634,41 +613,29 @@ code, thus we may have taken a comment or some source code out of
 context in larger applications. Finally, using two different reviewers
 may lead to variations in the interpretations of some of the data. 
 
-We mitigated these threats by using a FindBugs plugin and JVMTI agent,
-providing reviewers consistent data about where to look in the code,
-and a means of validating their understanding of the code. Furthermore,
-we inspected entire source files when inspecting code that contained
-security manager operations. Even with this level of review, it is
-impossible to achieve a perfect understanding in every case in a reasonable
-period of time without reaching out to the developer that wrote the
-code. Finally, we tested our tools and processes in a pilot study
-to find and mitigate sources of inconsistencies. In our pilot study,
-each reviewer used the same inspection process and the tools listed
-earlier to ensure they consistently characterized sandbox interactions
-in the same set of six applications.
+We mitigated these threats by using a checklist, FindBugs plugin, and JVMTI agent to
+provide reviewers consistent processes for reviewing code
+and validating their results. Furthermore,
+we inspected entire source files that contained
+security manager operations. We tested our tools and processes in a pilot study
+to find and mitigate sources of inconsistencies.
 
 
 \subsubsection{External Validity}
 
-The applications in the study were limited to open source programs,
-specifically well-known applications included in the Qualitas Corpus
-and publicly-available applications available on GitHub. It is possible
+The study only includes open source applications. It is possible
 that closed source applications interact with the security manager
 in ways that we did not see in the open source community. However,
 we inspected a few small applications with our aerospace collaborators.
 We did not find any code that suggested this is the case. 
 
-
 \subsubsection{Reliability}
 
-While the majority of the study is easily replicable, certain aspects
-of the our results change over time. GitHub search results are constantly
+While the majority of the study is easily replicable, GitHub search results are constantly
 changing. Using GitHub to generate a new dataset using our method
-would likely generate a different dataset. Furthermore, applications
-on GitHub can become inaccessible. Over the course of our security
+would likely generate a different dataset. Furthermore, over the course of our security
 manager study, two applications either became private repositories
 or were removed from GitHub (FileManagerFtpHttpServer and Visor).
-
 
 \section{Security Manager Study Results}\label{sec:Study-results}
 
@@ -699,9 +666,9 @@ manager to null as discussed in Section \ref{sub:Reducing-Web-Application-Comple
 
 \begin{figure}
 \begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt}]
-    public static void main(String[] args) {     
-        if (System.getSecurityManager() == null) {       
-            System.setSecurityManager(new RMISecurityManager());   
+   public static void main(String[] args) {     
+      if (System.getSecurityManager() == null) {       
+         System.setSecurityManager(new RMISecurityManager());   
 \end{lstlisting}
 \caption{Weka code snippet that initializes a security manager if one does
 not already exist. This is the only reference to the security manager
