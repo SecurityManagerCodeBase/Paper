@@ -45,7 +45,7 @@ directly use privileged classes. Exploits routinely do both. We derive two rules
 \section{Introduction}
 
 The Java Runtime Environment (JRE) is widely installed on user endpoints,
-where it executes external code in the form of applets and Java Web Start (JWS) applications \cite{gong1997going,gong2003inside}.
+where it executes external code in the form of applets and Java Web Start (JWS) \cite{_java_web_start} applications \cite{gong1997going,gong2003inside}.
 These facts, combined with the hundreds of recently discovered vulnerabilities
 in Java, including zero-day vulnerabilities (e.g. CVE-2013-0422),
 have made Java a popular exploit vector (see Figure \ref{fig:most-targeted-applications}).
@@ -583,7 +583,7 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 \midrule
 1. Sets manager, nothing else & 6 & 1 & 7\tabularnewline
 2. Changes set security manager & 5 & 3 & 8\tabularnewline
-3. Interactions in production code & 10 & 3 & 13\tabularnewline
+3. Support being sandboxed & 10 & 3 & 13\tabularnewline
 4. Interactions only in unit tests & 3 & 5 & 8\tabularnewline
 5. No interactions (false positive) & 5 & 5 & 10\tabularnewline
 \bottomrule
@@ -620,7 +620,6 @@ we inspected entire source files that contained
 security manager operations. We tested our tools and processes in a pilot study
 to find and mitigate sources of inconsistencies.
 
-
 \subsubsection{External Validity}
 
 The study only includes open source applications. It is possible
@@ -639,71 +638,20 @@ or were removed from GitHub (FileManagerFtpHttpServer and Visor).
 
 \section{Security Manager Study Results}\label{sec:Study-results}
 
-We divided the security manager dataset into categories based on the
-operations each application performed on the security manager. The
-categories are summarized as follows: (1) applications that set a
+We characterized the security manager interactions of the applications in our dataset by assigning each one of five types. The
+types are summarized as follows: (1) applications that set a
 security manager that does not get changed later in the application's
 execution, (2) applications that change a set manager at some point
 in the program's execution, (3) applications that interact with a
-security manager in production code if one is set, (4) applications
+security manager in production code if one is set but do not modify the manager or its policy, (4) applications
 that only interact with the manager in unit tests, and (5) false positives
 that do not actually interact with the manager. Table \ref{tab:Classification-of-Application}
-shows how each application in our dataset was categorized. The number
-for each category type in the table corresponds to the numbers in
-the previous list used throughout the rest of this section.
+summarizes our dataset using these types.
 
-Type 1 applications set a security manager that is not changed during
-any execution of the application after it is set. In other words,
-for each possible execution path, there is at most one place the application
-sets a security manager. For example, Weka contains several main methods,
-most of which never set a security manager. However, the main method
-in \texttt{RemoteEngine.java} sets a security manager, as shown in
-Figure \ref{fig:Weka-snippet}, unless the environment set one already
-(e.g. the user set one on the command line, or Weka is running as
-an applet or web start application). One Type 1 application, JTimeLag,
-did not actually set a security manager, but did set the security
-manager to null as discussed in Section \ref{sub:Reducing-Web-Application-Complexity}. 
+Type 3, 4, and 5 applications will not be discussed further unless they provide a novel insight into benign sandbox interactions. The applications in these categories cannot violate any of our hypotheses because they do not attempt to alter a security manager or policy it enforces.
 
-\begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=321,xrightmargin={0.1cm},numbersep={-10pt}]
-   public static void main(String[] args) {     
-      if (System.getSecurityManager() == null) {       
-         System.setSecurityManager(new RMISecurityManager());   
-\end{lstlisting}
-\caption{Weka code snippet that initializes a security manager if one does
-not already exist. This is the only reference to the security manager
-in the Weka code base.}
-\label{fig:Weka-snippet}
-\end{figure}
-
-
-Type 2 applications are of particular interest in validating our hypotheses
-because they change a set security manager at some point in the application's
-execution. In other words, the weak, moderate, and ideal mitigations
-break these applications. Due to their effect on our hypotheses, applications
-of this type are discussed in Sections \ref{sub:Non-security-uses-of}
-and \ref{sub:Using-the-Security}.
-
-Type 3 applications contain code that enables them to interact with
-a security manager if one is set, but never actually set a security
-manager themselves. These applications contain code that either (A)
-performs permission checks if the application is sandboxed or (B)
-uses privileged actions \cite{_java_privilegedaction} to ensure the
-application works if constrained. Similarly, Type 4 applications contain
-unit test code that ensures the application works correctly if sandboxed
-or that set a manager themselves. These applications are not useful
-for validating our hypotheses because their interactions with the
-manager are not in production code.
-
-Type 5 primarily includes applications that have a class whose name
-contains the word ``SecurityManager'' but do not extend the \texttt{SecurityManager}
-class. These custom classes cannot be used to enforce a JRE-wide security
-policy, thus applications of this type are false positives. 
-
-The remainder of this section provides details about Type 1 and Type
-2 applications, with few details about the remaining types because
-they did not have a significant bearing on the outcomes of this study.
-
+Type 1 and 2 applications provide the bulk of the material for the rest of this section because they set security managers to enforce policies and even change a manager or its policy after it has been set. Unlike Type 1 applications, Type 2 applications can violate our hypotheses. However, Type 1 applications are still of interest because they provide novel insights into how benign applications use the sandbox. At this point we stop distinguishing applications by their types to discuss application that use the sandbox for purposes that are not security related in Section \ref{sub:Non-security-uses-of}
+and applications that use the sandbox for its intended security purposes in Section \ref{sub:Using-the-Security}.
 
 \subsection{Evaluation of the Hypotheses}\label{sub:Evaluation-of-the-hypotheses}
 
@@ -711,49 +659,34 @@ We only require one counterexample to falsify a hypothesis from Section
 \ref{sec:Security-Manager-Study}. This section summarizes how our
 hypotheses held up against the results of this study.
 
-\textbf{Hypothesis 1}: \textit{Benign applications do not disable
-the security manager. }\textit{\emph{The investigation determined
+\textbf{Hypothesis 1}: \emph{Benign applications do not disable
+the security manager.} The investigation determined
 that some benign applications do disable the security manager, which
 turns off the sandbox. The applications that explicitly disabled the
-manager typically were not using the sandbox for security purposes;
-these cases are further explained in Section \ref{sub:Non-security-uses-of}.
-However, some of these applications turned off the sandbox temporarily
-to update the imposed security policy.}}
+manager typically were not using the sandbox for security purposes, but a few did to allow the user to update the security policy.
 
 \textbf{Hypothesis 2}: \emph{Benign applications do not weaken the
-security manager. }This hypothesis was not definitively falsified
-if turning off the security manager is excluded from weakening. However,
-multiple applications provided methods for the user to dynamically
-change the security policy or the manager. These methods did not restrict
-their callers from weakening the manager during execution.
+security manager.} Multiple applications provided methods for the user to dynamically change the security policy or the manager in ways that can reduce the security of the sandbox.
 
-\textbf{Hypothesis 3}: \textit{Benign applications do not change the
+\textbf{Hypothesis 3}: \emph{Benign applications do not change the
 security manager if a self-protecting security manager has been set}.
-This hypothesis was supported by both datasets. No applications in
-our set change the sandbox settings after a self-protecting security
-manager is set.
+This hypothesis was supported by both datasets.
 
-\textbf{Hypothesis 4}:\textit{ Benign applications do not change a
-set security manager. }\textit{\emph{This hypothesis was shown to
-be false: multiple applications changed the security manager, both
-for security and non-security reasons.}}
+\textbf{Hypothesis 4}: \emph{Benign applications do not change a
+set security manager.} This hypothesis was falsified by multiple applications that changed the security manager.
 
 In short, the strong mitigation is the only proposed mitigation that
 can be implemented without breaking benign applications.
 
-
 \subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
-This section describes applications that violated hypotheses 1, 2
-and 4 while using the sandbox for reasons that do not satisfy security
-requirements. We found several applications using the sandbox in ways
-unrelated to system security. Most of these applications used the
+This section describes applications that provide novel insights into benign sandbox interactions unrelated to satisfy security
+requirements. Most of these applications used the
 sandbox to enforce architectural constraints when interacting with
 other applications or forcibly disabled the sandbox to reduce development
 complexity.
 
-
-\subsubsection{Enforcing Architectural Constraints }
+\subsubsection{Enforcing Architectural Constraints}
 
 Java applications commonly call \texttt{System.exit()} when a non-recoverable
 error condition occurs. This error handling strategy causes problems
@@ -766,7 +699,7 @@ outcome.
 To prevent this outcome without modifying the library application,
 the calling application needs to enforce the architectural constraint
 that libraries can not terminate the JVM. In practice, applications
-enforce this architectural constraint by setting a security manager
+enforce this constraint by setting a security manager
 that prevents \texttt{System.exit()} calls. If a manager has already
 been set, applications tend to save a copy of the current manager
 before replacing it with one that prevents termination of the JVM,
@@ -814,39 +747,10 @@ are handled, the original manager is restored.
 from terminating the JVM when Ant encounters an unrecoverable error.}\label{fig:Eclipse-snippet}
 \end{figure}
 
-
-GJMan also enforces this architectural constraint, as shown in Figure
-\ref{fig:GJMan-snippet}. A code comment (not shown) references a
+GJMan also enforces this constraint and contains a code comment referencing a
 blog post that we believe is the origin of this solution.%
 \footnote{http://www.jroller.com/ethdsy/entry/disabling\_system\_exit%
-} The code contains an \texttt{apply} method that creates and sets
-a security manager to prevent termination of the JVM and an \texttt{unapply}
-method to disable the sandbox. GJMan is a library and does not use
-these methods itself, but applications that use it could. 
-
-\begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt}]
-    public static void apply() { 
-        final SecurityManager securityManager = new SecurityManager() { 
-            public void checkPermission(Permission permission) { 
-                if(permission.getName().startsWith("exitVM")) { 
-                    throw new Exception(); 
-                } 
-            } 
-        }; 
-       System.setSecurityManager(securityManager); 
-    }
-    public static void unapply() { 
-        System.setSecurityManager(null); 
-    }
-\end{lstlisting}
-
-
-\caption{Methods in GJMan that enable and disable the sandbox to prevent termination
-of the JVM when select code is running.}
-\label{fig:GJMan-snippet}
-\end{figure}
-
+} 
 
 In total, we found 3 applications that use a variation of this technique:
 Eclipse, GJMan, and AspectJ. While this technique does enforce the
@@ -859,79 +763,29 @@ is very carefully written to prevent malicious code from changing
 the manager or the policy it enforces. Defenseless security managers
 are not capable of reliably enforcing a serious security policy.
 
-
 \subsubsection{Reducing Web Application Development Complexity}\label{sub:Reducing-Web-Application-Complexity}
 
 We found applications that were complicated by the Java security policies
-for web applications (applets and applications launched via Java Web
-Start) \cite{_java_web_start}. In the latest versions of the JRE
-(1.7.72 and 1.8.25), users are prompted to allow the execution of
-Java web applications originating from a source other than the host
-machine. By default, Java executes such an application inside a restrictive
+for web applications (applets and applications launched via JWS). By default, Java executes such an application inside a restrictive
 sandbox that severely limits the operations the application can perform,
 excluding operations such as accessing local files, retrieving resources
 from any third party server, or changing the security manager. 
 
-For some applications, required behaviors may be prevented by the
-restrictive sandbox. To avoid executing the applet in a restrictive
-sandbox, a developer must first get the application digitally signed
-by a recognized certificate authority. Once the application has been
-properly signed, the developer may specify that the application should
-run outside of the sandbox. Before running this kind of application,
-the user must accept two prompts: one to run the application, and
-a second to run outside the sandbox. 
-
-If an application is executed inside a restrictive sandbox and uses
-permissions prevented by the restrictive sandbox, the application
-developer has two options: adjust the application to not require the
-restricted permissions or have the application terminate with a \texttt{SecurityException}.
-The first option would require the application to recognize the sandbox
-and then avoid using restricted permissions. Thus, the application
-would only be able to execute a subset of the full application. This
-requires more development effort because the application is essentially
-implemented twice, once as the restricted version and again as the
-full version. The second option does not allow the application to
-execute inside a restrictive sandbox: The application must run outside
-the sandbox. We found that applications using this method attempted
+Applications in our set that cannot run in a restrictive sandbox universally opted to run outside of the sandbox because the alternative is to painstakingly construct the application to run reasonably without required privileges (e.g. by detecting the sandbox and disabling privileged operations). To avoid executing the applet in a restrictive
+sandbox, a developer must get the application digitally signed
+by a recognized certificate authority then specify that the application should
+run outside of the sandbox. We found that applications using this method attempted
 to set the security manager to \texttt{null} at the beginning of the
-application, causing the sandbox to catch the security violation and
+application, causing a restrictive sandbox to catch the security violation and
 terminate the application. 
 
 We found two applications that use the second option: Eclipse and
-Timelag. Figure \ref{fig:Eclipse-jws-snippet} shows a snippet from
-Eclipse's WebStartMain.java file that performs this operation. The
-comment shows that Eclipse attempts to disable the sandbox to avoid
-the permission issues caused by the default sandbox for web start.
-Timelag performs the same operation in the file JTimelag.java but
-does not contain any comments, thus we can only infer the motivation
-behind turning off the sandbox.
-\begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=22,xrightmargin={0.1cm},numbersep={-10pt}]
-    /** 
-    * The launcher to start eclipse using webstart. To use this launcher, the client 
-    * must accept to give all security permissions.
-    ...
-\end{lstlisting}
-
-
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=55,escapechar={\%},xrightmargin={0.1cm},numbersep={-10pt}]
-    public static void main(String[] args) { 
-    System.setSecurityManager(null); %\textbf{//TODO Hack so that when the classloader loading the fwk is created we don't have funny permissions. This should be revisited. }
-\end{lstlisting}
-
-
-\caption{A snippet from Eclipse that disables the sandbox when Java Web Start
-is used to run the IDE.}
-\label{fig:Eclipse-jws-snippet}
-\end{figure}
-
-
+Timelag. The rationale for disabling the manager in Eclipse is explained in a code comment that reads, "The launcher to start eclipse using webstart. To use this launcher, the client must accept to give all security permissions." Timelag performs the same operation in the file JTimelag.java but does not contain any comments, thus we can only infer the motivation behind turning off the sandbox.
 
 \subsection{Using the Security Manager for Security Purposes}\label{sub:Using-the-Security}
 
-This section describes applications that violated hypotheses 1, 2,
-and 4 while using the sandbox in attempts to improve the security
-posture of the application. Batik, Eclipse, and Spring-modules provide
+This section describes applications that provide novel insights into benign sandbox interactions related to improving the security
+posture of the application. Several of these applications clearly violate hypotheses 1, 2, and 4: Batik, Eclipse, and Spring-modules provide
 methods that allow the user to set and change an existing manager,
 and Ant, Freemind, and Netbeans explicitly set then change the manager.
 
