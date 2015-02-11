@@ -1265,102 +1265,40 @@ by the application. This rule is violated when code causes a change
 in the sandbox's configuration, the goal of many exploits. This rule
 is an implementation of the strong mitigation.
 
+\section{Validating the Rules}\label{sec:Mitigations}
 
-\section{Mitigations}\label{sec:Mitigations}
-
-In Section \ref{sec:Security-Manager-Study}, we discussed four alternative
-hypotheses about security manager usage in benign applications, each
+In Section \ref{sec:Security-Manager-Study}, we discussed four hypotheses about security manager usage in benign applications, each
 of which, if validated, leads to a distinct mitigation. In Section
 \ref{sec:Study-results}, we gave empirical evidence in support of
 Hypothesis 3 and rejected all of the others. Along the way, we learned
 practical lessons about how applications use the Java sandbox that
 are useful to exploit mitigation implementers. 
 
-In this section, we realize the rules through an implementation and
-evaluation of runtime monitors that enforce the Privilege Escalation
-and Security Manager rules. We collectively call these monitors the
-\textit{Java Sandbox Fortifier} (JSF). We evaluated JSF in collaboration
-with a large aerospace company. The company is currently working on
-deploying the tool to employee workstations focusing on those often
-the subject of attacks. 
+In this section, we evaluate the protection merits and backwards compatibility of the rules presented in Section \ref{sec:Rules-for-Fortifying} through an implementation of runtime monitors that enforce them. This evaluation was done in collaboration
+with a large aerospace company.
 
 Section \ref{sub:Implementation-Using-JVMTI} discusses how we implemented
 our runtime monitors using JVMTI. Section \ref{sub:Effectiveness-at-Fortifying}
 explains the methodology behind and results of an experiment we conducted
-to determine how effective the monitors are at stopping existing exploits.
-Section \ref{sub:Overhead} measures and discusses the overhead our
-monitors introduce to Java application execution. Finally, Section
-\ref{sub:Related-Work-Mitigation} covers prior work related to our
-mitigations.
-
+to determine how effective the rules are at stopping existing exploits without breaking benign applications. Finally, Section
+\ref{sub:Related-Work-Mitigation} covers prior work related to Java exploit mitigations.
 
 \subsection{Implementation Using JVMTI}\label{sub:Implementation-Using-JVMTI}
 
-Prior work attempts to prevent exploits in native libraries used by
-language runtimes such as Java's \cite{cappos_retaining_2010,li_quarantine:_2011,siefers_robusta:_2010,sun_jvm-portable_2012}.
-The machine learning community has put some effort into detecting
-exploits delivered via drive-by downloads using Java applets and similar
-technologies \cite{cova_detection_2010,ford_analyzing_2009,helmer_anomalous_2001,schlumberger_jarhead_2012}.
-We implemented a tool in JVMTI to proactively stop exploits written
-directly in the Java programming language to exploit vulnerable Java
-code.%
-\footnote{Our tool, Java Sandbox Fortifier, is open source. An anonymized version
-of the tool can be found at \url{http://goo.gl/In6Di0}%
-} In particular, our tool blocks operations that exploits use without
-affecting the execution of benign applications.
-
-JVMTI is a native interface for accessing JVM operations used to create
+JVMTI is a native interface used to create
 analysis tools such as profilers, debuggers, monitors, and thread
 analyzers. Tools that use JVMTI are called agents, and are attached
 to a running Java application at a configuration-specific point in
 the application's lifecycle. The interface allows an agent to set
 capabilities, enabling the tool to intercept events such as class
 or thread creation, field access or modification, breakpoints, etc.
-After acquiring the necessary capabilities, a JVMTI agent registers
-callbacks for the events the agent requires. 
 
 Our agent must intercept three events to enforce the Privilege Escalation
 and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
 and \texttt{FieldModification}. Enforcement of these rules is discussed
 in detail in subsections \ref{sub:Enforcing-the-Privilege} and \ref{sub:Enforcing-the-SecurityManager}.
 
-Our agent was written in C++. 524 lines of code were required to enforce
-the Privilege Escalation rule; 377 lines of code were required for
-the Security Manager rule. This code constitutes the attack surface
-for our tool, because a malicious class could potentially craft information
-such as class, field, or method names to exploit an issue in the rule
-enforcement code when the information is passed to the appropriate
-callback. The risk here is greatly reduced both by the fact that there
-is little attack surface to inspect and because work cited earlier
-in this section can be applied to our tool. For example, the software-based
-fault isolation subset of Robusta \cite{siefers_robusta:_2010} can
-be applied to our tool to isolate the effects of an exploit. Using
-a security kernel for Java similar to Cappo's for Python \cite{cappos_retaining_2010},
-our tool could be isolated to its own security layer with access only
-to the information it gets from JVMTI. We did not attempt to apply
-these solutions because the required tools and code are not publicly
-available, which would make it difficult, if not impossible, for most
-people to adopt our tool.
-
-Our agent may be configured to run in \textit{enforce} or \textit{monitor}
-mode. In \emph{enforce} mode, a violation of either rule causes the
-agent to log the offending behavior and terminate the JVM to which
-it is attached. Figure \ref{fig:A-popup-from} shows an example of
-a popup displayed after an exploit was caught breaking the Privilege
-Escalation rule. In \emph{monitor} mode, the agent logs the offending
-behavior, but leaves the JVM's execution of the application untouched.
-
-\begin{figure}
-\begin{centering}
-\includegraphics[width=3.25in]{rule_violation_popup}
-\par\end{centering}
-
-\caption{A popup from our agent after it caught an exploit breaking the Privilege
-Escalation rule.}
-\label{fig:A-popup-from}
-\end{figure}
-
-
+The field events require JVMTI to turn off the JIT, which slows down program execution enough that our monitors are not suitable for adoption on their own. JVMTI implementations can avoid this limitation, but avoidance would likely increase implementation complexity beyond what is reasonable for a diagnostic interface. We are currently in communication with the OpenJDK developers on their security-dev mailing list regarding enforcement of our rules in the JVM itself to avoid overhead issues.\footnote{REVIEWERS: This discussion will be referenced in the final version of the paper. At this time, the OpenJDK developers are very receptive to the idea, were already considering implementing something similar to our SecurityManager rule, and have stated the lessons from the empirical study we shared with in an early manuscript of this paper are valuable to their efforts.}
 
 \subsubsection{Enforcing the Privilege Escalation Rule}\label{sub:Enforcing-the-Privilege}
 
@@ -1425,7 +1363,7 @@ and write to the \texttt{security} field of the \texttt{System} class:
 This field stores the security manager that is used by protected code.
 The agent implements the read and write monitors by respectively registering
 \texttt{FieldAccess and FieldModification} events for the field. Typically
-the field, which is private and static, is accessed via \texttt{System.getSecurityManager()}
+the field is accessed via \texttt{System.getSecurityManager()}
 and modified using \texttt{System.setSecurityManager()}, but we must
 monitor the field instead of instrumenting these methods to detect
 type confusion attacks. 
@@ -1448,15 +1386,7 @@ security manager. When the field is written, the agent checks the
 shadow copy of the manager. Assuming the shadow copy is \texttt{null},
 the agent knows the manager is being set for the first time and checks
 to see if the new manager is self-protecting. If the manager is self-protecting
-the agent simply updates the shadow copy. Otherwise the agent drops
-from \textit{enforce} to \textit{monitor} mode as applicable because
-the rules cannot be enforced for applications using defenseless managers.
-Rule enforcement in the presence of a defenseless security manager
-may break benign applications that use a defenseless manager, as shown
-in several examples in Section \ref{sec:Study-results}. In any case,
-future modifications are logged as a violation of the rule, and trigger
-the operation relevant to the agent's current mode, discussed in Section
-\ref{sub:Implementation-Using-JVMTI}.
+the agent simply updates the shadow copy. Otherwise the agent stops monitoring the application because the rule does not apply in the presence of a defenseless manager.
 
 Access events are used to detect type confusion attacks against the
 manager. The modification event we register will not be triggered
@@ -1482,7 +1412,9 @@ by the modification event.
 
 \subsection{Effectiveness at Fortifying the Sandbox}\label{sub:Effectiveness-at-Fortifying}
 
-We performed an experiment to evaluate how effective our agent is
+%%Need to integrate backwards compatibility experiment here
+
+We performed an experiment to evaluate how effective our rules are
 at blocking exploits that disable the sandbox. In our experiment,
 we ran Java 7 exploits for the browser from Metasploit 4.10.0 on 64-bit
 Windows 7 against the initial release of version 7 of the JRE. This
@@ -1499,9 +1431,7 @@ Escalation rule, and (3) while enforcing both rules. We ran these
 conditions to respectively: (1) establish that the exploits succeed
 against our JRE, (2) test how effective the Privilege Escalation rule
 is without the security manager rule, and (3) evaluate how effective
-the agent is in the strictest configuration currently available. Running
-the Privilege Escalation rule alone shows how effective the tool is
-at stopping applet exploits with low runtime overhead. Overall, all
+the agent is in the strictest configuration. Overall, all
 ten of the exploits succeed against our JRE without the agent. Four
 were stopped by the Privilege Escalation rule. All ten were stopped
 when both rules were enforced. The exploits that were not stopped
@@ -1534,42 +1464,10 @@ summarizes our results using the specific CVEs each exploit targeted.
 \end{tabular}
 \end{table}
 
-
-
-\subsection{Overhead}\label{sub:Overhead}
-
-On the other
-hand, the Security Manager rule produced a significant slowdown, causing
-applications to run >45 times slower, on average. We investigated
-the cause of this slowdown, and found that read and write monitors
-on fields in JVMTI cause the program to run without the benefit of
-the JIT. We measured the benchmarks in interpreted mode to measure
-how much of this extensive slowdown is the result of the JIT being
-off. The experiment determined that the interpreted applications run
-14.1 times slower relative to the JITed version of the application.
-We also measured performance with a version of the agent that receives
-the required events for both monitors but does nothing with them---the
-code that enforces the rules was removed. The results are nearly identical
-to the results we received when the rule implementations were in place.
-This strongly suggests that about 75\% of the significant performance
-slowdown is caused by JVMTI's implementation of the registered events
-to enforce the Security Manager rule.
-
-The security manager rule slowdown can be largely mitigated by advancing
-JVMTI implementations, for example, to enable the JIT in all cases.
-However, JVMTI implementors tend to favor ease of implementation over
-speed because many non-research uses of JVMTI are not performance-critical.
-We hypothesize that the Security Manager rule can be implemented with
-significantly less performance overhead if the rule is built into
-the JVM. This approach has the added benefit that the rules would
-become a permanent mitigation for all Java applications. We are actively
-communicating with Java developers to explore the prototype implementation
-of these rules in OpenJDK.
-
 \subsection{Related Work}\label{sub:Related-Work-Mitigation}
 
-The mitigations in this study increase the security of the sandbox
-by removing unnecessary features. Prior work has taken a different
+Our rules increase the security of the sandbox
+by effectively removing unnecessary features. Prior work has taken a different
 approach, instead focusing on re-implementing the Java sandbox or
 adding to the sandbox to increase security. Cappos et al. created
 a new sandbox structure. They implemented a security isolated kernel
@@ -1601,10 +1499,9 @@ et al. used machine learning and static analysis to identify common
 exploit features in malicious applets \cite{schlumberger_jarhead_2012}.
 Blasing et al. used static analysis and dynamic analysis of sandboxed
 executions to detect malicious Android applications \cite{Blasing-AndriodSandbox}.
-Unlike these automated approaches, our implementation shows that unique
+Unlike these automated approaches, our rules shows that unique
 mitigation strategies can be created with a better understanding of
 how applications interact with the sandbox. 
-
 
 \subsection{Limitations}
 
@@ -1616,7 +1513,6 @@ that mimic privileged classes to perform their operations directly.
 However, our rules substantially improve Java sandbox security, and
 future work will be able to build upon these results to create mitigation
 techniques for additional types of exploits.
-
 
 \section{Conclusion}
 
