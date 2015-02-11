@@ -1525,8 +1525,8 @@ manager and never modify it or set a defenseless manager and modify
 it at run time. 
 
 These findings, in combination with our analysis of recent Java exploits,
-enabled us to build two security monitors which together successfully
-defeated Metasploit's applet exploits. Some of the studied applications
+enabled us to define two rules which together successfully
+defeated Metasploit's applet exploits without breaking backward compatibility with benign applications when enforced by an experimental JVMTI agent. Some of the studied applications
 used the security manager to prevent third party components from calling
 \texttt{System.exit()}. More generally, frameworks often need to enforce
 constraints on plugins (e.g. to ensure non-interference). This suggests
