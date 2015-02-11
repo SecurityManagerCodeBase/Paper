@@ -1571,59 +1571,7 @@ summarizes our results using the specific CVEs each exploit targeted.
 
 \subsection{Overhead}\label{sub:Overhead}
 
-We measured JSF's performance overhead using version 9.12 of the DaCapo
-Benchmark Suite \cite{DaCapo:paper}, a standard set of real-world
-Java applications used for Java benchmarking. Performance was measured
-by running DaCapo five times using the converge switch \emph{--converge
---max-iterations 30 --window 3. }The average for each benchmark is
-the geometric mean of the last benchmark execution times from the
-five convergence iterations. We ran the benchmarks on an otherwise
-idle laptop with 8 gigabytes of RAM and an 8 core 64-bit Intel i7-3632QM
-CPU at 2.2 GHz. We used the 64-bit version of Java version 1.7.0,
-update 60.
-
-The DaCapo benchmarks do not set a security manager. Thus, to measure
-JSF's overhead, we used a modified version of the agent that always
-performs JSF's rule checks. This produces the worst-case overhead,
-because the unmodified version of JSF only attempts to monitor for
-rule violations when a security manager has actually been set. Table
-\ref{tab:Performance-Test-Results.} contains the performance results
-from these tests.
-
-\begin{table*}
-\protect\caption{Performance test results.}\label{tab:Performance-Test-Results.}
-
-
-\centering{}%
-\begin{tabular}{lrrrrrrrrr}
-\toprule 
- & No Tool & \multicolumn{2}{c}{Privilege Esc. Monitor} & \multicolumn{2}{c}{Both Monitors} & \multicolumn{2}{c}{No Tool Interpreted} & \multicolumn{2}{r}{JVMTI Agent w/o Rules}\tabularnewline
-Program & time(ms) & time(ms) & overhead & time(ms) & overhead & time(ms) & overhead & time(ms) & overhead\tabularnewline
-\midrule
-\texttt{\footnotesize{}avrora} & 6,840 & 6,458 & -5.6\% & 110,348 & 1513\% & 32,323 & 373\% & 110,074 & 1509\%\tabularnewline
-\texttt{\footnotesize{}batik} & 1,184 & 1,108 & -6.4\% & 17,279 & 1359\% & 6,860 & 479\% & 17,079 & 1343\%\tabularnewline
-\texttt{\footnotesize{}eclipse} & 13,358 & 13,481 & 0.9\% & 505,386 & 3683\% & 188,801 & 1313\% & 501,968 & 3658\%\tabularnewline
-\texttt{\footnotesize{}fop} & 272 & 265 & -2.4\% & 21,151 & 7682\% & 6,551 & 2310\% & 21,079 & 7655\%\tabularnewline
-\texttt{\footnotesize{}h2} & 6,168 & 6,250 & 1.3\% & 422,526 & 6750\% & 133,134 & 2058\% & 419,118 & 6695\%\tabularnewline
-\texttt{\footnotesize{}jython} & 1,581 & 1,648 & 4.3\% & 297,056 & 18694\% & 88,269 & 5485\% & 295,550 & 18599\%\tabularnewline
-\texttt{\footnotesize{}luindex} & 748 & 674 & -9.9\% & 48,182 & 6338\% & 16,476 & 2102\% & 48,357 & 6361\%\tabularnewline
-\texttt{\footnotesize{}lusearch} & 586 & 568 & -3.1\% & 43,848 & 7385\% & 11,504 & 1864\% & 45,186 & 7613\%\tabularnewline
-\texttt{\footnotesize{}pmd} & 2,103 & 2,122 & 0.9\% & 30,376 & 1344\% & 8,548 & 306\% & 30,052 & 1329\%\tabularnewline
-\texttt{\footnotesize{}sunflow} & 1,935 & 1,880 & -2.8\% & 203,036 & 10394\% & 50,645 & 2518\% & 207,664 & 10633\%\tabularnewline
-\texttt{\footnotesize{}tomcat} & 1,635 & 1,614 & -1.3\% & 24,995 & 1429\% & 9,166 & 461\% & 24,916 & 1424\%\tabularnewline
-\texttt{\footnotesize{}tradebeans} & 8,979 & 8,871 & -1.2\% & 414,509 & 4516\% & 147,192 & 1539\% & 413,188 & 4502\%\tabularnewline
-\texttt{\footnotesize{}tradesoap} & 5,301 & 5,310 & 0.2\% & 187,791 & 3443\% & 62,169 & 1073\% & 188,365 & 3454\%\tabularnewline
-\texttt{\footnotesize{}xalan} & 532 & 561 & 5.5\% & 48,176 & 8952\% & 12,513 & 2251\% & 49,878 & 9272\%\tabularnewline
-\midrule
-total & 51,221 & 50,811 & -0.8\% & 2,374,659 & 4536\% & 774,151 & 1411\% & 2,372,472 & 4532\%\tabularnewline
-\bottomrule
-\end{tabular}
-\end{table*}
-
-
-Our results indicate that the Privilege Escalation rule causes minimal
-slowdown, with an average of -0.8\% overhead, which we believe is
-due to variations in the benchmark runs and not the tool. On the other
+On the other
 hand, the Security Manager rule produced a significant slowdown, causing
 applications to run >45 times slower, on average. We investigated
 the cause of this slowdown, and found that read and write monitors
@@ -1650,29 +1598,6 @@ the JVM. This approach has the added benefit that the rules would
 become a permanent mitigation for all Java applications. We are actively
 communicating with Java developers to explore the prototype implementation
 of these rules in OpenJDK.
-
-Since Java exploits are primarily delivered by drive-by downloads,
-applets and Java Web Start applications are the greatest security
-security risk to most systems. With this in mind, a user can deploy
-JSF to only monitor applets and Java Web Start applications with both
-rules. This deployment option provides the strongest protection for
-the riskiest applications while allowing other applications to execute
-without a performance penalty. Many applets and Java Web Start applications
-do not require high performance,%
-\footnote{Many people could simply turn off the plugin to mitigate this issue,
-but large companies tend to leave it on because some employees need
-it: it is cheaper to have a standard, enterprise-wide configuration
-than custom configurations for the few employees that need applets. %
-} and both are relatively rare. A recent study found that less than
-0.1\% of websites on the entire Internet contain an applet \cite{_applet_usage_stats}.
-
-Adjusting the browser plugin settings only affects applets and Java
-Web Start applications. Users can deploy the tool in only their browsers
-by configuring the runtime parameters of the Java browser plugin with
-the Java Control Panel \cite{_java_control_panel}. The user would
-set the runtime parameters to the same values used in the tool options
-environment variable in other deployments.
-
 
 \subsection{Related Work}\label{sub:Related-Work-Mitigation}
 
