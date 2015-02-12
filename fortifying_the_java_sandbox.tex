@@ -647,7 +647,7 @@ that only interact with the manager in unit tests, and (5) false positives
 that do not actually interact with the manager. Table \ref{tab:Classification-of-Application}
 summarizes our dataset using these types.
 
-Type 3, 4, and 5 applications will not be discussed further unless they provide a novel insight into benign sandbox interactions. The applications in these categories cannot violate any of our hypotheses because they do not attempt to alter a security manager or policy it enforces.
+Type 3, 4, and 5 applications will not be discussed further. The applications in these categories cannot violate any of our hypotheses because they do not attempt to alter a security manager or policy it enforces.
 
 Type 1 and 2 applications provide the bulk of the material for the rest of this section because they set security managers to enforce policies and even change a manager or its policy after it has been set. Unlike Type 1 applications, Type 2 applications can violate our hypotheses. However, Type 1 applications are still of interest because they provide novel insights into how benign applications use the sandbox. At this point we stop distinguishing applications by their types to discuss application that use the sandbox for purposes that are not security related in Section \ref{sub:Non-security-uses-of}
 and applications that use the sandbox for its intended security purposes in Section \ref{sub:Using-the-Security}.
@@ -1092,7 +1092,6 @@ be easy to update this check to instead ensure that every permission
 in the loaded class's protection domain is also implied by the other
 protection domain to handle other cases.
 
-
 \subsubsection{Enforcing the SecurityManager Rule}\label{sub:Enforcing-the-SecurityManager}
 
 The SecurityManager rule is enforced by monitoring every read from
@@ -1275,7 +1274,7 @@ to strengthen the policy temporarily (e.g. by adding a permission).
 
 We indirectly observed many developers struggling to understand and
 use the security manager for any purpose. This is perhaps why there
-were only 47 applications in our sample. Some developers seemed to
+were only 46 applications in our sample. Some developers seemed to
 misunderstand the interaction between policy files and the security
 manager that enforces the policy. Other developers appear confused
 about how permissions work. In particular, they do not realize that
