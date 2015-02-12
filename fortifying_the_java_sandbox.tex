@@ -860,54 +860,8 @@ This specific permission set leads to a defenseless security manager.}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
-
-\begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=98,xrightmargin={0.1cm},numbersep={-10pt}]
-    public synchronized void setSecurityManager() throws BuildException {         
-      origSm = System.getSecurityManager();         
-      init();         
-      System.setSecurityManager(new MySM());         
-      active = true;     
-    }
-    
-    /**      
-      * Initializes the list of granted permissions, checks the list of revoked permissions.      
-      */     private void init() throws BuildException {
-      ...
-\end{lstlisting}
-\begin{lstlisting}[numbers=left,basicstyle={\scriptsize},firstnumber=169,xrightmargin={0.1cm},numbersep={-10pt}]
-    public synchronized void restoreSecurityManager() {         
-      active = false;         
-      System.setSecurityManager(origSm);     
-    }
-\end{lstlisting}
-\protect\caption{Code snippet showing Ant's custom security manager architecture, used
-to allow builds to run Java code under a specific set of permissions
-unique to the instantiated code.}
-\label{fig:Ant-Permissions-Enforcement}
-\end{figure}
-
-
-Ant uses the code section from \texttt{Permissions.java} shown in
-Figure \ref{fig:Ant-Permissions-Enforcement} to provide the user
-the ability to grant and revoke permissions. Ant calls the \texttt{setSecurityManager}
-method of the \texttt{Permissions} class when it is about to execute
-the restricted application. This method starts by saving the current
-security manager to a temporary variable. Then the \texttt{init} method
-creates the set of granted permissions. The \texttt{setSecurityManager}
-method then initializes a custom security manager, \texttt{MySM},
-which enforces the permissions specified by the user. When the security
-manager is initially set, it allows all permission checks to succeed,
-making it a defenseless security manager. Once the \texttt{setSecurityManager}
-method changes \texttt{active} to true, \texttt{MySM} enforces the
-specified permissions. When Ant has finished executing the application,
-it calls the method \texttt{restoreSecurityManager} to restore the
-original security manager.
-
-With this implementation, Ant catches applications that perform actions
-restricted by the user while typically protecting sandbox settings.
-Ant is also able to revert to the original security manager after
-executing the application. However, we are not sure that this implementation
+When Ant is about to execute an external, constrained class, it saves the current security manager and replaces it with a custom manager. This operation assumes the current manager is defenseless. The custom manager is not defenseless given a self-protecting permission set, but contains a private switch to make the manager defenseless for the purposes of restoring the original manager. With this implementation, Ant catches applications that perform actions
+restricted by the user while typically protecting sandbox settings. However, it is not clear this implementation
 is free of vulnerabilities.
 
 Netbeans similarly sets a security manager around a separate application.
