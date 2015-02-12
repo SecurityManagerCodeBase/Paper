@@ -39,7 +39,7 @@ applications and compared their use of the sandbox to the usage present
 in recent exploits. We found that benign applications with secured
 sandboxes do not modify the security manager, the security policy
 enforcement mechanism, after it is first set and do not attempt to
-directly use privileged classes. Exploits routinely do both. We derive two rules from these results to prevent (1) security manager modifications and (2) privilege escalation. We evaluated their protection merits in a case study using runtime monitors to enforce the rules during the execution of exploits and benign applications. The rules stop all ten Metasploit Java 7 exploits without breaking backwards compatibility with benign applications. These practical rules should be enforced in the JRE to fortify the Java sandbox.
+directly use privileged classes. Exploits routinely do both. We derive two rules from these results to prevent (1) security manager modifications and (2) privilege escalation. We evaluated their protection merits in a case study using runtime monitors to enforce the rules during the execution of exploits and benign applications. The rules stop all ten Metasploit Java 7 exploits without breaking backwards-compatibility with benign applications. These practical rules should be enforced in the JRE to fortify the Java sandbox.
 \end{abstract}
 
 \section{Introduction}
@@ -358,7 +358,7 @@ The nature of recent Java exploits caused us to ask the question: Do application
 We focus our efforts on the security manager, as it is the means by
 which applications interact with the sandbox. 
 
-Any JVM enhancements that are to stop even zero-day exploits while maintaining backwards compatibility with benign applications must be designed with an understanding of which operations both exploitive
+Any JVM enhancements that are to stop even zero-day exploits while maintaining backwards-compatibility with benign applications must be designed with an understanding of which operations both exploitive
 and benign applications perform on the security manager. Assuming
 there is a difference between the set of operations performed by exploits
 and those performed by benign applications, one can exclude the operations
@@ -391,7 +391,6 @@ admitted in a ten year retrospective on Java Security that he didn't
 know how or how extensively the ``fine grained access control mechanism''
 (i.e. the Java sandbox) is used \cite{gong2009java}. We fill in that
 gap. 
-
 
 \subsection{Methodology}
 
@@ -643,13 +642,12 @@ security manager that does not get changed later in the application's
 execution, (2) applications that change a set manager at some point
 in the program's execution, (3) applications that interact with a
 security manager in production code if one is set but do not modify the manager or its policy, (4) applications
-that only interact with the manager in unit tests, and (5) false positives
-that do not actually interact with the manager. Table \ref{tab:Classification-of-Application}
+that only interact with the manager in unit tests, and (5) applications that do not actually interact with the manager. Table \ref{tab:Classification-of-Application}
 summarizes our dataset using these types.
 
-Type 3, 4, and 5 applications will not be discussed further. The applications in these categories cannot violate any of our hypotheses because they do not attempt to alter a security manager or policy it enforces.
+Type 3, 4, and 5 applications will not be discussed further because their interactions with the sandbox cannot violate our hypotheses.
 
-Type 1 and 2 applications provide the bulk of the material for the rest of this section because they set security managers to enforce policies and even change a manager or its policy after it has been set. Unlike Type 1 applications, Type 2 applications can violate our hypotheses. However, Type 1 applications are still of interest because they provide novel insights into how benign applications use the sandbox. At this point we stop distinguishing applications by their types to discuss application that use the sandbox for purposes that are not security related in Section \ref{sub:Non-security-uses-of}
+Type 2 applications can violate our hypotheses and therefore provide the bulk of our discussion below. However, a few Type 1 applications are discussed due to the novel insights they provide into benign interactions with the sandbox. We discuss application that use the sandbox for purposes that are not security related in Section \ref{sub:Non-security-uses-of}
 and applications that use the sandbox for its intended security purposes in Section \ref{sub:Using-the-Security}.
 
 \subsection{Evaluation of the Hypotheses}\label{sub:Evaluation-of-the-hypotheses}
@@ -660,12 +658,10 @@ hypotheses held up against the results of this study.
 
 \textbf{Hypothesis 1}: \emph{Benign applications do not disable
 the security manager.} The investigation determined
-that some benign applications do disable the security manager, which
-turns off the sandbox. The applications that explicitly disabled the
-manager typically were not using the sandbox for security purposes, but a few did to allow the user to update the security policy.
+that some benign applications do disable the security manager, but these were typically were not using the sandbox for security purposes.
 
 \textbf{Hypothesis 2}: \emph{Benign applications do not weaken the
-security manager.} Multiple applications provided methods for the user to dynamically change the security policy or the manager in ways that can reduce the security of the sandbox.
+security manager.} Several applications provided methods for the user to dynamically change the security policy or the manager in ways that can reduce the security of the sandbox.
 
 \textbf{Hypothesis 3}: \emph{Benign applications do not change the
 security manager if a self-protecting security manager has been set}.
@@ -687,25 +683,17 @@ complexity.
 
 \subsubsection{Enforcing Architectural Constraints}
 
-Java applications commonly call \texttt{System.exit()} when a non-recoverable
-error condition occurs. This error handling strategy causes problems
-when an application uses another application that implements this
-strategy as a library. When the library application executes \texttt{System.exit()},
+Java applications often call \texttt{System.exit()} when a non-recoverable
+error occurs. This error handling strategy causes problems when applications that use it are used as libraries. When the library application executes \texttt{System.exit()},
 the calling application is closed as well because both applications
-are running in the same JVM. In many cases, this is not the intended
-outcome. 
+are running in the same JVM. This is not the desired
+outcome in several cases. 
 
 To prevent this outcome without modifying the library application,
 the calling application needs to enforce the architectural constraint
 that libraries can not terminate the JVM. In practice, applications
 enforce this constraint by setting a security manager
-that prevents \texttt{System.exit()} calls. If a manager has already
-been set, applications tend to save a copy of the current manager
-before replacing it with one that prevents termination of the JVM,
-but defer to the saved version for all security decisions that do
-not have to do with enforcing this particular constraint. The original
-security manager is often restored when the library application is
-finished executing.
+that prevents \texttt{System.exit()} calls.
 
 This case appears in Eclipse, which uses Ant as a library. When an
 unrecoverable error condition occurs, Ant kills the JVM to terminate
@@ -747,19 +735,15 @@ from terminating the JVM when Ant encounters an unrecoverable error.}\label{fig:
 \end{figure}
 
 GJMan also enforces this constraint and contains a code comment referencing a
-blog post that we believe is the origin of this solution.%
-\footnote{http://www.jroller.com/ethdsy/entry/disabling\_system\_exit%
-} 
+blog post that we believe is the origin of this solution.\footnote{http://www.jroller.com/ethdsy/entry/disabling\_system\_exit} 
 
 In total, we found 3 applications that use a variation of this technique:
 Eclipse, GJMan, and AspectJ. While this technique does enforce the
 desired constraint, and appears to be the best solution available
 in Java at the moment, it may cause problems when applications are
 also using the sandbox for security purposes. The technique requires
-the application to dynamically change the security manager. This operation
-requires that the manager itself be defenseless or that the application
-is very carefully written to prevent malicious code from changing
-the manager or the policy it enforces. Defenseless security managers
+the application to dynamically change the security manager, which requires either a defenseless manager or for the application
+to be carefully written to prevent malicious code from weakening the sandbox. Defenseless security managers
 are not capable of reliably enforcing a serious security policy.
 
 \subsubsection{Reducing Web Application Development Complexity}\label{sub:Reducing-Web-Application-Complexity}
@@ -778,8 +762,8 @@ to set the security manager to \texttt{null} at the beginning of the
 application, causing a restrictive sandbox to catch the security violation and
 terminate the application.
 
-We found two applications that use the second option: Eclipse and
-Timelag. The rationale for disabling the manager in Eclipse is explained in a code comment that reads, "The launcher to start eclipse using webstart. To use this launcher, the client must accept to give all security permissions." Timelag performs the same operation in the file JTimelag.java but does not contain any comments, thus we can only infer the motivation behind turning off the sandbox.
+We found two applications that do this: Eclipse and
+Timelag. The rationale for disabling the manager in Eclipse is explained in a code comment that reads, "The launcher to start eclipse using webstart. To use this launcher, the client must accept to give all security permissions." Timelag performs the same operation but does not contain any comments, thus we can only infer their motivation.
 
 \subsection{Using the Security Manager for Security Purposes}\label{sub:Using-the-Security}
 
@@ -835,15 +819,15 @@ time, which enables then disables the sandbox. While this was an interesting
 occurrence, there seems to be no valid reason to disable the sandbox
 in this case other than to show off the capability to do so.
 
-Ant, Freemind, and Netbeans explicitly set and then change the manager
+Ant, Freemind, and Netbeans explicitly set then change the manager
 during runtime. Ant allows the users to create build scripts that
 execute Java classes during a build under a user specified
 permissions set. Figure \ref{fig:Ant Permissions Example}
-shows the first example of a permission set from the Ant Permissions website.%
+shows an example permission set from the Ant Permissions website.%
 \footnote{https://ant.apache.org/manual/Types/permissions.html%
 } The contents of the \texttt{grant} element provide the application
 all permissions, but the contents of the \texttt{revoke} element restrict
-the application from using all property permissions. Due the use a
+the application from using all property permissions. Due the use of a
 defenseless security manager, malicious code can easily disable the sandbox and perform all actions
 including those requiring \texttt{PropertyPermissions}.
 
@@ -860,11 +844,10 @@ This specific permission set leads to a defenseless security manager.}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
-When Ant is about to execute an external, constrained class, it saves the current security manager and replaces it with a custom manager. This operation assumes the current manager is defenseless. The custom manager is not defenseless given a self-protecting permission set, but contains a private switch to make the manager defenseless for the purposes of restoring the original manager. With this implementation, Ant catches applications that perform actions
+When Ant is about to execute an external, constrained class, it saves the current security manager and replaces it with a custom manager. The custom manager is not initially defenseless given a self-protecting permission set, but it contains a private switch to make the manager defenseless for the purposes of restoring the original manager. With this implementation, Ant catches applications that perform actions
 restricted by the user while typically protecting sandbox settings. However, it is not clear this implementation
-is free of vulnerabilities.
+is free of vulnerabilities. Netbeans similarly sets a security manager around a separate application.
 
-Netbeans similarly sets a security manager around a separate application.
 Both of these cases require a defenseless security manager, otherwise
 the application would not be able to change the current security manager.
 A better implementation would use a custom class
@@ -917,15 +900,14 @@ Freemind attempted to implement an architecture that would allow the
 sandbox to enforce a stricter policy on the Groovy scripts than on
 the rest of Freemind. Their design centers around the use of a custom
 security manager that is set as the system manager in the usual manner.
-This custom manager contains a field, \texttt{mFinalSecurityManager},
-that specifies the proxy manager to be used during the execution of
+This custom manager contains a field that holds a proxy manager to be used during the execution of
 scripts. In this design, all checks to the security manager are ultimately
 deferred to the proxy manager set in this field. When
 this field is set to \texttt{null}, the sandbox is effectively disabled
 even though the system's manager is still set to the custom manager.
 
 Figure \ref{fig:Freemind-Security-Manager} shows how Freemind sets
-the proxy security manager field in the file \texttt{FreemindSecurityManager.java}.
+the proxy security manager field.
 Once a manager is set, if \texttt{setFinalSecurityManager} is called
 again with a different security manager, a \texttt{SecurityException}
 is thrown, but calling the method with a reference to the set manager disables the sandbox. The comment implies this specific sequence
@@ -970,7 +952,7 @@ to execute arbitrary code.}
 
 Given the results of our investigation in Section \ref{sec:Security-Manager-Study}
 and the discussion in Section \ref{sub:Java-Exploits}, we can fortify
-the sandbox for applications that set a\emph{ self-protecting} security
+the sandbox for applications that set a \emph{self-protecting} security
 manager. In this section, we define two rules to stop Java exploits
 from disabling the manager. These rules are backwards-compatible with
 benign applications: the Privilege Escalation rule and the Security
@@ -1010,7 +992,7 @@ Hypothesis 3 and rejected all of the others. Along the way, we learned
 practical lessons about how applications use the Java sandbox that
 are useful to exploit mitigation implementers. 
 
-In this section, we evaluate the protection merits and backwards compatibility of the rules presented in Section \ref{sec:Rules-for-Fortifying} through an implementation of runtime monitors that enforce them. This evaluation was done in collaboration
+In this section, we evaluate the protection merits and backwards-compatibility of the rules presented in Section \ref{sec:Rules-for-Fortifying} through an implementation of runtime monitors that enforce them. This evaluation was done in collaboration
 with a large aerospace company.
 
 Section \ref{sub:Implementation-Using-JVMTI} discusses how we implemented
@@ -1148,7 +1130,7 @@ by the modification event.
 
 \subsection{Effectiveness at Fortifying the Sandbox}\label{sub:Effectiveness-at-Fortifying}
 
-%%Need to integrate backwards compatibility experiment here
+%%Need to integrate backwards-compatibility experiment here
 
 We performed an experiment to evaluate how effective our rules are
 at blocking exploits that disable the sandbox. In our experiment,
