@@ -486,10 +486,10 @@ applications using the following steps:
 to output every line containing the keyword \textsl{SecurityManager} and the 5 lines before and after it.
 \item Reject any application where it is clear from the grep output that the keyword is used in ways that are unrelated to the security manager class.
 \item Run the static analysis on retained applications. 
-\item Manually inspect code specified in step 3's findings,
-starting with the line where the manager was set and tracing the code
+\item Manually inspect code identified in step 3.
+Start where the manager is set and trace 
 back to locations where potential security
-managers were initialized. 
+managers are initialized. 
 \item Manually inspect all of the lines returned in step 1, looking for how the application interacts with
 the sandbox. 
 \item Execute the application with the dynamic analysis using parameters
