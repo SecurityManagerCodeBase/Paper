@@ -777,7 +777,7 @@ by a recognized certificate authority then specify that the application should
 run outside of the sandbox. We found that applications using this method attempted
 to set the security manager to \texttt{null} at the beginning of the
 application, causing a restrictive sandbox to catch the security violation and
-terminate the application. getProtectionDomain
+terminate the application.
 
 We found two applications that use the second option: Eclipse and
 Timelag. The rationale for disabling the manager in Eclipse is explained in a code comment that reads, "The launcher to start eclipse using webstart. To use this launcher, the client must accept to give all security permissions." Timelag performs the same operation in the file JTimelag.java but does not contain any comments, thus we can only infer the motivation behind turning off the sandbox.
