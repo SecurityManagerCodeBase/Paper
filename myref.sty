@@ -1,0 +1,144 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Cross-referencing with page numbers, element names and hyperref support
+% Usage:
+% 1. Define the custom function genreftext (long), as follows
+%    Will be invoked: \genreftext{elementname}{elementnumber}
+%                                {currentpage}{elementpage}
+%                     Ex: \genreftext{Section}{5.2}{15}{27}
+%    You can use the macro \mydiffpage{elementpage}{currentpage} to produce 
+%    a page reference if the current cross-reference is invoked with * option.
+%    Otherwise the macro is ignored. The following is the definition of the
+%    macro:
+%      if "elementpage - currentpage = -1"
+%         if "currentpage is odd"   -> " on the previous page"
+%      if "elementpage - currentpage = +1"
+%         if "currentpage is even"   -> " on the next page"
+%      if "elementpage - currentpage < -1"   -->  " on page <elementpage>"
+%      if "elementpage - currentpage > -1"   -->  " on page <elementpage>"
+%
+% 2. Use \myref{Section}{prefix}{name} to create "Section~\ref{prefix-name}"
+% 3. Use \myref*{Section}{prefix}{name} to also generate page references
+%
+% I normally define the following
+% \def\secref#1{\myref{Section}{sec}}
+
+% This is the default value of genreftext
+\long\def\genreftext#1#2#3#4{#1~#2\mydiffpage{#4}{#3}}
+
+
+\newif\if@putpageno            %Used to request page references
+\newcount\@diffpage
+%
+% Computes the page difference
+% \@mydiffpage{referencedpage}{currentpage}
+%
+\def\mydiffpage#1#2{%
+\if@putpageno%See if we have to generate page numbers
+   \@diffpage=#1\advance\@diffpage by -#2%Page difference
+   \def\@diff{\the\@diffpage}%For some reason I have to do this
+   \ifnum \@diff < -1{ on page~#1}\fi
+   \ifnum \@diff = -1\ifodd\@thepage\else{ on the previous page\null}%
+                             \fi
+   \fi
+   \ifnum \@diff = 1\ifodd\@thepage{ on the next page\null}\fi\fi
+   \ifnum \@diff > 1{ on page~#1}\fi
+ \fi}
+
+%
+% \@myhypref{elementnumber}                         2.2
+%           {elementpage}                           13
+%           {elementtitle}                          Introduction
+%	    {elementhyperlinkname}                  section.foo
+%           {?}
+%           {elementname}                           Section
+%           {currentpage}                           36
+%
+\long\def\@myhypref#1#2#3#4#5#6#7{\hyper@link{link}{#4}{%
+                                  \genreftext{#6}{#1}{#7}{#2}}}
+%
+% \@myref{elementnumber}                            2.2
+%        {elementpage}                              13
+%        {elementname}                              Section
+%        {currentpage}                              36
+%
+\long\def\@myref#1#2#3#4{\genreftext{#3}{#1}{#4}{#2}}
+%
+% This is the main function
+% Usage: \myref{Section}{sec}{foo} to produce "Section~\ref{sec-foo}"
+%        Use \myref* to also generate page numbers
+%
+
+
+\def\myref{\futurelet\mych@r\@myrefstar}
+\def\@myrefstar{\ifx *\mych@r
+                  \@putpagenotrue
+                  \def\@myrefpag@ *##1##2##3{\@myrefpag{##1}{##2}{##3}}%
+                \else
+                  \let\@myrefpag@\@myrefpag
+                \fi
+                \@myrefpag@}
+%\@ifnextchar*{\@putpagenotrue\@myrefpag}{\@myrefpag*}}
+
+%
+% Checks to see if we have enough arguments. If not then we might be using 
+% standard labels (no hyperlinks)
+%
+\newif\ifuse@hyperlink
+\def\mr@sign{\relax}
+\def\g@@bblethree#1#2#3{}
+\def\disp@tchref#1#2#3#4#5#6#7{%
+  \ifx #5\mr@sign
+      \@myref{#1}{#2}{#3}{#4}%
+  \else
+      \@myhypref{#1}{#2}{#3}{#4}{#5}{#6}{#7}%
+  \fi}
+
+\def\@myrefpag#1#2#3{%
+  \@ifundefined{r@#2:#3}%If the reference is undef
+    {\protect\G@refundefinedtrue
+     \nfss@text{#1~\reset@font\bfseries ??}%
+     \@latex@warning{Reference `#2:#3' on page \thepage \space undefined}}%
+    {%If the reference is defined
+     \edef\@thepage{\@ifundefined{thepage}{0}\thepage}%The current page
+     \edef\myreftempa{\csname r@#2:#3\endcsname}%This is the expansion
+     \expandafter\disp@tchref\myreftempa{#1}\@thepage\mr@sign\mr@sign\mr@sign}%
+  \@putpagenofalse}
+
+
+\newcommand\partref{\myref{Part}{part}}
+\newcommand\chref{\myref{Chapter}{ch}}
+\newcommand\secref{\myref{Section}{sec}}
+\newcommand\tabref{\myref{Table}{tab}}
+\newcommand\figref{\myref{Figure}{fig}}
+\newcommand\lemmaref{\myref{Lemma}{lemma}}
+\newcommand\corref{\myref{Corollary}{cor}}
+\newcommand\thref{\myref{Theorem}{th}}
+\def\eqref{\myref{Equation}{eq}}
+\newcommand\propref{\myref{Property}{prop}}
+\newcommand\defref{\myref{Definition}{def}}
+\newcommand\appref{\myref{Appendix}{app}}
+\newcommand\invref{\myref{Invariant}{inv}}
+\newcommand\condref{\myref{Condition}{cond}}
+
+\newcommand\defpagref{\myref*{Definition}{def}}
+\newcommand\tabpagref{\myref*{Table}{tab}}
+\newcommand\thpagref{\myref*{Theorem}{th}}
+\newcommand\figpagref{\myref*{Figure}{fig}}
+\newcommand\proppagref{\myref*{Property}{prop}}
+
+
+
+%
+% Trailing space. Adds a space between a macro expansion and the text that
+% follows if that is not a punctuation character. It is useful when the space
+% follwing a macro without parameters is consumed as part of reading the macro.
+% In math mode no space is left
+% Usage: \def\mymacro{\trailingspace{the text for the macro}}
+%
+\def\trailingspace#1{{#1}\futurelet\@nxtchr\@dopunctuation}
+\def\@dopunctuation{\relax\ifmmode\else\ifx\@nxtchr .\else\ifx\@nxtchr ,\else
+\ifx\@nxtchr :\else\ifx\@nxtchr ;\else\ifx\@nxtchr -\else\ \fi\fi\fi\fi\fi\fi}
+
+
