@@ -80,7 +80,6 @@ represented half of all attack-attempts in their sample.}
 \label{fig:most-targeted-applications}
 \end{figure}
 
-
 To validate this insight, we conducted an empirical study of benign
 open source Java applications. Our empirical study was designed to
 answer the following research question: How do benign applications
@@ -353,7 +352,7 @@ In the rest of this paper, we do not concern ourselves with the specifics
 of particular exploits. We will now explore how benign applications interact with the sandbox to define ways of delineating them from exploits. 
 
 
-\section{Introduction to the Security Manager Study}\label{sec:Security-Manager-Study}
+\section{Introduction to the Security \\ Manager Study}\label{sec:Security-Manager-Study}
 
 The nature of recent Java exploits caused us to ask the question: Do applications need access to any facility for disabling or weakening the sandbox? This study aims to answer this question and provide data in support of JVM enhancements to fortify the Java sandbox.
 We focus our efforts on the security manager, as it is the means by
@@ -838,22 +837,16 @@ in this case other than to show off the capability to do so.
 
 Ant, Freemind, and Netbeans explicitly set and then change the manager
 during runtime. Ant allows the users to create build scripts that
-execute Java classes and JAR's during a build under a user specified
-permissions set. The permissions set is defined in the \texttt{permissions}
-element of an Ant build file. Figure \ref{fig:Ant Permissions Example}
-shows the first example from the Ant Permissions website.%
+execute Java classes during a build under a user specified
+permissions set. Figure \ref{fig:Ant Permissions Example}
+shows the first example of a permission set from the Ant Permissions website.%
 \footnote{https://ant.apache.org/manual/Types/permissions.html%
 } The contents of the \texttt{grant} element provide the application
 all permissions, but the contents of the \texttt{revoke} element restrict
 the application from using all property permissions. Due the use a
-defenseless security manager, malicious code can easily bypass the
-restrictions in this example by executing the line \texttt{System.setSecurityManager(null)}.
-Once the sandbox is disabled, the malicious code can perform all actions
-including those requiring \texttt{PropertyPermissions}. The Ant Permissions
-website does not mention that an implementation of this example is
-vulnerable. The site also does not mention that allowing certain permissions
-will potentially enable the restricted application to bypass any user
-specified restrictions. 
+defenseless security manager, malicious code can easily disable the sandbox and perform all actions
+including those requiring \texttt{PropertyPermissions}.
+
 \begin{figure}
 \begin{lstlisting}[language=XML,basicstyle={\scriptsize}]
 <permissions>   
@@ -862,68 +855,19 @@ specified restrictions.
 </permissions>
 \end{lstlisting}
 
-
 \caption{Example Ant build script element to grant all but one permission.
 This specific permission set leads to a defenseless security manager.}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
-
-\begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=98,xrightmargin={0.1cm},numbersep={-10pt}]
-    public synchronized void setSecurityManager() throws BuildException {         
-      origSm = System.getSecurityManager();         
-      init();         
-      System.setSecurityManager(new MySM());         
-      active = true;     
-    }
-    
-    /**      
-      * Initializes the list of granted permissions, checks the list of revoked permissions.      
-      */     private void init() throws BuildException {
-      ...
-\end{lstlisting}
-\begin{lstlisting}[numbers=left,basicstyle={\scriptsize},firstnumber=169,xrightmargin={0.1cm},numbersep={-10pt}]
-    public synchronized void restoreSecurityManager() {         
-      active = false;         
-      System.setSecurityManager(origSm);     
-    }
-\end{lstlisting}
-\protect\caption{Code snippet showing Ant's custom security manager architecture, used
-to allow builds to run Java code under a specific set of permissions
-unique to the instantiated code.}
-\label{fig:Ant-Permissions-Enforcement}
-\end{figure}
-
-
-Ant uses the code section from \texttt{Permissions.java} shown in
-Figure \ref{fig:Ant-Permissions-Enforcement} to provide the user
-the ability to grant and revoke permissions. Ant calls the \texttt{setSecurityManager}
-method of the \texttt{Permissions} class when it is about to execute
-the restricted application. This method starts by saving the current
-security manager to a temporary variable. Then the \texttt{init} method
-creates the set of granted permissions. The \texttt{setSecurityManager}
-method then initializes a custom security manager, \texttt{MySM},
-which enforces the permissions specified by the user. When the security
-manager is initially set, it allows all permission checks to succeed,
-making it a defenseless security manager. Once the \texttt{setSecurityManager}
-method changes \texttt{active} to true, \texttt{MySM} enforces the
-specified permissions. When Ant has finished executing the application,
-it calls the method \texttt{restoreSecurityManager} to restore the
-original security manager.
-
-With this implementation, Ant catches applications that perform actions
-restricted by the user while typically protecting sandbox settings.
-Ant is also able to revert to the original security manager after
-executing the application. However, we are not sure that this implementation
+When Ant is about to execute an external, constrained class, it saves the current security manager and replaces it with a custom manager. This operation assumes the current manager is defenseless. The custom manager is not defenseless given a self-protecting permission set, but contains a private switch to make the manager defenseless for the purposes of restoring the original manager. With this implementation, Ant catches applications that perform actions
+restricted by the user while typically protecting sandbox settings. However, it is not clear this implementation
 is free of vulnerabilities.
 
 Netbeans similarly sets a security manager around a separate application.
 Both of these cases require a defenseless security manager, otherwise
 the application would not be able to change the current security manager.
-However, this technique may cause problems if Ant or Netbeans are
-used in security critical settings, which require a self-protecting
-security manager. A better implementation would use a custom class
+A better implementation would use a custom class
 loader to load the untrusted classes into a constrained protection
 domain. This approach would align with the intended usage of the sandbox.
 Additionally, it would be more clearly correct and trustworthy while
@@ -937,19 +881,7 @@ language that is built on top of the JRE: A Java application that
 executes a script typically allows the script to execute in the same
 JVM as the application itself. As a result, a mind map could potentially
 be crafted to exploit a user that opens the map and runs its scripts.
-\begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=133,xrightmargin={0.1cm},numbersep={-10pt}]
-   public void checkPermission(Permission pPerm, Object pContext) {
-     if(mFinalSecurityManager == null) return; 		
-     mFinalSecurityManager.checkPermission(pPerm, pContext); 	
-   }
-\end{lstlisting}
 
-
-\caption{Code snippet showing how Freemind's custom security manager selectively
-enforces permissions.}
-\label{fig:Security-Checks-Freemind}
-\end{figure}
 \begin{figure}
 \begin{lstlisting}[numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=30,xrightmargin={0.1cm},numbersep={-10pt}]
   /**  
@@ -981,7 +913,6 @@ that stores the proxy security manager.}
 \label{fig:Freemind-Security-Manager}
 \end{figure}
 
-
 Freemind attempted to implement an architecture that would allow the
 sandbox to enforce a stricter policy on the Groovy scripts than on
 the rest of Freemind. Their design centers around the use of a custom
@@ -989,57 +920,36 @@ security manager that is set as the system manager in the usual manner.
 This custom manager contains a field, \texttt{mFinalSecurityManager},
 that specifies the proxy manager to be used during the execution of
 scripts. In this design, all checks to the security manager are ultimately
-deferred to the proxy manager set in this field, as shown in the example
-permission check in Figure \ref{fig:Security-Checks-Freemind}. When
+deferred to the proxy manager set in this field. When
 this field is set to \texttt{null}, the sandbox is effectively disabled
 even though the system's manager is still set to the custom manager.
 
 Figure \ref{fig:Freemind-Security-Manager} shows how Freemind sets
-the proxy security manager\texttt{ }field in the file \texttt{FreemindSecurityManager.java}.
+the proxy security manager field in the file \texttt{FreemindSecurityManager.java}.
 Once a manager is set, if \texttt{setFinalSecurityManager} is called
-again with a different security manager, a\texttt{ SecurityException}
-is thrown, but calling the method with a reference to the set manager\texttt{
-}disables the sandbox. The comment implies this specific sequence
+again with a different security manager, a \texttt{SecurityException}
+is thrown, but calling the method with a reference to the set manager disables the sandbox. The comment implies this specific sequence
 of operations was implemented to prevent malicious applications from
 changing the settings of the sandbox.
 
 The Freemind code responsible for initiating the execution of the
 Groovy scripts sets a proxy security manager that does not allow unsigned
 scripts to create network sockets, access the file-system, or execute
-programs on the machine. The manager explicitly allows all other permissions.
-\begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},firstnumber=199,xrightmargin={0.1cm},numbersep={-10pt}]
-	public void checkSecurityAccess(String pTarget) { 	
-    }
-\end{lstlisting}
-
-
-\caption{Freemind's custom security manager overrides permissions checks they
-are not concerned with, then fails to implement them. This effectively
-grants all permissions associated with the check.}
-\label{fig:Permission-Check-Groovy-Freemind}
-\end{figure}
-Figure \ref{fig:Permission-Check-Groovy-Freemind} shows a sample
-permission check from the proxy manager in \texttt{ScriptingSecurityManager.java}.
-\texttt{checkSecurityAccess} typically checks if the sandbox may be
-changed but due to the its empty implementation the check will always
-succeed. A malicious script can call \texttt{System.setSecurityManger(null)}
-to turn off the sandbox at any point.
+programs on the machine. The manager explicitly allows all other permissions by overriding permission check methods with implementations that do nothing. As a result, a malicious script can turn off the sandbox at any point.
 
 We demonstrated that the custom security manager is easily removed
 using reflection to show that the problem is more complex than simply
-fixing this permission check. Figure \ref{fig:Example-Exploit-for-Freemind}
-shows an exploit to turn off the manager written as a Groovy script
-in a mind map. The script gets a reference to the system's manager
+fixing permission checks related to setting the security manager. Figure \ref{fig:Example-Exploit-for-Freemind}
+shows a Groovy exploit to turn off the manager. The script gets a reference to the system's manager
 and its class. The class has the same type as the custom security
 manager, thus the exploit gets a reference to the proxy manager field.
 The field is made public to allow the exploit to reflectively \texttt{null}
-it, disabling the sandbox. Finally, a file is created to demonstrate
-that a ``forbidden'' operation succeeds.
+it, disabling the sandbox to allow ``forbidden'' operations.
 
 We sent a notice to the Freemind developers in August of 2014 to provide
 them with our example exploit and to offer our advice in achieving
 their desired outcome. 
+
 \begin{figure}
 \begin{lstlisting}[language=Java,basicstyle={\scriptsize},breaklines=true]
 def sm = System.getSecurityManager() 
@@ -1056,32 +966,6 @@ to execute arbitrary code.}
 \label{fig:Example-Exploit-for-Freemind}
 \end{figure}
 
-
-
-\subsection{Security Manager Interactions are Potentially Dangerous}\label{sub:Security-Manager-Interactions-Dangerous}
-
-We found an interesting reference to the security manager in IntelliJ
-IDEA Community Edition. The IntelliJ editor contains static analysis
-checks, called inspections,%
-\footnote{http://www.jetbrains.com/idea/documentation/inspections.jsp%
-} to warn users of potentially problematic sections of code. There
-are two security inspections that directly pertain to interactions
-with the sandbox: one that highlights calls to \texttt{System.setSecurityManager()}
-and another that highlights the definition of custom security manager
-classes. The descriptions for these inspections respectively contain
-warnings that imply interactions with the manager can create security
-issues:
-\begin{itemize}
-\item ``While often benign, any call to System.setSecurityManager() should
-be closely examined in any security audit.`` 
-\item ``While not necessarily representing a security hole, such classes
-should be thoroughly and professionally inspected for possible security
-issues.`` 
-\end{itemize}
-IntelliJ's concerns with these types of security manager interactions
-are warranted given our findings in the previous section.
-
-
 \section{Rules for Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
 Given the results of our investigation in Section \ref{sec:Security-Manager-Study}
@@ -1091,7 +975,6 @@ manager. In this section, we define two rules to stop Java exploits
 from disabling the manager. These rules are backwards-compatible with
 benign applications: the Privilege Escalation rule and the Security
 Manager rule. 
-
 
 \subsection{Privilege Escalation Rule}
 
@@ -1105,11 +988,10 @@ break this rule to elevate the privileges of their payload class.
 If all classes in the Java Virtual Machine (JVM) instance were loaded
 at the start of an application, this rule would never be broken. However,
 the JVM loads certain classes on demand, and some of the JVM classes
-have the full privileges. The rule makes exceptions for classes in
+have the full privileges. Classes in
 packages that are listed in the \texttt{package.access} property of
-\texttt{java.security.Security }as these classes are intended to be
+\texttt{java.security.Security} are not subject to this rule because they are intended to be
 loaded when accessed by a trusted proxy class. 
-
 
 \subsection{Security Manager Rule}
 
@@ -1147,7 +1029,8 @@ the application's lifecycle. The interface allows an agent to set
 capabilities, enabling the tool to intercept events such as class
 or thread creation, field access or modification, breakpoints, etc.
 
-Our agent must intercept three events to enforce the Privilege Escalation
+Our agent \footnote{Our agent is open source. An anonymized version
+of the tool can be found at http://goo.gl/In6Di0} must intercept three events to enforce the Privilege Escalation
 and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
 and \texttt{FieldModification}. Enforcement of these rules is discussed
 in detail in subsections \ref{sub:Enforcing-the-Privilege} and \ref{sub:Enforcing-the-SecurityManager}.
@@ -1397,7 +1280,8 @@ misunderstand the interaction between policy files and the security
 manager that enforces the policy. Other developers appear confused
 about how permissions work. In particular, they do not realize that
 restricting just one permission but allowing all others enables a
-\emph{defenseless} sandbox. In general, sandbox-defeating permissions
+\emph{defenseless} sandbox. Our concerns are shared by the IntelliJ developers, who included static analysis checks to warn developers that a security expert should check their interactions with the security manager.\footnote{http://www.jetbrains.com/idea/documentation/inspections.jsp%
+} In general, sandbox-defeating permissions
 should be packaged and segregated to prevent accidental creation of
 defenseless sandboxes. More generally, some developers appear to believe
 the sandbox functions as a blacklist when, in reality, it is a whitelist.
