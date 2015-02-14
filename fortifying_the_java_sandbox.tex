@@ -71,8 +71,8 @@ applets exploit security vulnerabilities in the JRE to deliver malware,
 typically leaving the user unaware.
 
 In theory, such attacks should not be so common: 
-Java provides a sandboxing mechanism that seeks to enable the safe execution of untrusted code and isolate
-components from one another. Both the host application and host machine should
+Java provides a sandboxing mechanism that enables the safe execution of untrusted code and isolates
+components another. Both the host application and host machine should
 therefore be protected from malicious behavior on the part of
 external code.  In practice, these security mechanisms are problematically
 buggy, such that the sandbox often fails to properly contain external code. 
@@ -83,14 +83,14 @@ disable the security manager, the component of the sandbox responsible for enfor
 security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012}.
 
 In this paper, we investigate this disconnect between theory and practice.  We
-hypothesize that it results largely from unecessary complexity and flexibility
+hypothesize that it results primarily from unecessary complexity and flexibility
 in the design and engineering of Java's security mechanisms.  In particular, we
 hypothesize that benign applications interact with the security manager in ways
 that are measurably different from the ways that exploitative applications do.  
 If true, this difference can be leveraged to prevent future attacks.
 
 To validate these insights, we conducted an empirical study of benign open
-source Java applications to answer the research question: How do benign
+source Java applications.  We sought to answer the research question: How do benign
 applications interact with the Java security manager?  We identified 46
 open-source Java projects that use the security manager, taken from the Qualitas
 Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub. For each project, we
@@ -98,24 +98,45 @@ isolated code that interacts with the security manager, manually characterized
 those interactions, and constructed and used a Java Virtual Machine Tool Interface (JVMTI) agent
 to confirm that our characterizations were accurate at runtime.
 
-We discovered two types of security managers: \emph{defenseless} security
-managers, which enforce a security policy that allows code inside
-the sandbox to modify sandbox settings, and \emph{self-protecting}
-security managers, which disallow such behavior. Applications with
-defenseless security managers are inherently insecure. These applications
-sometimes modified or disabled the security manager during program
-execution. Some of these applications use the security manager to
-enforce policies unrelated to security. On the other hand, we found
-that applications with self-protecting security managers, a category
-which includes all applets and JWS applications, do not change sandbox settings during program execution. 
+We discovered that there are two types of security managers used in
+practice. \emph{Defenseless} security managers enforce a policy that allows code
+inside the sandbox to modify sandbox settings.  Applications with defenseless
+managers are inherently insecure, because externally-loaded malicious code can
+modify or disable the security manager.  In our study, this situation typically
+arose in applications that modified sandbox settings at runtime, often because
+they use the security manager to enforce policies unrelated to security.
+\todo{I think this train of thought needs one more observation, starting with
+  something like ``this is interesting because''.  I'm drawing a blank on what
+  should come after the ``because'', however, hence this todo.}
+\emph{Self-protecting} security managers do not allow sandboxed code to modify
+security settings.  The applications in our dataset with self-protecting
+managers, including all applets and JWS applications, did not change those
+settings over the course of execution.  It might still be possible to exploit
+such applications due to defects in the JRE code that enforces the security
+policy, but not due to poorly-deployed local security settings.
 
-Based on our analysis of benign and malicious applications, we propose two runtime rules to fortify the Java sandbox. The first rule mitigates privilege escalation by preventing restricted classes inside a sandbox from loading classes with fewer restrictions. The second prevents changes to the sandbox when a self-protecting security manager is initialized. We evaluated the protection merits of our rules by implementing each in runtime monitors used against ten applets in Metasploit 4.10.0%
+
+Based on our analysis of benign and malicious applications, we propose two
+runtime rules to fortify the Java sandbox. The first rule mitigates privilege
+escalation by preventing restricted classes inside a sandbox from loading
+classes with fewer restrictions. The second prevents changes to the sandbox when
+a self-protecting security manager is initialized. We evaluated the protection
+merits of our rules by implementing each in runtime monitors used against ten
+applets in Metasploit 4.10.0%
 \footnote{http://www.metasploit.com/%
-} that successfully exploit unpatched versions of Java 7. The monitor for the privilege
-escalation rule detected and stopped four of the ten exploits.
-Using both monitors together detected and stopped all ten exploits. Neither monitor produces false-positives for a corpus of benign JWS applications.
+} that successfully exploit unpatched versions of Java 7. The monitor for the
+privilege escalation rule detected and stopped four of the ten exploits.  Using
+both monitors together detected and stopped all ten exploits. Neither monitor
+produces false-positives for a corpus of benign JWS applications.
 
-Our results suggest that the rules are effective and should be enforced in the Java Virtual Machine (JVM) itself. This implementation strategy is motivated by two concerns: Existing mechanisms for monitoring the execution of Java applications are either (1) insufficient to securely enforce the rules (e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade performance by disabling the just-in-time compiler (JIT). We are engaged in an on-going discussion on the security-dev mailing list for OpenJDK about implementing runtime enforcement of these rules in the JVM.
+Our results suggest that the rules are effective and should be enforced in the
+Java Virtual Machine (JVM) itself. This implementation strategy is motivated by
+two concerns: Existing mechanisms for monitoring the execution of Java
+applications are either (1) insufficient to securely enforce the rules
+(e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade
+performance by disabling the just-in-time compiler (JIT). We are engaged in an
+on-going discussion on the security-dev mailing list for OpenJDK about
+implementing runtime enforcement of these rules in the JVM.
 
 The contributions of this papers are as follows:
 \begin{itemize}
