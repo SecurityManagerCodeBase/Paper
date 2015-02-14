@@ -84,7 +84,10 @@ security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_exploratio
 
 In this paper, we investigate this disconnect between theory and practice.  We
 hypothesize that it results primarily from unecessary complexity and flexibility
-in the design and engineering of Java's security mechanisms.  In particular, we
+in the design and engineering of Java's security mechanisms.  \todo{Can someone
+  flesh this out?  What types of complexity/flexibility does the sandbox allow
+  that we don't need?  Likely relevant example: the ability to change the
+  security manager at runtime.} In particular, we
 hypothesize that benign applications interact with the security manager in ways
 that are measurably different from the ways that exploitative applications do.  
 If true, this difference can be leveraged to prevent future attacks.
@@ -112,33 +115,26 @@ they use the security manager to enforce policies unrelated to security.
 security settings.  The applications in our dataset with self-protecting
 managers, including all applets and JWS applications, did not change those
 settings over the course of execution.  It might still be possible to exploit
-such applications due to defects in the JRE code that enforces the security
-policy, but not due to poorly-deployed local security settings.
+such applications due to defects in the JRE code that enforces security
+policies, but not due to poorly-deployed local security settings.
 
-
-Based on our analysis of benign and malicious applications, we propose two
-runtime rules to fortify the Java sandbox. The first rule mitigates privilege
-escalation by preventing restricted classes inside a sandbox from loading
-classes with fewer restrictions. The second prevents changes to the sandbox when
-a self-protecting security manager is initialized. We evaluated the protection
-merits of our rules by implementing each in runtime monitors used against ten
-applets in Metasploit 4.10.0%
+In practice, applications that attempt to use the sandbox for its intended
+purpose---protection from exploitative external code---do not make use of its
+vast flexibility.  We therefore propose two runtime rules to fortify the Java
+sandbox against the two most common modern attack types. We evaluate our rules
+with respect to their ability to guard against the ten applets in Metasploit
+4.10.0%
 \footnote{http://www.metasploit.com/%
-} that successfully exploit unpatched versions of Java 7. The monitor for the
-privilege escalation rule detected and stopped four of the ten exploits.  Using
-both monitors together detected and stopped all ten exploits. Neither monitor
-produces false-positives for a corpus of benign JWS applications.
-
-Our results suggest that the rules are effective and should be enforced in the
-Java Virtual Machine (JVM) itself. This implementation strategy is motivated by
-two concerns: Existing mechanisms for monitoring the execution of Java
-applications are either (1) insufficient to securely enforce the rules
-(e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade
-performance by disabling the just-in-time compiler (JIT). We are engaged in an
+} that successfully exploit unpatched versions of Java 7. Taken together, the
+monitors detected and stopped all ten exploits, and neither monitor produces
+false-positives for a corpus of benign JWS applications.
+We are engaged in an
 on-going discussion on the security-dev mailing list for OpenJDK about
-implementing runtime enforcement of these rules in the JVM.
+implementing runtime enforcement of these rules in the JVM itself.
 
 The contributions of this papers are as follows:
+\todo{CLG would like us to rethink these contributions once the rest of the paper
+  has been modified.}
 \begin{itemize}
 \item An analysis of privilege escalation in the Java security model and
 recent Java exploits (Section \ref{sub:Java-Exploits}).
@@ -1042,7 +1038,21 @@ of the tool can be found at http://goo.gl/In6Di0} must intercept three events to
 and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
 and \texttt{FieldModification}. Enforcement of these rules is discussed in subsections \ref{sub:Enforcing-the-Privilege} and \ref{sub:Enforcing-the-SecurityManager}.
 
-The field events require JVMTI to turn off the JIT, which slows down program execution enough that our monitors are not suitable for adoption on their own. JVMTI implementations can avoid this limitation, but avoidance would likely increase implementation complexity beyond what is reasonable for a diagnostic interface. We are currently in communication with the OpenJDK developers on their security-dev mailing list regarding enforcement of our rules in the JVM itself to avoid overhead issues.\footnote{REVIEWERS: This discussion will be referenced in the final version of the paper. At this time, the OpenJDK developers are very receptive to the idea, were already considering implementing something similar to our SecurityManager rule, and have stated the lessons from the empirical study we shared with in an early manuscript of this paper are valuable to their efforts.}
+The field events require JVMTI to turn off the JIT, which slows down program
+execution enough that our monitors are not suitable for adoption on their
+own. JVMTI implementations can avoid this limitation, but avoidance would likely
+increase implementation complexity beyond what is reasonable for a diagnostic
+interface. We are currently in communication with the OpenJDK developers on
+their security-dev mailing list regarding enforcement of our rules in the JVM
+itself to avoid overhead issues.
+\todo{Note: I moved the next sentence from the intro, which was too long. It may
+not belong here and definitely needs to be integrated into the surrounding text.}
+ This implementation strategy is motivated by
+two concerns: Existing mechanisms for monitoring the execution of Java
+applications are either (1) insufficient to securely enforce the rules
+(e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade
+performance by disabling the just-in-time compiler (JIT). 
+\footnote{REVIEWERS: This discussion will be referenced in the final version of the paper. At this time, the OpenJDK developers are very receptive to the idea, were already considering implementing something similar to our SecurityManager rule, and have stated the lessons from the empirical study we shared with in an early manuscript of this paper are valuable to their efforts.}
 
 \subsubsection{Enforcing the Privilege Escalation Rule}\label{sub:Enforcing-the-Privilege}
 
