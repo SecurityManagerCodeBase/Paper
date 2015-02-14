@@ -7,6 +7,8 @@
 \usepackage{url}
 \usepackage[english]{babel}
 \usepackage{listings}
+\usepackage{myref}
+\usepackage{todos}
 
 \makeatletter
 \makeatother
@@ -44,54 +46,57 @@ directly use privileged classes. Exploits routinely do both. We derive two rules
 
 \section{Introduction}
 
-The Java Runtime Environment (JRE) is widely installed on user endpoints,
-where it executes external code in the form of applets and Java Web Start (JWS) \cite{_java_web_start} applications \cite{gong1997going,gong2003inside}.
-These facts, combined with the hundreds of recently discovered vulnerabilities
-in Java, including zero-day vulnerabilities (e.g. CVE-2013-0422),
-have made Java a popular exploit vector (see Figure \ref{fig:most-targeted-applications}).
-Attackers typically lure users to websites containing hidden malicious
-applets. Once the user visits the website, the exploit triggers a
-series of events that ends with the delivery of malware, all while
-the user is left unaware. This kind of attack is commonly referred
-to as a ``drive-by download.''
-
-Java includes a mechanism to safely execute untrusted code and isolate
-components from one another in a sandbox, such that both the application
-and the host machine are protected from malicious behavior. However,
-the exploits cited above show that there is substantial room to improve
-the containment of code within the sandbox. Previous investigations
-of Java exploits have shown Java malware commonly alters the sandbox's
-settings \cite{garber_2012}. Typically, exploits disable the security
-manager, the component of the sandbox responsible for enforcing the
-security policy \cite{fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012}.
-We hypothesize that, when compared to the exploits, benign applications
-interact with the security manager differently. If true, this difference
-can be exploited to prevent future attacks.
 
 \begin{figure}
 \begin{centering}
 \includegraphics[width=2in]{most_targeted_apps_ibm_xforce}
 \par\end{centering}
-
 \caption{Pie chart showing the most
 targeted applications on enterprise workstations, according to to
 a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
-represented half of all attack-attempts in their sample.}
-\label{fig:most-targeted-applications}
+\label{fig:most-targeted-applications}represented half of all attack-attempts in their sample.}
 \end{figure}
 
-To validate this insight, we conducted an empirical study of benign
-open source Java applications. Our empirical study was designed to
-answer the following research question: How do benign applications
-modify the security manager? To answer this question, we identified
-Java projects in the Qualitas Corpus \cite{QualitasCorpus:APSEC:2010}
-and the GitHub repository that make use of the security manager. We
-analyzed the resulting 46 projects using a custom FindBugs \cite{hovemeyer_finding_2004}
-plugin to isolate code involved in the initialization or modification
-of the security manager. We then manually characterized the security
-manager usage in each of the isolated code snippets. Finally, we used
-a Java Virtual Machine Tool Interface (JVMTI) agent to confirm that
-our characterizations were accurate at run time. 
+Java applications are very popular targets for malicious attackers (see
+Figure~\ref{fig:most-targeted-applications}), for three broad reasons.  First,
+it is the Java Runtime Environment (JRE) is widely installed on user endpoints.
+Second, the JRE can (and often does) execute external code, in the form of
+applets and Java Web Start (JWS)~\cite{_java_web_start}
+applications~\cite{gong1997going,gong2003inside}.  Finally, Java contains
+hundreds of vulnerabilities \todo{Can we add raw numbers here, say over
+  2011-2013?}, including zero-day vulnerabilities (e.g. CVE-2013-0422).  In the
+common scenario, often referred to as a ``drive-by download'', attackers lure
+users to a website that contains a hidden malicious applet. Such malicious
+applets exploit security vulnerabilities in the JRE to deliver malware,
+typically leaving the user unaware.
+
+In theory, such attacks should not be so common: 
+Java provides a sandboxing mechanism that seeks to enable the safe execution of untrusted code and isolate
+components from one another. Both the host application and host machine should
+therefore be protected from malicious behavior on the part of
+external code.  In practice, these security mechanisms are problematically
+buggy, such that the sandbox often fails to properly contain external code. 
+Java malware typically alters the sandbox's
+settings~\cite{garber_2012}.  Such exploits take advantage of defects in either
+the JRE's implementation the application's configuration of the sandbox to 
+disable the security manager, the component of the sandbox responsible for enforcing the
+security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012}.
+
+In this paper, we investigate this disconnect between theory and practice.  We
+hypothesize that it results largely from unecessary complexity and flexibility
+in the design and engineering of Java's security mechanisms.  In particular, we
+hypothesize that benign applications interact with the security manager in ways
+that are measurably different from the ways that exploitative applications do.  
+If true, this difference can be leveraged to prevent future attacks.
+
+To validate these insights, we conducted an empirical study of benign open
+source Java applications to answer the research question: How do benign
+applications interact with the Java security manager?  We identified 46
+open-source Java projects that use the security manager, taken from the Qualitas
+Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub. For each project, we
+isolated code that interacts with the security manager, manually characterized
+those interactions, and constructed and used a Java Virtual Machine Tool Interface (JVMTI) agent
+to confirm that our characterizations were accurate at runtime.
 
 We discovered two types of security managers: \emph{defenseless} security
 managers, which enforce a security policy that allows code inside
