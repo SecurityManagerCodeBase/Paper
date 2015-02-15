@@ -386,7 +386,7 @@ the sandbox.
 % the sandbox to define ways of delineating them from exploits.
 
 
-\section{Study Approach}\label{sec:Security-Manager-Study}
+\section{Security Manager Study}\label{sec:Security-Manager-Study}
 
 The Java security model is complex
 The nature of recent Java exploits caused us to ask the question: Do applications need access to any facility for disabling or weakening the sandbox? This study aims to answer this question and provide data in support of JVM enhancements to fortify the Java sandbox.
@@ -405,119 +405,7 @@ we describe the methodology for and limitations of an empirical study
 that validated this strategy and answers our motivating question.
 
 
-
-\subsection{Methodology}
-
-As discussed in the previous sections, it is widely known within the
-Java security community that current exploits that operate on the
-security manager perform one operation: They disable it. To understand
-the operations benign applications perform on the manager, we undertook
-an empirical analysis consisting of static, dynamic, and manual inspections
-of the open source Java application landscape. More precisely, we
-answer the following research question: How do open source Java applications
-interact with the security manager? To answer this question, our empirical
-analysis aimed to validate four independent hypotheses. Each hypothesis
-is paired with a mitigation that can be implemented if the hypothesis
-is supported. The mitigations are given names that denote their relative
-strengths when compared to each other. For example, a ``weak'' mitigation
-stops a small number of in-scope exploits and is easily bypassed.
-An ``ideal'' mitigation stops all in-scope exploits and can never
-be bypassed. Our hypotheses and their accompanying mitigations follow: 
-
-\textbf{Hypothesis 1:} \emph{Benign applications do not disable
-the security manager.} If this hypothesis holds, exploits can be differentiated
-from benign applications by any attempt to disable the current security
-manager. This \textbf{weak mitigation} would be easy to implement,
-but exploits that weaken the sandbox without disabling it would remain
-a threat. For example, attackers could potentially bypass the mitigation
-by modifying the enforced policy to allow the permissions they need
-or they could replace the current manager with one that never throws
-a \texttt{SecurityException}.
-
-\textbf{Hypothesis 2:} \emph{Benign applications do not weaken the
-security manager}. Validation of this hypothesis would enable
-mitigations that prevent attackers from weakening or disabling the
-sandbox. However, an implementation of this \textbf{moderate mitigation}
-would require differentiating between changes which weaken the sandbox
-and those that do not. Classifying changes in this manner autonomously is difficult
-because it requires context specific information that a general mitigation
-strategy may not have. For example, if a permission to write to a
-file is replaced by a permission to write to a different file, is
-the sandbox weakened, strengthened, or exactly as secure as it was
-before?
-
-\textbf{Hypothesis 3:} \emph{Benign applications do not change the
-sandbox if a self-protecting security manager has been set}. If supported,
-it is possible to implement a mitigation strategy that disallows any
-change to a security manager that is enforcing a strict policy (as
-defined in Section \ref{sec:Background}). To implement this \textbf{strong
-mitigation}, a runtime monitor must determine if a security manager
-is self-protecting at the time the manager is set. This can be easily
-achieved. While this mitigation has the same outcome as the moderate
-mitigation, it is significantly easier to implement soundly and it
-is therefore more likely to be effective in practice. 
-
-\textbf{Hypothesis 4:} \textit{Benign applications do not change a
-set security manager.} If the study supports this hypothesis, any
-attempted change to an already established security manager can be
-considered malicious. The \textbf{ideal mitigation} could easily be
-implemented in the JVM. 
-
-Our empirical analysis used applications from the Qualitas Corpus
-(QC) \cite{QualitasCorpus:APSEC:2010} and GitHub to form a dataset
-of applications that use the security manager. To filter relevant
-applications out of the 112 applications in QC, we performed a simple
-\texttt{grep} of each application's source code to find instances
-of the keyword \textit{SecurityManager}. When any instance of the
-keyword was found, we included the application in our dataset. This
-filtering reduced the set of applications to inspect from 112 to 29. 
-
-We performed a similar process on GitHub while searching only Java files. The keyword \textit{System.setSecurityManager(} was added to remove false positives. To include applications that disable the manager we also searched for \textit{System.setSecurityManager(null)}. We picked the top seven applications from the results for each keyword, removed false positives, and ended up with an additional 17 applications that were not already in QC. We only looked at the latest commit.
-
-With the dataset in hand, we created static and dynamic analysis tools
-to assist in the manual inspection of each application. Our static
-analysis tool is a FindBugs \cite{hovemeyer_finding_2004} plugin
-that uses a dataflow analysis to determine where \texttt{System.setSecurityManager}()
-is called, as well as the lines of code where its arguments were initialized.
-We created a dynamic analysis tool using the Java Virtual Machine
-Tool Interface (JVMTI) \cite{_jvmti}. JVMTI is designed to allow
-tools to inspect the current state of Java applications and control
-their execution; it is commonly used to create Java debugging and
-profiling tools. Our dynamic analysis tool set a modification watch
-on the \texttt{security} field of Java's \texttt{System} class. This
-field holds the current security manager object for the application.
-The watch prints out the class name, source file name, and line of
-code where any change to the field took place. A special notice is
-printed when the field is set to \texttt{null}. 
-
-We split the dataset between two reviewers. The reviewers both analyzed
-applications using the following steps:
-
-\begin{enumerate}
-\item Run grep on all Java source files in the application
-to output every line containing the keyword \textsl{SecurityManager} and the 5 lines before and after it.
-\item Reject any application where it is clear from the grep output that the keyword is used in ways that are unrelated to the security manager class.
-\item Run the static analysis on retained applications. 
-\item Manually inspect code identified in step 3.
-Start where the manager is set and trace 
-back to locations where potential security
-managers are initialized. 
-\item Manually inspect all of the lines returned in step 1, looking for how the application interacts with
-the sandbox. 
-\item Execute the application with the dynamic analysis using parameters
-and actions steps 4 and 5 show affect the security
-manager to verify conclusions from previous steps.
-\item Summarize the operations performed
-on the security manager with an emphasis on points that support or
-reject each hypothesis.
-\end{enumerate}
-
-We undertook a pilot study where each reviewer
-independently inspected the same six applications and compared their
-results. This ensured reviewers understood the analysis steps and produced
-consistent results.
-
-\subsection{The Security Manager Dataset}\label{sec:Applications-Studied}
+\subsection{Dataset}\label{sec:Applications-Studied}
 
 \begin{table}
 \caption{Table of applications included in the security manager study.}
@@ -580,9 +468,135 @@ Visor & Closure Library & Github\tabularnewline
 \end{table}
 
 
+Our empirical analysis used applications from the Qualitas Corpus
+(QC) \cite{QualitasCorpus:APSEC:2010} and GitHub to form a dataset
+of applications that use the security manager. To filter relevant
+applications out of the 112 applications in QC, we performed a simple
+\texttt{grep} of each application's source code to find instances
+of the keyword \textit{SecurityManager}. When any instance of the
+keyword was found, we included the application in our dataset. This
+filtering reduced the set of applications to inspect from 112 to 29. 
+
+We performed a similar process on GitHub while searching only Java files. The keyword \textit{System.setSecurityManager(} was added to remove false positives. To include applications that disable the manager we also searched for \textit{System.setSecurityManager(null)}. We picked the top seven applications from the results for each keyword, removed false positives, and ended up with an additional 17 applications that were not already in QC. We only looked at the latest commit.
+
+
 The Qualitas Corpus is a curated collection of open source Java applications
 for use in reproducible software studies. We investigated sandbox
 interactions in 29 applications from QC version 20130901.
+
+
+While QC provides a strong starting point for the construction of
+a dataset for this study, their inclusion criteria%
+\footnote{http://qualitascorpus.com/docs/criteria.html%
+} leads to the inclusion of large, popular applications and frameworks.
+We diversified our dataset by turning to GitHub. Table \ref{Table:applications-studied}
+lists all studied applications. Version numbers and Git commit hashes
+are available in an online supplement.%
+\footnote{http://goo.gl/dtcqTM%
+}
+
+\subsection{Methodology}
+
+As discussed in the previous sections, it is widely known within the
+Java security community that current exploits that operate on the
+security manager perform one operation: They disable it. To understand
+the operations benign applications perform on the manager, we undertook
+an empirical analysis consisting of static, dynamic, and manual inspections
+of the open source Java application landscape. More precisely, we
+answer the following research question: How do open source Java applications
+interact with the security manager? To answer this question, our empirical
+analysis aimed to validate four independent hypotheses. Each hypothesis
+is paired with a mitigation that can be implemented if the hypothesis
+is supported. The mitigations are given names that denote their relative
+strengths when compared to each other. For example, a ``weak'' mitigation
+stops a small number of in-scope exploits and is easily bypassed.
+An ``ideal'' mitigation stops all in-scope exploits and can never
+be bypassed. Our hypotheses and their accompanying mitigations follow: 
+
+\textbf{Hypothesis 1:} \emph{Benign applications do not disable
+the security manager.} If this hypothesis holds, exploits can be differentiated
+from benign applications by any attempt to disable the current security
+manager. This \textbf{weak mitigation} would be easy to implement,
+but exploits that weaken the sandbox without disabling it would remain
+a threat. For example, attackers could potentially bypass the mitigation
+by modifying the enforced policy to allow the permissions they need
+or they could replace the current manager with one that never throws
+a \texttt{SecurityException}.
+
+\textbf{Hypothesis 2:} \emph{Benign applications do not weaken the
+security manager}. Validation of this hypothesis would enable
+mitigations that prevent attackers from weakening or disabling the
+sandbox. However, an implementation of this \textbf{moderate mitigation}
+would require differentiating between changes which weaken the sandbox
+and those that do not. Classifying changes in this manner autonomously is difficult
+because it requires context specific information that a general mitigation
+strategy may not have. For example, if a permission to write to a
+file is replaced by a permission to write to a different file, is
+the sandbox weakened, strengthened, or exactly as secure as it was
+before?
+
+\textbf{Hypothesis 3:} \emph{Benign applications do not change the
+sandbox if a self-protecting security manager has been set}. If supported,
+it is possible to implement a mitigation strategy that disallows any
+change to a security manager that is enforcing a strict policy (as
+defined in Section \ref{sec:Background}). To implement this \textbf{strong
+mitigation}, a runtime monitor must determine if a security manager
+is self-protecting at the time the manager is set. This can be easily
+achieved. While this mitigation has the same outcome as the moderate
+mitigation, it is significantly easier to implement soundly and it
+is therefore more likely to be effective in practice. 
+
+\textbf{Hypothesis 4:} \textit{Benign applications do not change a
+set security manager.} If the study supports this hypothesis, any
+attempted change to an already established security manager can be
+considered malicious. The \textbf{ideal mitigation} could easily be
+implemented in the JVM. 
+
+With the dataset in hand, we created static and dynamic analysis tools
+to assist in the manual inspection of each application. Our static
+analysis tool is a FindBugs \cite{hovemeyer_finding_2004} plugin
+that uses a dataflow analysis to determine where \texttt{System.setSecurityManager}()
+is called, as well as the lines of code where its arguments were initialized.
+We created a dynamic analysis tool using the Java Virtual Machine
+Tool Interface (JVMTI) \cite{_jvmti}. JVMTI is designed to allow
+tools to inspect the current state of Java applications and control
+their execution; it is commonly used to create Java debugging and
+profiling tools. Our dynamic analysis tool set a modification watch
+on the \texttt{security} field of Java's \texttt{System} class. This
+field holds the current security manager object for the application.
+The watch prints out the class name, source file name, and line of
+code where any change to the field took place. A special notice is
+printed when the field is set to \texttt{null}. 
+
+We split the dataset between two reviewers. The reviewers both analyzed
+applications using the following steps:
+
+\begin{enumerate}
+\item Run grep on all Java source files in the application
+to output every line containing the keyword \textsl{SecurityManager} and the 5 lines before and after it.
+\item Reject any application where it is clear from the grep output that the keyword is used in ways that are unrelated to the security manager class.
+\item Run the static analysis on retained applications. 
+\item Manually inspect code identified in step 3.
+Start where the manager is set and trace 
+back to locations where potential security
+managers are initialized. 
+\item Manually inspect all of the lines returned in step 1, looking for how the application interacts with
+the sandbox. 
+\item Execute the application with the dynamic analysis using parameters
+and actions steps 4 and 5 show affect the security
+manager to verify conclusions from previous steps.
+\item Summarize the operations performed
+on the security manager with an emphasis on points that support or
+reject each hypothesis.
+\end{enumerate}
+
+We undertook a pilot study where each reviewer
+independently inspected the same six applications and compared their
+results. This ensured reviewers understood the analysis steps and produced
+consistent results.
+
+
+\section{Study Results}\label{sec:Study-results}
 
 \begin{table}
 \caption{Classification of application interactions with the security manager.}
@@ -603,52 +617,6 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 \end{table}
 
 
-While QC provides a strong starting point for the construction of
-a dataset for this study, their inclusion criteria%
-\footnote{http://qualitascorpus.com/docs/criteria.html%
-} leads to the inclusion of large, popular applications and frameworks.
-We diversified our dataset by turning to GitHub. Table \ref{Table:applications-studied}
-lists all studied applications. Version numbers and Git commit hashes
-are available in an online supplement.%
-\footnote{http://goo.gl/dtcqTM%
-}
-
-\subsection{Limitations}\label{sub:Limitations-Study}
-
-\subsubsection{Internal Validity}
-
-Our results are dependent on accurately studying the source code of
-applications and their comments. In most cases, security manager interactions
-are easily understood, but there are a few particularly complex interactions
-that may be misdiagnosed. Furthermore, we did not review all application
-code, thus we may have taken a comment or some source code out of
-context in larger applications. Finally, using two different reviewers
-may lead to variations in the interpretations of some of the data. 
-
-We mitigated these threats by using a checklist, FindBugs plugin, and JVMTI agent to
-provide reviewers consistent processes for reviewing code
-and validating their results. Furthermore,
-we inspected entire source files that contained
-security manager operations. We tested our tools and processes in a pilot study
-to find and mitigate sources of inconsistencies.
-
-\subsubsection{External Validity}
-
-The study only includes open source applications. It is possible
-that closed source applications interact with the security manager
-in ways that we did not see in the open source community. However,
-we inspected a few small applications with our aerospace collaborators.
-We did not find any code that suggested this is the case. 
-
-\subsubsection{Reliability}
-
-While the majority of the study is easily replicable, GitHub search results are constantly
-changing. Using GitHub to generate a new dataset using our method
-would likely generate a different dataset. Furthermore, over the course of our security
-manager study, two applications either became private repositories
-or were removed from GitHub (FileManagerFtpHttpServer and Visor).
-
-\section{Security Manager Study Results}\label{sec:Study-results}
 
 We characterized the security manager interactions of the applications in our dataset by assigning each one of five types. The
 types are summarized as follows: (1) applications that set a
@@ -1183,6 +1151,43 @@ that mimic privileged classes to perform their operations directly.
 However, our rules substantially improve Java sandbox security, and
 future work will be able to build upon these results to create mitigation
 techniques for additional types of exploits.
+
+
+\section{Threats to Validity}
+
+\subsection{Study limitations}\label{sub:Limitations-Study}
+\subsubsection{Internal Validity}
+
+Our results are dependent on accurately studying the source code of
+applications and their comments. In most cases, security manager interactions
+are easily understood, but there are a few particularly complex interactions
+that may be misdiagnosed. Furthermore, we did not review all application
+code, thus we may have taken a comment or some source code out of
+context in larger applications. Finally, using two different reviewers
+may lead to variations in the interpretations of some of the data. 
+
+We mitigated these threats by using a checklist, FindBugs plugin, and JVMTI agent to
+provide reviewers consistent processes for reviewing code
+and validating their results. Furthermore,
+we inspected entire source files that contained
+security manager operations. We tested our tools and processes in a pilot study
+to find and mitigate sources of inconsistencies.
+
+\subsubsection{External Validity}
+
+The study only includes open source applications. It is possible
+that closed source applications interact with the security manager
+in ways that we did not see in the open source community. However,
+we inspected a few small applications with our aerospace collaborators.
+We did not find any code that suggested this is the case. 
+
+\subsubsection{Reliability}
+
+While the majority of the study is easily replicable, GitHub search results are constantly
+changing. Using GitHub to generate a new dataset using our method
+would likely generate a different dataset. Furthermore, over the course of our security
+manager study, two applications either became private repositories
+or were removed from GitHub (FileManagerFtpHttpServer and Visor).
 
 \section{Related work}
 \label{sec:related}
