@@ -158,9 +158,9 @@ description on how exploits commonly bypass these security mechanisms
 
 \begin{figure}
 \includegraphics[width=\columnwidth]{sandbox_overview}
-\caption{A summary of the components of the Java sandbox that are relevant
+\caption{High-level summary of the components of the Java 
 \label{fig:Sandbox-high-level-summary}
-to understanding this work.}
+sandbox.}
 \end{figure}
 
 The Java sandbox is designed to safely execute code from untrusted
@@ -399,27 +399,6 @@ we describe the methodology for and limitations of an empirical study
 that validated this strategy and answers our motivating question.
 
 
-\subsection{Prior work}
-
-Several recent studies have examined the use of security libraries
-and discovered rampant library misuse, which caused severe vulnerabilities.
-Georgiev et al. uncovered vulnerabilities in dozens of security critical
-applications caused by SSL library protocol violations \cite{georgiev12most-dangerous}.
-These applications misconfigured high-level libraries such that the
-high-level libraries misused low-level SSL libraries which in turn
-failed silently. Somorovsky et al. demonstrate vulnerabilities in
-11 security frameworks such that Security Assertion Markup Language
-(SAML) assertions are not checked properly when certain API mis-orderings
-are triggered \cite{somorovsky12breaking}. Li et al. examined browser-based
-password managers and found that many of their features relied on
-an incorrect version of the same-origin policy, which could allow
-attackers to steal user credentials \cite{li2014emperor}. As far
-as we are aware no study has examined Java applications' use of the
-sandbox. Li Gong, the main designer of the Java security architecture,
-admitted in a ten year retrospective on Java Security that he didn't
-know how or how extensively the ``fine grained access control mechanism''
-(i.e. the Java sandbox) is used \cite{gong2009java}. We fill in that
-gap. 
 
 \subsection{Methodology}
 
@@ -1188,7 +1167,46 @@ summarizes our results using the specific CVEs each exploit targeted.
 \end{tabular}
 \end{table}
 
-\subsection{Related Work}\label{sub:Related-Work-Mitigation}
+\subsection{Limitations}
+
+Neither of these rules will stop all Java exploits. While the rules
+catch all of the exploits in our set, some Java vulnerabilities can
+be exploited to cause significant damage without disabling the security
+manager. For example, our rules will not detect type confusion exploits
+that mimic privileged classes to perform their operations directly.
+However, our rules substantially improve Java sandbox security, and
+future work will be able to build upon these results to create mitigation
+techniques for additional types of exploits.
+
+\section{Related work}
+\label{sec:related}
+% CLG: I know you guys like to put the related work inline, but it's just taking
+% soooooo long to get to the actual meat of the paper.  Can we try it like this
+% to see if it works?  I'll concede if you insist. 
+
+\subsection{Study}
+
+Several recent studies have examined the use of security libraries
+and discovered rampant library misuse, which caused severe vulnerabilities.
+Georgiev et al. uncovered vulnerabilities in dozens of security critical
+applications caused by SSL library protocol violations \cite{georgiev12most-dangerous}.
+These applications misconfigured high-level libraries such that the
+high-level libraries misused low-level SSL libraries which in turn
+failed silently. Somorovsky et al. demonstrate vulnerabilities in
+11 security frameworks such that Security Assertion Markup Language
+(SAML) assertions are not checked properly when certain API mis-orderings
+are triggered \cite{somorovsky12breaking}. Li et al. examined browser-based
+password managers and found that many of their features relied on
+an incorrect version of the same-origin policy, which could allow
+attackers to steal user credentials \cite{li2014emperor}. As far
+as we are aware no study has examined Java applications' use of the
+sandbox. Li Gong, the main designer of the Java security architecture,
+admitted in a ten year retrospective on Java Security that he didn't
+know how or how extensively the ``fine grained access control mechanism''
+(i.e. the Java sandbox) is used \cite{gong2009java}. We fill in that
+gap. 
+
+\subsection{Mitigation}\label{sub:Related-Work-Mitigation}
 
 Our rules increase the security of the sandbox
 by effectively removing unnecessary features. Prior work has taken a different
@@ -1227,16 +1245,6 @@ Unlike these automated approaches, our rules shows that unique
 mitigation strategies can be created with a better understanding of
 how applications interact with the sandbox. 
 
-\subsection{Limitations}
-
-Neither of these rules will stop all Java exploits. While the rules
-catch all of the exploits in our set, some Java vulnerabilities can
-be exploited to cause significant damage without disabling the security
-manager. For example, our rules will not detect type confusion exploits
-that mimic privileged classes to perform their operations directly.
-However, our rules substantially improve Java sandbox security, and
-future work will be able to build upon these results to create mitigation
-techniques for additional types of exploits.
 
 \section{Conclusion}
 
