@@ -242,7 +242,12 @@ SecurityPermission(``setProperty.package.access'') & Make privileged internal cl
 \end{tabular}
 \end{table*}
 
-
+\todo{I think we need to hammer this point a bit more: Java's security model is
+  too complicated---meaning it's implemented badly/in a way that's full of
+  bugs---and also unecessarily so---because people don't need all that
+  flexibility.  I'm not sure how to expand this text to help with that
+  point-hammering, but I think it would be useful to the development of the
+  argument.  Anyone see what I'm getting at and want to try to expand accordingly?}
  Java is flexible about when in an application's execution the sandbox
 is configured and enabled. The default case for web applets and applications
 that use Java Web Start is to set what we call a \textit{self-protecting} security
@@ -258,7 +263,7 @@ security of either a constrained application or its host. However, we find
 in Section~\ref{sec:Study-results} that the developers of some benign applications
 have found interesting non-security uses for defenseless managers. 
 
-Table \ref{tab:defenseless-permissions} summarizes the set of permissions
+Table~\ref{tab:defenseless-permissions} summarizes the set of permissions
 used to distinguish between self-protecting and defenseless security
 managers. We consider any security manager that enforces a policy
 that contains any one of the listed permissions to be defenseless.
@@ -376,13 +381,14 @@ little purpose. In sections \ref{sec:Rules-for-Fortifying} and \ref{sec:Mitigati
 we discuss how we can leverage these distinctions to further fortify
 the sandbox.
 
-In the rest of this paper, we do not concern ourselves with the specifics of
-particular exploits. We will now explore how benign applications interact with
-the sandbox to define ways of delineating them from exploits.
+% In the rest of this paper, we do not concern ourselves with the specifics of
+% particular exploits. We will now explore how benign applications interact with
+% the sandbox to define ways of delineating them from exploits.
 
 
-\section{Introduction to the Security Manager Study}\label{sec:Security-Manager-Study}
+\section{Study Approach}\label{sec:Security-Manager-Study}
 
+The Java security model is complex
 The nature of recent Java exploits caused us to ask the question: Do applications need access to any facility for disabling or weakening the sandbox? This study aims to answer this question and provide data in support of JVM enhancements to fortify the Java sandbox.
 We focus our efforts on the security manager, as it is the means by
 which applications interact with the sandbox. 
