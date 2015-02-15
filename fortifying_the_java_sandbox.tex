@@ -145,85 +145,84 @@ programs (Section \ref{sec:Rules-for-Fortifying}).
 \item A case study evaluation of the protection merits of our rules with a discussion of practical implementation considerations (Section \ref{sec:Mitigations}).
 \end{itemize}
 
-\section{Background on the Java Sandbox}\label{sec:Background}
+\section{Background}\label{sec:Background}
 
-In this section, we describe components of the Java sandbox that are
-relevant to understanding this work, how they compose to form the
-sandbox, and their functions. These points are summarized in Figure
-\ref{fig:Sandbox-high-level-summary}. The Java sandbox was designed
-to safely execute code from untrusted sources. Essentially, when a
-\textit{class loader} loads a class from some location (e.g., network,
-filesystem, etc.) the class is assigned a \textit{code source}. The
-assigned code source indicates the origin of the code and associates
-the class with a \textit{protection domain}. Protection domains segment
-the application classes into groups, where each group is assigned
-a unique \textit{permission set}. The permission sets contain permissions
-explicitly allowing actions with possible security implications, such
-as writing to the filesystem, accessing the network, using certain
-reflection features, etc. (see a more complete list at \cite{_permissions_2014}).
-\emph{Policies} written in the Java policy language \cite{_java_policy_language}
-define permission sets and assign code sources to each set. By default,
-applications executed from the local file system are run without a
-sandbox, and all other applications are run inside a restrictive sandbox.
-This prevents applications from the network or other untrusted sources
-from executing malicious operations on the host system. 
+In this section, we describe the Java sandbox
+(Section~\ref{sec:sandbox}), distinguish between defenseless and self-protecting
+Security Managers (Section~\ref{sec:secmanagers}) and provide a high-level
+description on how exploits commonly bypass these security mechanisms
+(Section~\ref{sec:Java-Exploits}). 
+
+\subsection{The Java sandbox}
+\label{sec:sandbox}
 
 \begin{figure}
-\includegraphics[scale=0.3]{sandbox_overview}
-
+\includegraphics[width=\columnwidth]{sandbox_overview}
 \caption{A summary of the components of the Java sandbox that are relevant
-to understanding this work.}
 \label{fig:Sandbox-high-level-summary}
+to understanding this work.}
 \end{figure}
 
+The Java sandbox is designed to safely execute code from untrusted
+sources. 
+The relevant components are summarized in Figure
+\ref{fig:Sandbox-high-level-summary}. 
+When a \textit{class loader} loads a class (e.g., from
+the network, filesystem, etc.), it assigns the class a \textit{code source} that
+indicates the code origin, and associates it with a \textit{protection
+  domain}. Protection domains segment the classes into groups by
+\textit{permission set}. These sets
+contain permissions that explicitly allow actions with security
+implications, such as writing to the filesystem, accessing the network, using
+certain reflection features, etc (see a more complete list
+at~\cite{_permissions_2014}).  Unlisted actions are disallowed for classes in
+that protection domain.  \emph{Policies}, written in the Java policy
+language~\cite{_java_policy_language}, define the permission sets and the code
+sources associated with them. 
+By default, classes loaded from the local file system are run
+without a sandbox; all other applications are run inside a restrictive
+sandbox.  This prevents applications from the network or other untrusted sources
+from executing malicious operations on the host system.
 
-Defined policies will not be enforced unless the sandbox is activated.
-The sandbox is activated by setting a security manager for the system.
-This security manager acts as the gateway between the sandbox and
-the rest of the application. Whenever a class attempts to execute
-a method with security implications inside a sandbox, the protected
-method queries the security manager to determine if the operation
-should be allowed. For example, if an application attempts to write
-to a file (e.g. \texttt{java.io.FileOutputStream}) inside a sandbox,
-the class that performs the write will check with the security manager
-to ensure that a write to that file is allowed. Missing checks are
-a common source of Java vulnerabilities because protected code must
-initiate the check. 
+The sandbox is activated by setting a \emph{security manager}, which acts as the
+gateway between the sandbox and the rest of the application. Whenever a
+sandboxed class attempts to execute a method with security implications, that
+method queries the security manager to determine if the operation should be
+permitted.  We refer to such methods as \emph{privileged code}.  For example, if
+a sandboxed application attempts to write to a file by using
+\texttt{java.io.FileOutputStream}, the latter will first
+check with the security manager to ensure that a write to that file is
+permitted.  Missing checks in code that \emph{should} be protected are a common
+source of Java vulnerabilities, because the security-critical code must initiate
+the check.  Note that such vulnerabilities lie in the JVM itself (i.e., the code
+written by the Java developers), not in the code that uses the sandbox to
+execute untrusted external applications.
 
-To perform a permission check, the security manager walks the call
-stack to ensure each class in the current stack frame has the required
-permission. However, privileged code can stop stack walking before
-the entire frame has been walked by wrapping code inside a \texttt{doPrivileged}
-call. This allows privileged code sections to perform actions with
-security implications at the request of non-privileged code sections,
-once the request has been properly verified. If the permission check
-reaches a class in the stack frame that does not have the correct
-permissions, the security manager will throw a \texttt{SecurityException}.
-Stack-based access control is discussed in more detail in \cite{banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_1998,erlingsson_irm_2000,fournet_stack_2002,pistoia_beyond_2007,zhao_type_2005}. 
+To perform a permission check, the security manager walks the call stack to
+ensure each class in the current stack frame has the permissions necessary to
+perform the action.  Consider a sandboxed class \texttt{Sandboxed} that attempts
+to create a \texttt{java.io.FileOutputStream}. The \texttt{FileOutputStream}
+constructor checks with the security manager to determine whether
+\texttt{Sandboxed} has permission to open the file in question.  The manager
+then checks the permission sets of each class in the call stack:
+\texttt{FileOutputStream}, and then \texttt{Sandboxed}.  If the permission check
+reaches a class in the stack frame that does not have the correct permissions,
+the security manager will throw a \texttt{SecurityException}.  Privileged code,
+such as \texttt{FileOutputStream} in our example, can wrap sensitive actions in
+a \texttt{doPrivileged} call to preempt the stack check.  This allows privileged
+code sections to perform actions with security implications at the request of
+non-privileged code.\footnote{Stack-based access control is discussed in more
+  detail
+  in~\cite{banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_1998,erlingsson_irm_2000,fournet_stack_2002,pistoia_beyond_2007,zhao_type_2005}.}
 
-Java is flexible about when in an application's execution the sandbox
-is configured and enabled. The default case for web applets and applications
-that use Java Web Start is to set a \textit{self-protecting} security
-manager before loading the application from the network. The security
-manager, and thus the sandbox, is self-protecting in the sense that
-it does not allow the application to change sandbox settings. A security
-manager can also be \textit{defenseless}, which is the exact opposite
-of self-protecting. A defenseless manager does little to improve the
-security of a constrained application or the host. However, we show
-in Section \ref{sec:Study-results} that some benign applications
-have found interesting uses for defenseless managers. 
-
-Table \ref{tab:defenseless-permissions} summarizes the set of permissions
-used to distinguish between self-protecting and defenseless security
-managers. We consider any security manager that enforces a policy
-that contains even one of the listed permissions to be defenseless.
-A subset of the permissions in this list were identified in \cite{security_explorations_2012}. 
+\subsection{Defenseless vs. self-protecting managers}
+\label{sec:secmanagers}
 
 \begin{table*}
 \caption{List of sandbox-defeating permissions. A security manager that enforces
 a policy containing any of these permission is sufficient to result
-in a defenseless sandbox.}
 \label{tab:defenseless-permissions}
+in a defenseless sandbox.}
 
 
 \centering{}%
@@ -244,23 +243,32 @@ SecurityPermission(``setProperty.package.access'') & Make privileged internal cl
 \end{table*}
 
 
+ Java is flexible about when in an application's execution the sandbox
+is configured and enabled. The default case for web applets and applications
+that use Java Web Start is to set what we call a \textit{self-protecting} security
+manager before loading the application from the network. The security
+manager, and thus the sandbox, is self-protecting in the sense that
+it does not allow the application to change sandbox settings. We contrast
+self-protecting managers with those we call 
+\textit{defenseless}, meaning that sandboxed applications have privileges that
+permit them to modify or disable the security manager at runtime.  Such a
+security manager is the exact opposite
+of self-protecting. A defenseless manager is virtually useless in terms of improve the
+security of either a constrained application or its host. However, we find
+in Section~\ref{sec:Study-results} that the developers of some benign applications
+have found interesting non-security uses for defenseless managers. 
 
-\section{Exploiting Java Code} \label{sub:Java-Exploits}
+Table \ref{tab:defenseless-permissions} summarizes the set of permissions
+used to distinguish between self-protecting and defenseless security
+managers. We consider any security manager that enforces a policy
+that contains any one of the listed permissions to be defenseless.
+A subset of the permissions in this list were identified in \cite{security_explorations_2012}. 
 
-This section provides an analysis of privilege escalation in the Java
-security model and recent Java exploits. Between 2011 and 2013, drive-by
-downloads that used Java applets as the vector were widely reported.
-While the Java sandbox \textit{should} prevent malicious applets from
-executing their payloads, exploits leveraged vulnerabilities in the
-Java Runtime Environment (JRE) to set the security manager to \texttt{null}.
-Setting the security manager to \texttt{null} disables the sandbox,
-allowing previously constrained classes to perform any operation that
-the JRE itself has the privileges to perform. Figure \ref{fig:A-typical-exploit-payload}
-shows a typical payload class whose privileges have been elevated
-by an exploit to allow it to disable the sandbox. This example payload
-uses \texttt{doPrivileged} to allow the unprivileged exploit class
-to execute the operations in the payload without causing a \texttt{SecurityException}.
 
+\subsection{Exploiting Java Code}
+ \label{sec:Java-Exploits}
+
+\iffalse
 \begin{figure}
 \begin{centering}
 \begin{lstlisting}[language=Java,basicstyle={\scriptsize}]
@@ -289,92 +297,91 @@ public class Payload
 
 \par\end{centering}
 
-\caption{A typical sandbox-disabling Java exploit payload from http://pastebin.com/QWU1rqjf.}
-\label{fig:A-typical-exploit-payload}
+\caption{A typical sandbox-disabling  \label{fig:A-typical-exploit-payload}
+Java exploit payload from http://pastebin.com/QWU1rqjf.}
+% CLG isn't convinced that this figure is adding enough to justify the amount of
+% space it's taking up.
 \end{figure}
+\fi
 
+% Between 2011 and 2013, drive-by 
+% downloads that used Java applets as the vector were widely reported.\todo{needs
+%   a reference.  Also, I'm considering killing this sentence, but haven't decided
+% yet.}
+%
+% This section provides an analysis of privilege escalation in the Java
+% security model and recent Java exploits. 
+While the Java sandbox \textit{should} prevent malicious applets from
+executing their payloads, defects in the
+Java Runtime Environment (JRE) enforcement of these security mechanisms permit
+malicious code to set a security manager to \texttt{null}.  
+Setting the security manager to \texttt{null} disables the sandbox, allowing
+previously constrained classes to perform operations with the privileges of 
+the JRE itself. 
+This approach was taken in a large proportion of drive-by downloads exploiting
+Java applets between 2011 and 2013~\cite{fixme-metasploit}. 
+%Figure \ref{fig:A-typical-exploit-payload}
+%shows a typical payload class whose privileges have been elevated
+%by an exploit to allow it to disable the sandbox. This example payload
+%uses \texttt{doPrivileged} to allow the unprivileged exploit class
+%to execute the operations in the payload without causing a \texttt{SecurityException}.
+%
+There are a couple of methods by which an exploit may nullify a security manager:
 
-Less than half of recent Java exploits use \textit{type confusion}
-to bypass the sandbox. A type confusion vulnerability is exploited
-by breaking type safety, allowing the attacker to craft an object
-that can perform operations as if it is an instance of a class of
-a different type. For example, attackers craft objects that either
-(1) point to the \texttt{System} class or (2) act as if they have
+\noindent\textbf{Type confusion.} An attacker breaks type
+safety to craft an object that can perform operations as if it had
+a different type. Commonly, attackers craft objects that either
+(1) point to the \texttt{System} class or (2) act as if they had
 the same type as a privileged class loader (see CVE-2012-0507 \cite{_vulnerability_2012_0507}).
-In the first case the attack causes any operation performed on the
-masqueraded class to happen on the real \texttt{System} class, allowing
-the attacker to directly alter the field where the security manager
-is stored. In the second case the malicious class can load the exploit's
+In the first case, any operation performed on the
+masqueraded class is applied to the real \texttt{System} class, allowing
+the attacker to directly alter the field storing the security manager. 
+In the second case, the malicious class can load an exploitative
 payload with elevated privileges.
 
-Another prominent class of Java exploits takes advantage of a \textit{confused
-deputy} vulnerability \cite{hardy_confused_1988}, which is an example
-of privilege escalation. In the case of a confused deputy, the exploit
-often convinces a class with access to a vulnerable \textit{privileged
-class} (i.e. a class with more privileges than the application's classes)
-to return a reference to it. The returned privileged class often contains
-a vulnerability such as a missing security check (e.g. where the class
-should consult with the security manager before performing some operation,
-but does not). In some cases, the privileged class may be directly
-accessible to all Java applications, but this is quite rare and typically
-the fault of a vulnerable third-party library. Providing all classes
-with direct access to a privileged class is a violation of the \textit{access
+\noindent\textbf{Confused deputy.} Exploitative code ``convinces'' another
+class to return a reference to a privileged class~\cite{hardy_confused_1988}
+known to contain a vulnerability (such as a missing security check).  The
+attacker then takes advantage of that vulnerability to disable the sandbox 
+(see CVE-2012-4681 \cite{_vulnerability_2012_4681}).
+The ``convincing'' is necessary
+because it is rare that a vulnerable privilege class is directly accessible
+to all Java applications; doing so violates the \textit{access
 control} principle that is part of the Java development culture.%
 \footnote{\url{https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm}%
 } Once an exploit gains access to a vulnerable privileged class, that
-class can be tricked into executing code that disables the sandbox
-(see CVE-2012-4681 \cite{_vulnerability_2012_4681}).
+class can be ``tricked'' into executing code that disables the sandbox
 
-For the most part, benign applications have no reason to directly
-access privileged classes. The majority of the JRE's privileged classes
-are internal implementations of features that applications can access
-via less-privileged code paths. For example, many reflection operations
-are implemented in the \texttt{sun.reflect} package, which has all
-permissions. However, Java applications are supposed to use classes
-in the \texttt{java.lang.reflect} package to use reflection and do
-not have direct access to the \texttt{sun} classes given default JRE
-configurations. Classes in the \texttt{java} package do not perform
-privileged operations themselves, but do have permission to access
-classes in the \texttt{sun} package.
-
-A privileged class loader must be used to load a privileged class.
-Thus, a class typically does not have direct access to a class that
-has a vulnerability that can be exploited to bypass the sandbox unless
-the former had its privileges reduced at some point in the application's
-execution. This is implicit in the Java security model: If any class
+The confused deputy attack is an example of privilege escalation.  Most
+privileged classes in the JRE implement features that can be accessed via
+less-privileged code paths; benign applications therefore rarely need to
+directly access them. 
+%
+%  For example, the \texttt{sun.reflect} package implements
+% reflection operations; it also has all permissions. However, Java applications
+% do not have direct access to the \texttt{sun} classes with default JRE
+% configurations; instead, they are expected to use classes in the
+% \texttt{java.lang.reflect} package to use reflection.  The \texttt{java} package
+% classes do not perform privileged operations, but do have access to the
+% privileged classes in the \texttt{sun} package.
+Because a privileged class loader must be used to load a privileged class, 
+a non-privileged class does not typically have access to vulnerable
+privileged classes anyway. The danger of vulnerabilities in privileged
+classes is therefore mitigated, because such vulnerabilites cannot be exploited
+directly unless malicious code succeeds in modifying its privileges first. 
+This redundancy is implicit in the Java security model: If any class
 could load more privileged classes and directly cause the execution
 of privileged operations, the sandbox in its current form would serve
 little purpose. In sections \ref{sec:Rules-for-Fortifying} and \ref{sec:Mitigations}
 we discuss how we can leverage these distinctions to further fortify
 the sandbox.
 
-Many of the recent type confusion and privilege escalation vulnerabilities
-would not have been introduced if the JRE were developed strictly
-following ``The CERT Oracle Secure Coding Standard for Java'' \cite{long_cert_2011}.
-For example, Svoboda \cite{svoboda_anatomy_blog_2013,svoboda_anatomy_2014}
-pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
-a total of six different secure coding rules and four guidelines. 
-
-In the typical case, following just one or two of the broken rules
-and guidelines would have prevented a serious exploit. For example,
-CVE-2012-4681 resulted from two rule violations in a privileged Abstract
-Window Toolkit (AWT) class in the \texttt{sun} package and two rule
-violations and an ignored guideline in a JavaBean class. The bean
-class was exploited to access the AWT class. The AWT class contained
-a method that reflectively fetched any field in any class, made the
-field public, and returned it. This is a violation of rule SEC05-J
-because reflection is being used to increase the accessibility of
-fields. It is also a violation of SEC00-J because the AWT class is
-privileged and leaks sensitive information (the fields) across trust
-boundaries. The AWT class should have followed all of the secure coding
-guidelines, but its violation of SEC00-J is especially problematic---the
-exploits use the leaked fields to disable the security manager. 
-
-In the rest of this paper, we do not concern ourselves with the specifics
-of particular exploits. We will now explore how benign applications interact with the sandbox to define ways of delineating them from exploits. 
+In the rest of this paper, we do not concern ourselves with the specifics of
+particular exploits. We will now explore how benign applications interact with
+the sandbox to define ways of delineating them from exploits.
 
 
-\section{Introduction to the Security \\ Manager Study}\label{sec:Security-Manager-Study}
+\section{Introduction to the Security Manager Study}\label{sec:Security-Manager-Study}
 
 The nature of recent Java exploits caused us to ask the question: Do applications need access to any facility for disabling or weakening the sandbox? This study aims to answer this question and provide data in support of JVM enhancements to fortify the Java sandbox.
 We focus our efforts on the security manager, as it is the means by
@@ -1232,6 +1239,33 @@ future work will be able to build upon these results to create mitigation
 techniques for additional types of exploits.
 
 \section{Conclusion}
+
+\todo{CLG moved the following two paragraphs from what used to be section 3; my
+  thought is we could have a longer ``discussion'' of Java software development
+  and its relationship to security, and I think these two paragraphs might fit
+  in well there.}
+Many of the recent type confusion and privilege escalation vulnerabilities
+would not have been introduced if the JRE were developed strictly
+following ``The CERT Oracle Secure Coding Standard for Java'' \cite{long_cert_2011}.
+For example, Svoboda \cite{svoboda_anatomy_blog_2013,svoboda_anatomy_2014}
+pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
+a total of six different secure coding rules and four guidelines. 
+
+In the typical case, following just one or two of the broken rules
+and guidelines would have prevented a serious exploit. For example,
+CVE-2012-4681 resulted from two rule violations in a privileged Abstract
+Window Toolkit (AWT) class in the \texttt{sun} package and two rule
+violations and an ignored guideline in a JavaBean class. The bean
+class was exploited to access the AWT class. The AWT class contained
+a method that reflectively fetched any field in any class, made the
+field public, and returned it. This is a violation of rule SEC05-J
+because reflection is being used to increase the accessibility of
+fields. It is also a violation of SEC00-J because the AWT class is
+privileged and leaks sensitive information (the fields) across trust
+boundaries. The AWT class should have followed all of the secure coding
+guidelines, but its violation of SEC00-J is especially problematic---the
+exploits use the leaked fields to disable the security manager. 
+
 
 Our study of Java sandbox usage in open-source applications found
 that the majority of studied applications do not change the security
