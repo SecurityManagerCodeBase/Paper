@@ -15,6 +15,30 @@
 
 \begin{document}
 
+
+\lstset{language=Java}
+\definecolor{dkgreen}{rgb}{0,0.5,0}
+\definecolor{dkred}{rgb}{0.5,0,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\lstset{
+basicstyle=\ttfamily\bfseries\scriptsize,
+  morekeywords={virtualinvoke}, 
+  keywordstyle=\color{blue},
+  ndkeywordstyle=\color{red},
+  commentstyle=\color{dkred},
+  stringstyle=\color{dkgreen},
+  numbers=left,
+  breaklines=true,
+  numberstyle=\ttfamily\footnotesize\color{gray},
+  stepnumber=1,
+  numbersep=10pt,
+  backgroundcolor=\color{white},
+  tabsize=4,
+  showspaces=false,
+  showstringspaces=false,
+  xleftmargin=.23in
+}
+%original settings on at least some of the figures: 
 %\author{BLINDED FOR SUBMISSION}
 
 \title{Give 'em less rope: Open Source Evidence of Java Sandbox Perversions}
@@ -677,27 +701,22 @@ Section \ref{sub:Using-the-Security}.
 \subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
 \begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=691,xrightmargin={0.1cm},numbersep={-10pt}]
-    System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThread()));
-    ...
+\begin{lstlisting}[firstnumber=691]
+System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThread()));
 \end{lstlisting}
 \vspace{-0.3cm}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt}]
-    getCurrentProject().executeTargets(targets); //Note: Ant is executed on this line
-    ...
+\begin{lstlisting}[firstnumber=703]
+// ...execute Ant...
 \end{lstlisting}
 \vspace{-0.3cm}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=721,xrightmargin={0.1cm},numbersep={-10pt}]
-    finally {
-    ...
-\end{lstlisting}
-\vspace{-0.3cm}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=725,xrightmargin={0.1cm},numbersep={-10pt}]
-      if (System.getSecurityManager() instanceof AntSecurityManager) { 
-          System.setSecurityManager(originalSM); 
-      }
-\end{lstlisting}
-\protect\caption{Snippet of Eclipse code that uses a security manager to prevent Ant\label{fig:Eclipse-snippet}
+\begin{lstlisting}[firstnumber=723]
+finally {
+  // ...
+  if (System.getSecurityManager() instanceof AntSecurityManager) { 
+      System.setSecurityManager(originalSM); 
+  }
+\end{lstlisting}\vspace{-0.3cm}
+\caption{Snippet of Eclipse code that uses a security manager to prevent Ant\label{fig:Eclipse-snippet}
 from terminating the JVM.}
 \end{figure}
 
