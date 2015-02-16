@@ -388,22 +388,29 @@ the sandbox.
 
 \section{Security Manager Study}\label{sec:Security-Manager-Study}
 
-The Java security model is complex
-The nature of recent Java exploits caused us to ask the question: Do applications need access to any facility for disabling or weakening the sandbox? This study aims to answer this question and provide data in support of JVM enhancements to fortify the Java sandbox.
-We focus our efforts on the security manager, as it is the means by
-which applications interact with the sandbox. 
+Modern exploits that manipulate on the Java security manager perform one
+operation: They disable it.  This is possible because of a complex set of
+vulnerabilities and misconfigurations on the part of developers of both Java
+applications and the JRE itself.  Fundamentally, we hypothesize that these
+mistakes arise largely from the fact that the Java security model is extremely
+complex, in that it grants enormous flexibility to application developers to
+set, reconfigure, manipulate, weaken, strengthen, or otherwise change a security
+manager after it has been created.
 
-Any JVM enhancements that are to stop even zero-day exploits while maintaining backwards-compatibility with benign applications must be designed with an understanding of which operations both exploitive
-and benign applications perform on the security manager. Assuming
-there is a difference between the set of operations performed by exploits
-and those performed by benign applications, one can exclude the operations
-on which exploits depend, that are not of use to benign applications. This strategy would help ensure the sandbox
-continues to enforce its policy in a given execution without having
-to deal with the wide diversity in the manifestations of vulnerabilities
-within the JRE or the subtleties of their exploits. In this section
-we describe the methodology for and limitations of an empirical study
-that validated this strategy and answers our motivating question.
+Do applications need this power?  Do they regularly take advantage of the
+ability to disable or weaken the sandbox?  If not, we can design
+backwards-compatible JVM enhancements that can stop even zero-day exploits by
+eliminating the operations on which exploits depend.  \todo{This strategy would
+  allow the sandbox to enforce policies on a given execution without having to
+  deal with the wide diversity in the manifestations of vulnerabilities within
+  the JRE or the subtleties of their exploits. CLG says: I'm not sure I
+  understand this sentence, but I think it's important.  Can we simplify it?}
 
+In this section, we describe the methodology for and limitations of an empirical
+study on open-source Java projects to validate this strategy, answer our
+motivating question, and provide data in support of JVM enhancements to fortify
+the Java sandbox.  We focus our efforts on the security manager, as it is the
+means by which applications interact with the sandbox.
 
 \subsection{Dataset}\label{sec:Applications-Studied}
 
@@ -468,38 +475,34 @@ Visor & Closure Library & Github\tabularnewline
 \end{table}
 
 
-Our empirical analysis used applications from the Qualitas Corpus
-(QC) \cite{QualitasCorpus:APSEC:2010} and GitHub to form a dataset
-of applications that use the security manager. To filter relevant
-applications out of the 112 applications in QC, we performed a simple
-\texttt{grep} of each application's source code to find instances
-of the keyword \textit{SecurityManager}. When any instance of the
-keyword was found, we included the application in our dataset. This
-filtering reduced the set of applications to inspect from 112 to 29. 
-
-We performed a similar process on GitHub while searching only Java files. The keyword \textit{System.setSecurityManager(} was added to remove false positives. To include applications that disable the manager we also searched for \textit{System.setSecurityManager(null)}. We picked the top seven applications from the results for each keyword, removed false positives, and ended up with an additional 17 applications that were not already in QC. We only looked at the latest commit.
-
-
-The Qualitas Corpus is a curated collection of open source Java applications
-for use in reproducible software studies. We investigated sandbox
-interactions in 29 applications from QC version 20130901.
-
-
-While QC provides a strong starting point for the construction of
-a dataset for this study, their inclusion criteria%
+We used applications from the Qualitas Corpus (QC)
+\cite{QualitasCorpus:APSEC:2010} and GitHub to form a dataset of applications
+that use the security manager.  The Qualitas Corpus is a curated collection of
+open source Java applications for use in reproducible software studies.  While
+QC provides a strong starting point for the construction of a dataset for this
+study, their inclusion criteria%
 \footnote{http://qualitascorpus.com/docs/criteria.html%
-} leads to the inclusion of large, popular applications and frameworks.
-We diversified our dataset by turning to GitHub. Table \ref{Table:applications-studied}
-lists all studied applications. Version numbers and Git commit hashes
-are available in an online supplement.%
+} means it is comprised largely of large, popular applications and frameworks.
+We diversified our dataset by including applications from GitHub. Table
+\ref{Table:applications-studied} lists all studied applications. Version numbers
+and Git commit hashes are available in an online supplement.%
 \footnote{http://goo.gl/dtcqTM%
-}
+} 
+
+We investigated sandbox interactions in 29 of the 112 applications from QC
+version 20130901.  We used \texttt{grep} on the source code of the full set
+to find instances of the keyword \textit{SecurityManager}, which
+identified 29 applications of interest.  We performed a similar process on
+GitHub, searching only Java files. We added the keyword
+\textit{System.setSecurityManager(} to remove false positives, and
+\textit{System.setSecurityManager(null)} to find applications that disable the
+manager. We picked the top seven applications from the results for each keyword,
+removed false positives, resulting in an additional 17 applications that
+were not already in QC. We only looked at the latest commit \todo{as of when?}.
 
 \subsection{Methodology}
 
-As discussed in the previous sections, it is widely known within the
-Java security community that current exploits that operate on the
-security manager perform one operation: They disable it. To understand
+To understand
 the operations benign applications perform on the manager, we undertook
 an empirical analysis consisting of static, dynamic, and manual inspections
 of the open source Java application landscape. More precisely, we
