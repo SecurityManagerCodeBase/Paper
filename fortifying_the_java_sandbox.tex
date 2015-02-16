@@ -722,8 +722,8 @@ complexity.  \todo{These applications are interesting because --- CLG thinks it
   might be desireable to put such a discussion into an explicit ``discussion''
   or conclusions section, but put in this todo just to remember to think about it}.
 
-\noindent\textbf{Enforcing Architectural Constraints}
-%
+\subsubsection{Enforcing Architectural Constraints}
+
 Java applications often call \texttt{System.exit()} when a non-recoverable
 error occurs. This is problematic when the application in question is 
 used as a library: The \texttt{System.exit()} will close the calling
@@ -759,8 +759,8 @@ the application to dynamically change the security manager, which requires eithe
 to be carefully written to prevent malicious code from weakening the sandbox. Defenseless security managers
 are not capable of reliably enforcing a serious security policy.
 
-\noindent\textbf{Reducing Web Application Development Complexity}%\label{sub:Reducing-Web-Application-Complexity}
-%
+\subsubsection{Reducing Web Application Development Complexity}\label{sub:Reducing-Web-Application-Complexity}
+
 We also found applications that were complicated by the Java security policies
 for web applications (applets and applications launched via JWS). By default,
 Java executes such applications inside a restrictive 
@@ -1144,10 +1144,7 @@ can directly access a privileged class to exploit. Table \ref{tab:Exploit-experi
 summarizes our results using the specific CVEs each exploit targeted.
 
 \begin{table}
-\protect\caption{Effectiveness test results.}\label{tab:Exploit-experiment-summary}
-
-
-\centering{}%
+\caption{Effectiveness test results.}\label{tab:Exploit-experiment-summary}
 \begin{tabular}{l>{\raggedright}p{3cm}l}
 \toprule 
 \textbf{CVE-ID} & \textbf{Privilege Escalation Monitor} & \textbf{Both Monitors}\tabularnewline
