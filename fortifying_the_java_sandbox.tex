@@ -389,28 +389,84 @@ the sandbox.
 \section{Security Manager Study}\label{sec:Security-Manager-Study}
 
 Modern exploits that manipulate on the Java security manager perform one
-operation: They disable it.  This is possible because of a complex set of
-vulnerabilities and misconfigurations on the part of developers of both Java
-applications and the JRE itself.  Fundamentally, we hypothesize that these
-mistakes arise largely from the fact that the Java security model is extremely
-complex, in that it grants enormous flexibility to application developers to
+operation: They disable it.  This is possible because the Java security model is extremely
+complex and grants enormous flexibility to application developers to
 set, reconfigure, manipulate, weaken, strengthen, or otherwise change a security
 manager after it has been created.
-
 Do applications need this power?  Do they regularly take advantage of the
 ability to disable or weaken the sandbox?  If not, we can design
 backwards-compatible JVM enhancements that can stop even zero-day exploits by
-eliminating the operations on which exploits depend.  \todo{This strategy would
-  allow the sandbox to enforce policies on a given execution without having to
-  deal with the wide diversity in the manifestations of vulnerabilities within
-  the JRE or the subtleties of their exploits. CLG says: I'm not sure I
-  understand this sentence, but I think it's important.  Can we simplify it?}
+eliminating the operations on which exploits depend.  \todo{CLG says: I'm not
+  sure I understand this sentence, but I think it's important.  Can we simplify
+  it? This strategy would allow the sandbox to enforce policies on a given
+  execution without having to deal with the wide diversity in the manifestations
+  of vulnerabilities within the JRE or the subtleties of their exploits. } 
 
-In this section, we describe the methodology for and limitations of an empirical
+In this section, we describe an empirical analysis consisting of static,
+dynamic, and manual inspections of the open source Java application landscape
+that aims to understand the operations benign applications perform on the
+manager. We focus our efforts on the security manager, as it is the
+means by which applications interact with the sandbox.
+%
+Our basic research question is: How do benign open source Java applications interact
+with the security manager? The answer to this question informs which JVM-level
+modifications can be deployed to mitigate the ability of exploitative code to
+nullify the security manager while maintaining backwards compatibility.  The
+possible mitigations vary in the strength with which they will be able to stop
+exploits. 
+% For example, a ``weak'' mitigation stops a small number of in-scope
+% exploits and is easily bypassed.  An ``ideal'' mitigation stops all in-scope
+% exploits and can never be bypassed.  
+There are four possibilities:
+\begin{flushenum}	\setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\itemsep}{0pt}
+\item \textit{Benign applications never disable the security manager.}  If true,
+  only exploitative code attempts to disable the security manager once it is set.
+  The JVM could mitigate this risk by eliminating an application's ability to
+  do so.  This would be easy to implement, but would not guard against exploits
+  that weaken the sandbox without disabling it.
+% For example, attackers could potentially bypass the mitigation
+% by modifying the enforced policy to allow the permissions they need
+% or they could replace the current manager with one that never throws
+% a \texttt{SecurityException}.
+\item \textit{Benign applications do not weaken a set security manager}.  If
+  true, the JVM could be modified to prevent any weakening or disabling of the 
+  sandbox once it's set.  This is more powerful than simply removing the
+  ability to disable the security manager, but is significantly more difficult to
+  implement.
+  % However, this would require the ability to
+  % differentiate between changes that weaken the sandbox and those that do not,
+  % a difficult problem.
+  % Classifying changes in this manner autonomously is difficult
+  % because it requires context specific information that a general mitigation
+  % strategy may not have. 
+  For example, if a permission to write to a file is
+  replaced by a permission to write to a different file, is the sandbox
+  weakened, strengthened, or exactly as secure as it was before?
+\item \textit{Benign applications never modify the sandbox if a self-protecting
+    security manager has been set}. If true, the JVM could be modified to
+  disallow any change to a self-protecting security manager, defined by the
+  policy it enforces.  This could be implemented with a runtime monitor that
+  determines if a security manager is self-protecting when an application
+  attempts to change the sandbox. This is much easier to implement soundly than
+  the previous mitigation and guards against the same number and types of
+  exploits.
+  % This can
+  % be easily achieved. While this mitigation has the same outcome as the moderate
+  % mitigation, it is significantly easier to implement soundly and it is
+  % therefore more likely to be effective in practice.
+\item \textit{Benign applications do not change a set security manager.} If
+  true, any attempted change to an already established security manager can be
+  considered malicious. This would be the ideal result: restricting this
+  operation is easy to implement in the JVM.
+\end{flushenum}
+
+In this section, we describe the
+methodology for and limitations of our empirical study
 study on open-source Java projects to validate this strategy, answer our
 motivating question, and provide data in support of JVM enhancements to fortify
-the Java sandbox.  We focus our efforts on the security manager, as it is the
-means by which applications interact with the sandbox.
+the Java sandbox.  
 
 \subsection{Dataset}\label{sec:Applications-Studied}
 
@@ -501,59 +557,6 @@ removed false positives, resulting in an additional 17 applications that
 were not already in QC. We only looked at the latest commit \todo{as of when?}.
 
 \subsection{Methodology}
-
-To understand
-the operations benign applications perform on the manager, we undertook
-an empirical analysis consisting of static, dynamic, and manual inspections
-of the open source Java application landscape. More precisely, we
-answer the following research question: How do open source Java applications
-interact with the security manager? To answer this question, our empirical
-analysis aimed to validate four independent hypotheses. Each hypothesis
-is paired with a mitigation that can be implemented if the hypothesis
-is supported. The mitigations are given names that denote their relative
-strengths when compared to each other. For example, a ``weak'' mitigation
-stops a small number of in-scope exploits and is easily bypassed.
-An ``ideal'' mitigation stops all in-scope exploits and can never
-be bypassed. Our hypotheses and their accompanying mitigations follow: 
-
-\textbf{Hypothesis 1:} \emph{Benign applications do not disable
-the security manager.} If this hypothesis holds, exploits can be differentiated
-from benign applications by any attempt to disable the current security
-manager. This \textbf{weak mitigation} would be easy to implement,
-but exploits that weaken the sandbox without disabling it would remain
-a threat. For example, attackers could potentially bypass the mitigation
-by modifying the enforced policy to allow the permissions they need
-or they could replace the current manager with one that never throws
-a \texttt{SecurityException}.
-
-\textbf{Hypothesis 2:} \emph{Benign applications do not weaken the
-security manager}. Validation of this hypothesis would enable
-mitigations that prevent attackers from weakening or disabling the
-sandbox. However, an implementation of this \textbf{moderate mitigation}
-would require differentiating between changes which weaken the sandbox
-and those that do not. Classifying changes in this manner autonomously is difficult
-because it requires context specific information that a general mitigation
-strategy may not have. For example, if a permission to write to a
-file is replaced by a permission to write to a different file, is
-the sandbox weakened, strengthened, or exactly as secure as it was
-before?
-
-\textbf{Hypothesis 3:} \emph{Benign applications do not change the
-sandbox if a self-protecting security manager has been set}. If supported,
-it is possible to implement a mitigation strategy that disallows any
-change to a security manager that is enforcing a strict policy (as
-defined in Section \ref{sec:Background}). To implement this \textbf{strong
-mitigation}, a runtime monitor must determine if a security manager
-is self-protecting at the time the manager is set. This can be easily
-achieved. While this mitigation has the same outcome as the moderate
-mitigation, it is significantly easier to implement soundly and it
-is therefore more likely to be effective in practice. 
-
-\textbf{Hypothesis 4:} \textit{Benign applications do not change a
-set security manager.} If the study supports this hypothesis, any
-attempted change to an already established security manager can be
-considered malicious. The \textbf{ideal mitigation} could easily be
-implemented in the JVM. 
 
 With the dataset in hand, we created static and dynamic analysis tools
 to assist in the manual inspection of each application. Our static
