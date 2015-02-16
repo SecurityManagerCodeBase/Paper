@@ -70,7 +70,7 @@ directly use privileged classes. Exploits routinely do both. We derive two rules
 
 \section{Introduction}
 
-
+\iffalse
 \begin{figure}
 \begin{centering}
 \includegraphics[width=2in]{most_targeted_apps_ibm_xforce}
@@ -80,9 +80,11 @@ targeted applications on enterprise workstations, according to to
 a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
 \label{fig:most-targeted-applications}represented half of all attack-attempts in their sample.}
 \end{figure}
+\fi
 
-Java applications are very popular targets for malicious attackers (see
-Figure~\ref{fig:most-targeted-applications}), for three broad reasons.  First,
+Java applications are very popular targets for malicious attackers~\cite{xforceQ12013},% (see
+%Figure~\ref{fig:most-targeted-applications}), 
+for three broad reasons.  First,
 it is the Java Runtime Environment (JRE) is widely installed on user endpoints.
 Second, the JRE can (and often does) execute external code, in the form of
 applets and Java Web Start (JWS)~\cite{_java_web_start}
@@ -960,12 +962,12 @@ new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 \end{lstlisting}
 
 
-\caption{Example exploit that breaks out of the scripting sandbox in Freemind
-to execute arbitrary code.}
-\label{fig:Example-Exploit-for-Freemind}
+\caption{Exploit that breaks out of the scripting sandbox in Freemind\label{fig:Example-Exploit-for-Freemind}
+to execute arbitrary code.\todo{What language is this actually in so I can
+  format it properly?}}
 \end{figure}
 
-\section{Rules for Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
+\section{ Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
 Given the results of our investigation in Section \ref{sec:Security-Manager-Study}
 and the discussion in Section \ref{sub:Java-Exploits}, we can fortify
@@ -974,8 +976,6 @@ manager. In this section, we define two rules to stop Java exploits
 from disabling the manager. These rules are backwards-compatible with
 benign applications: the Privilege Escalation rule and the Security
 Manager rule. 
-
-\subsection{Privilege Escalation Rule}
 
 The \textit{Privilege Escalation rule} ensures that, if a self-protecting
 security manager is set for the application, a class may not directly
@@ -992,15 +992,13 @@ packages that are listed in the \texttt{package.access} property of
 \texttt{java.security.Security} are not subject to this rule because they are intended to be
 loaded when accessed by a trusted proxy class. 
 
-\subsection{Security Manager Rule}
-
 The \textit{Security Manager rule} states that the manager cannot
 be changed if a \emph{self-protecting} security manager has been set
 by the application. This rule is violated when code causes a change
 in the sandbox's configuration, the goal of many exploits. This rule
 is an implementation of the strong mitigation.
 
-\section{Validating the Rules}\label{sec:Mitigations}
+\subsection{Validating the Rules}\label{sec:Mitigations}
 
 In Section \ref{sec:Security-Manager-Study}, we discussed four hypotheses about security manager usage in benign applications, each
 of which, if validated, leads to a distinct mitigation. In Section
