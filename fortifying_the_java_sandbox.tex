@@ -82,27 +82,25 @@ a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
 \end{figure}
 \fi
 
-Java applications are very popular targets for malicious attackers~\cite{xforceQ12013},% (see
+Java applications are very popular targets for malicious attackers,% (see
 %Figure~\ref{fig:most-targeted-applications}), 
 for three broad reasons.  First,
 it is the Java Runtime Environment (JRE) is widely installed on user endpoints.
 Second, the JRE can (and often does) execute external code, in the form of
 applets and Java Web Start (JWS)~\cite{_java_web_start}
 applications~\cite{gong1997going,gong2003inside}.  Finally, Java contains
-hundreds of vulnerabilities \todo{Can we add raw numbers here, say over
-  2011-2013?\\MM: I tried searching NVD (https://web.nvd.nist.gov/view/vuln/search-advanced), but this would only get us the number of CVE's. Unfortunately, NVD is erroring out instead of returning useful data. This would not tell us the actual number of vulnerabilities because a CVE can refer to many vulnerabilities. How important is this?}, including zero-day vulnerabilities (e.g. CVE-2013-0422).  In the
+hundreds of vulnerabilities, including zero-day vulnerabilities (e.g. CVE-2013-0422)~\cite{xforceQ12013}.  In the
 common scenario, often referred to as a ``drive-by download'', attackers lure
 users to a website that contains a hidden malicious applet. Such malicious
 applets exploit security vulnerabilities in the JRE to deliver malware,
-typically leaving the user unaware.
+often leaving the user unaware.
 
 In theory, such attacks should not be so common: 
 Java provides a sandboxing mechanism that enables the safe execution of untrusted code and isolates
-components another. Both the host application and host machine should
-therefore be protected from malicious behavior on the part of
-external code.  In practice, these security mechanisms are problematically
-buggy, such that the sandbox often fails to properly contain external code. 
-Java malware typically alters the sandbox's
+components another. Both the host application and machine should
+therefore be protected from malicious behavior.
+In practice, these security mechanisms are problematically
+buggy, such that Java malware typically operate by altering the sandbox's
 settings~\cite{garber_2012}.  Such exploits take advantage of defects in either
 the JRE's implementation the application's configuration of the sandbox to 
 disable the security manager, the component of the sandbox responsible for enforcing the
@@ -110,41 +108,43 @@ security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_exploratio
 
 In this paper, we investigate this disconnect between theory and practice.  We
 hypothesize that it results primarily from unnecessary complexity and flexibility
-in the design and engineering of Java's security mechanisms.  \todo{Can someone
-  flesh this out?  What types of complexity/flexibility does the sandbox allow
-  that we don't need?  Likely relevant example: the ability to change the
-  security manager at runtime. \\ MM: Added words.} For example, applications are allowed to change the security manager at runtime but static-only configuration of the manager would be more secure. The JRE also provides a number of permissions that are powerful enough that an application that uses one is essentially running without the sandbox. In particular, we
-hypothesize that benign applications interact with the security manager in ways
+in the design and engineering of Java's security mechanisms.  For example,
+applications are allowed to change the security manager at runtime but
+static-only configuration of the manager would be more secure. The JRE also
+provides a number of permissions that are so powerful that an application
+that uses one is essentially running without the sandbox. We 
+hypothesize that benign applications do not need all of this power, and that
+they interact with the security manager in ways
 that are measurably different from the ways that exploitative applications do.  
 If true, this difference can be leveraged to prevent future attacks.
 
-To validate these insights, we conducted an empirical study of benign open
-source Java applications.  We sought to answer the research question: How do benign
-applications interact with the Java security manager?  We identified 46
+To validate these insights, we conducted an empirical study
+to answer the question: How do benign
+applications interact with the Java security manager?  We identified 36
 open-source Java projects that use the security manager, taken from the Qualitas
-Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub. For each project, we
-isolated code that interacts with the security manager, manually characterized
-those interactions, and constructed and used a Java Virtual Machine Tool Interface (JVMTI) agent
-to confirm that our characterizations were accurate at runtime.
+Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub and characterized
+those interactions.
 
-We discovered that there are two types of security managers used in
-practice. \emph{Defenseless} security managers enforce a policy that allows code
-inside the sandbox to modify sandbox settings.  Applications with defenseless
-managers are inherently insecure, because externally-loaded malicious code can
+We discovered two types of security managers in
+practice. \emph{Defenseless} managers enforce a policy that allows sandboxed code
+to modify sandbox settings.  Such applications
+are inherently insecure, because externally-loaded malicious code can
 modify or disable the security manager.  In our study, this situation typically
 arose in applications that modified sandbox settings at runtime, often because
 they use the security manager to enforce policies unrelated to security.
-\todo{I think this train of thought needs one more observation, starting with
-  something like ``this is interesting because''.  I'm drawing a blank on what
-  should come after the ``because'', however, hence this todo.// MM: Added words.} It was not intended that the sandbox would be used to achieve these use cases, which effectively limit the set of potential exploit mitigations that are backwards-compatible with benign applications. Still, applications use the sandbox to fulfill requirements that do not improve the security of the application because Java does not provide better mechanisms for doing so. 
-\emph{Self-protecting} security managers do not allow sandboxed code to modify
+The sandbox is not intended to be used this way, 
+which effectively limits the potential exploit mitigations that are
+backwards-compatible with all benign applications. Still, such applications use the
+sandbox to fulfill non-security requirements
+because Java does not provide better mechanisms for doing so.  
+On the other hand, \emph{self-protecting} managers do not allow sandboxed code to modify
 security settings.  The applications in our dataset with self-protecting
-managers, including all applets and JWS applications, did not change those
+managers did not change security 
 settings over the course of execution.  It might still be possible to exploit
 such applications due to defects in the JRE code that enforces security
 policies, but not due to poorly-deployed local security settings.
 
-In practice, applications that attempt to use the sandbox for its intended
+Overall, we found that applications that attempt to use the sandbox for its intended
 purpose---protection from exploitative external code---do not make use of its
 vast flexibility.  We therefore propose two runtime rules to fortify the Java
 sandbox against the two most common modern attack types. We evaluate our rules
@@ -161,7 +161,9 @@ implementing runtime enforcement of these rules in the JVM itself.
 The contributions of this papers are as follows:
 \todo{CLG would like us to rethink these contributions once the rest of the paper
   has been modified.}
-\begin{itemize}
+\begin{flushitem}	\setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\itemsep}{0pt}
 \item An analysis of privilege escalation in the Java security model and
 recent Java exploits (Section \ref{sub:Java-Exploits}).
 \item An empirical study of Java sandbox usage in benign, open-source applications
@@ -169,14 +171,14 @@ recent Java exploits (Section \ref{sub:Java-Exploits}).
 \item Two novel rules for distinguishing between benign and malicious Java
 programs (Section \ref{sec:Rules-for-Fortifying}).
 \item A case study evaluation of the protection merits of our rules with a discussion of practical implementation considerations (Section \ref{sec:Mitigations}).
-\end{itemize}
+\end{flushitem}
 
 \section{Background}\label{sec:Background}
 
 In this section, we describe the Java sandbox
 (Section~\ref{sec:sandbox}), distinguish between defenseless and self-protecting
 Security Managers (Section~\ref{sec:secmanagers}) and provide a high-level
-description on how exploits commonly bypass these security mechanisms
+description on how Java exploits commonly work
 (Section~\ref{sec:Java-Exploits}). 
 
 \subsection{The Java sandbox}
