@@ -244,9 +244,8 @@ execute untrusted external code.
 \caption{List of sandbox-defeating permissions. A security manager that enforces
 a policy containing any of these permission results
 \label{tab:defenseless-permissions}
-in a defenseless sandbox.}
-
-
+in a defenseless sandbox. A subset of these permissions were first identified in \cite{security_explorations_2012}. 
+}
 \begin{tabular}{ll}
 \toprule 
 \textbf{Permission} & \textbf{Risk}\tabularnewline
@@ -261,34 +260,33 @@ SecurityPermission(``setPolicy'') & Modify the application's permissions at will
 SecurityPermission(``setProperty.package.access'') & Make privileged internal classes accessible\tabularnewline
 \bottomrule
 \end{tabular}
+\vspace{-0.5cm}
 \end{table*}
 
-\todo{I think we need to hammer this point a bit more: Java's security model is
-  too complicated---meaning it's implemented badly/in a way that's full of
-  bugs---and also unecessarily so---because people don't need all that
-  flexibility.  I'm not sure how to expand this text to help with that
-  point-hammering, but I think it would be useful to the development of the
-  argument.  Anyone see what I'm getting at and want to try to expand accordingly?}
- Java is flexible about when in an application's execution the sandbox
-is configured and enabled. The default case for web applets and applications
+% \todo{I think we need to hammer this point a bit more: Java's security model is
+%   too complicated---meaning it's implemented badly/in a way that's full of
+%   bugs---and also unecessarily so---because people don't need all that
+%   flexibility.  I'm not sure how to expand this text to help with that
+%   point-hammering, but I think it would be useful to the development of the
+%   argument.  Anyone see what I'm getting at and want to try to expand accordingly?}
+Java is flexible about when in an application's execution the sandbox
+is enabled, configured, and reconfigured. The default case for web applets and applications
 that use Java Web Start is to set what we call a \textit{self-protecting} security
-manager before loading the application from the network. The security
+manager before loading the network application. The security
 manager, and thus the sandbox, is self-protecting in the sense that
 it does not allow the application to change sandbox settings. We contrast
 self-protecting managers with those we call 
-\textit{defenseless}, meaning that sandboxed applications have privileges that
-permit them to modify or disable the security manager at runtime.  Such a
-security manager is the exact opposite
-of self-protecting. A defenseless manager is virtually useless in terms of improve the
+\textit{defenseless}, meaning that sandboxed applications are 
+permitted to modify or disable the security manager.  
+A defenseless manager is virtually useless in terms of improving the
 security of either a constrained application or its host. However, we find
 in Section~\ref{sec:Study-results} that the developers of some benign applications
 have found interesting non-security uses for defenseless managers. 
 
 Table~\ref{tab:defenseless-permissions} summarizes the set of permissions
-used to distinguish between self-protecting and defenseless security
+that distinguish between self-protecting and defenseless security
 managers. We consider any security manager that enforces a policy
-that contains any one of the listed permissions to be defenseless.
-A subset of the permissions in this list were identified in \cite{security_explorations_2012}. 
+containing any of these permissions defenseless.
 
 
 \subsection{Exploiting Java Code}
