@@ -64,7 +64,7 @@ Second, the JRE can (and often does) execute external code, in the form of
 applets and Java Web Start (JWS)~\cite{_java_web_start}
 applications~\cite{gong1997going,gong2003inside}.  Finally, Java contains
 hundreds of vulnerabilities \todo{Can we add raw numbers here, say over
-  2011-2013?}, including zero-day vulnerabilities (e.g. CVE-2013-0422).  In the
+  2011-2013?\\MM: I tried searching NVD (https://web.nvd.nist.gov/view/vuln/search-advanced), but this would only get us the number of CVE's. Unfortunately, NVD is erroring out instead of returning useful data. This would not tell us the actual number of vulnerabilities because a CVE can refer to many vulnerabilities. How important is this?}, including zero-day vulnerabilities (e.g. CVE-2013-0422).  In the
 common scenario, often referred to as a ``drive-by download'', attackers lure
 users to a website that contains a hidden malicious applet. Such malicious
 applets exploit security vulnerabilities in the JRE to deliver malware,
@@ -83,11 +83,11 @@ disable the security manager, the component of the sandbox responsible for enfor
 security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012}.
 
 In this paper, we investigate this disconnect between theory and practice.  We
-hypothesize that it results primarily from unecessary complexity and flexibility
+hypothesize that it results primarily from unnecessary complexity and flexibility
 in the design and engineering of Java's security mechanisms.  \todo{Can someone
   flesh this out?  What types of complexity/flexibility does the sandbox allow
   that we don't need?  Likely relevant example: the ability to change the
-  security manager at runtime.} In particular, we
+  security manager at runtime. \\ MM: Added words.} For example, applications are allowed to change the security manager at runtime but static-only configuration of the manager would be more secure. The JRE also provides a number of permissions that are powerful enough that an application that uses one is essentially running without the sandbox. In particular, we
 hypothesize that benign applications interact with the security manager in ways
 that are measurably different from the ways that exploitative applications do.  
 If true, this difference can be leveraged to prevent future attacks.
@@ -110,7 +110,7 @@ arose in applications that modified sandbox settings at runtime, often because
 they use the security manager to enforce policies unrelated to security.
 \todo{I think this train of thought needs one more observation, starting with
   something like ``this is interesting because''.  I'm drawing a blank on what
-  should come after the ``because'', however, hence this todo.}
+  should come after the ``because'', however, hence this todo.// MM: Added words.} It was not intended that the sandbox would be used to achieve these use cases, which effectively limit the set of potential exploit mitigations that are backwards-compatible with benign applications. Still, applications use the sandbox to achieve objectives that do not improve the security of the application because Java does not provide a better mechanisms for achieving their goals. 
 \emph{Self-protecting} security managers do not allow sandboxed code to modify
 security settings.  The applications in our dataset with self-protecting
 managers, including all applets and JWS applications, did not change those
