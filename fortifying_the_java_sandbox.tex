@@ -110,7 +110,7 @@ arose in applications that modified sandbox settings at runtime, often because
 they use the security manager to enforce policies unrelated to security.
 \todo{I think this train of thought needs one more observation, starting with
   something like ``this is interesting because''.  I'm drawing a blank on what
-  should come after the ``because'', however, hence this todo.// MM: Added words.} It was not intended that the sandbox would be used to achieve these use cases, which effectively limit the set of potential exploit mitigations that are backwards-compatible with benign applications. Still, applications use the sandbox to achieve objectives that do not improve the security of the application because Java does not provide a better mechanisms for achieving their goals. 
+  should come after the ``because'', however, hence this todo.// MM: Added words.} It was not intended that the sandbox would be used to achieve these use cases, which effectively limit the set of potential exploit mitigations that are backwards-compatible with benign applications. Still, applications use the sandbox to fulfill requirements that do not improve the security of the application because Java does not provide better mechanisms for doing so. 
 \emph{Self-protecting} security managers do not allow sandboxed code to modify
 security settings.  The applications in our dataset with self-protecting
 managers, including all applets and JWS applications, did not change those
