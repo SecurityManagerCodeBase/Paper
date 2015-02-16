@@ -202,33 +202,21 @@ indicates the code origin, and associates it with a \textit{protection
 \textit{permission set}. These sets
 contain permissions that explicitly allow actions with security
 implications, such as writing to the filesystem, accessing the network, using
-certain reflection features, etc (see a more complete list
-at~\cite{_permissions_2014}).  Unlisted actions are disallowed for classes in
-that protection domain.  \emph{Policies}, written in the Java policy
-language~\cite{_java_policy_language}, define the permission sets and the code
+certain reflection features, etc~\cite{_permissions_2014}.  Unlisted actions are disallowed.
+\emph{Policies} written in the Java policy
+language~\cite{_java_policy_language} define the permission sets and the code
 sources associated with them. 
-By default, classes loaded from the local file system are run
-without a sandbox; all other applications are run inside a restrictive
-sandbox.  This prevents applications from the network or other untrusted sources
-from executing malicious operations on the host system.
+By default all classes \emph{not} loaded from the local file system are run
+within a restrictive sandbox. 
 
 The sandbox is activated by setting a \emph{security manager}, which acts as the
 gateway between the sandbox and the rest of the application. Whenever a
 sandboxed class attempts to execute a method with security implications, that
 method queries the security manager to determine if the operation should be
-permitted.  We refer to such methods as \emph{privileged code}.  For example, if
-a sandboxed application attempts to write to a file by using
-\texttt{java.io.FileOutputStream}, the latter will first
-check with the security manager to ensure that a write to that file is
-permitted.  Missing checks in code that \emph{should} be protected are a common
-source of Java vulnerabilities, because the security-critical code must initiate
-the check.  Note that such vulnerabilities lie in the JVM itself (i.e., the code
-written by the Java developers), not in the code that uses the sandbox to
-execute untrusted external applications.
-
+permitted. 
 To perform a permission check, the security manager walks the call stack to
 ensure each class in the current stack frame has the permissions necessary to
-perform the action.  Consider a sandboxed class \texttt{Sandboxed} that attempts
+perform the action.  For example, consider a class \texttt{Sandboxed} that attempts
 to create a \texttt{java.io.FileOutputStream}. The \texttt{FileOutputStream}
 constructor checks with the security manager to determine whether
 \texttt{Sandboxed} has permission to open the file in question.  The manager
@@ -243,17 +231,22 @@ non-privileged code.\footnote{Stack-based access control is discussed in more
   detail
   in~\cite{banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_1998,erlingsson_irm_2000,fournet_stack_2002,pistoia_beyond_2007,zhao_type_2005}.}
 
+Missing checks in code that \emph{should} be protected are a common
+source of Java vulnerabilities, because the security-critical code must initiate
+the check.  Note that such vulnerabilities lie in the JVM itself (i.e., the code
+written by the Java developers), not in the code that uses the sandbox to
+execute untrusted external code.
+
 \subsection{Defenseless vs. self-protecting managers}
 \label{sec:secmanagers}
 
 \begin{table*}
 \caption{List of sandbox-defeating permissions. A security manager that enforces
-a policy containing any of these permission is sufficient to result
+a policy containing any of these permission results
 \label{tab:defenseless-permissions}
 in a defenseless sandbox.}
 
 
-\centering{}%
 \begin{tabular}{ll}
 \toprule 
 \textbf{Permission} & \textbf{Risk}\tabularnewline
