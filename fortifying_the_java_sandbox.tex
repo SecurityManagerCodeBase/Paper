@@ -618,6 +618,8 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 \end{tabular}
 \end{table}
 
+\todo{How many applications set or require a defenseless manager?  Is that interesting?}
+
 Recall that in Section~\ref{sec:Security-Manager-Study}, we refined the
 high-level research question---how do benign applications interact with the
 security manager?---into four possibilities, and that the possible mitigations
@@ -641,7 +643,7 @@ security manager if a self-protecting security manager has been set.
   observed multiple applications that changed a set security manager.
 \end{flushenum}
 
-In short, the strong mitigation is the only proposed mitigation that can be
+The strong mitigation is thus the only proposed mitigation that can be
 implemented without breaking the benign applications in our dataset;
 fortunately, the implementation does not require complex, context-sensitive
 information about whether a change to a policy weakens the sandbox or not. 
@@ -674,86 +676,90 @@ Section \ref{sub:Using-the-Security}.
 
 \subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
-This section describes applications that provide novel insights into benign sandbox interactions unrelated to satisfy security
-requirements. Most of these applications used the
-sandbox to enforce architectural constraints when interacting with
-other applications or forcibly disabled the sandbox to reduce development
-complexity.
-
-\subsubsection{Enforcing Architectural Constraints}
-
-Java applications often call \texttt{System.exit()} when a non-recoverable
-error occurs. This error handling strategy causes problems when applications that use it are used as libraries. When the library application executes \texttt{System.exit()},
-the calling application is closed as well because both applications
-are running in the same JVM. This is not the desired
-outcome in several cases. 
-
-To prevent this outcome without modifying the library application,
-the calling application needs to enforce the architectural constraint
-that libraries can not terminate the JVM. In practice, applications
-enforce this constraint by setting a security manager
-that prevents \texttt{System.exit()} calls.
-
-This case appears in Eclipse, which uses Ant as a library. When an
-unrecoverable error condition occurs, Ant kills the JVM to terminate
-execution of the build script currently running. However, Eclipse
-should continue executing and report an error to the user when Ant
-terminates with an error code. Figure \ref{fig:Eclipse-snippet} shows
-how Eclipse sets a security manager to enforce this constraint right
-before Ant is executed. After Ant closes and any error conditions
-are handled, the original manager is restored.
-
 \begin{figure}
 \begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=691,xrightmargin={0.1cm},numbersep={-10pt}]
     System.setSecurityManager(new AntSecurityManager(originalSM, Thread.currentThread()));
     ...
 \end{lstlisting}
-
-
+\vspace{-0.3cm}
 \begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=703,xrightmargin={0.1cm},numbersep={-10pt}]
-    getCurrentProject().executeTargets(targets); \\Note: Ant is executed on this line
+    getCurrentProject().executeTargets(targets); //Note: Ant is executed on this line
     ...
 \end{lstlisting}
-
-
+\vspace{-0.3cm}
 \begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=721,xrightmargin={0.1cm},numbersep={-10pt}]
     finally {
     ...
 \end{lstlisting}
-
-
+\vspace{-0.3cm}
 \begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=725,xrightmargin={0.1cm},numbersep={-10pt}]
-        if (System.getSecurityManager() instanceof AntSecurityManager) { 
-            System.setSecurityManager(originalSM); 
-        }
+      if (System.getSecurityManager() instanceof AntSecurityManager) { 
+          System.setSecurityManager(originalSM); 
+      }
 \end{lstlisting}
-
-
-\protect\caption{Snippet of Eclipse code that uses a security manager to prevent Ant
-from terminating the JVM when Ant encounters an unrecoverable error.}\label{fig:Eclipse-snippet}
+\protect\caption{Snippet of Eclipse code that uses a security manager to prevent Ant\label{fig:Eclipse-snippet}
+from terminating the JVM.}
 \end{figure}
 
-GJMan also enforces this constraint and contains a code comment referencing a
-blog post that we believe is the origin of this solution.\footnote{http://www.jroller.com/ethdsy/entry/disabling\_system\_exit} 
+This section describes applications that interact with the sandbox in ways that
+are not related to security. Most of these applications used the
+sandbox to enforce architectural constraints when interacting with
+other applications, or forcibly disabled the sandbox to reduce development
+complexity.  \todo{These applications are interesting because --- CLG thinks it
+  might be desireable to put such a discussion into an explicit ``discussion''
+  or conclusions section, but put in this todo just to remember to think about it}.
 
-In total, we found 3 applications that use a variation of this technique:
-Eclipse, GJMan, and AspectJ. While this technique does enforce the
+\noindent\textbf{Enforcing Architectural Constraints}
+%
+Java applications often call \texttt{System.exit()} when a non-recoverable
+error occurs. This is problematic when the application in question is 
+used as a library: The \texttt{System.exit()} will close the calling
+application as well, because both applications
+are running in the same JVM. This is often not the desired
+outcome.
+%
+To prevent this outcome without modifying the library application,
+the calling application needs to enforce the architectural constraint
+that libraries cannot terminate the JVM. 
+
+Some applications
+enforce this constraint by setting a security manager
+that prevents \texttt{System.exit()} calls.
+We found 3 applications that use a variation of this technique:
+Eclipse, GJMan, and AspectJ.\footnote{%
+GJMan contains a code comment referencing a
+blog post that we believe is the origin of this solution. \url{http://www.jroller.com/ethdsy/entry/disabling\_system\_exit}}
+For example, Eclipse uses Ant as a library.  Ant calls \texttt{System.exit()} to
+terminate a currently-running build script in the event of an unrecoverable
+error.  However, when Eclipse uses Ant as a library, it
+should instead continue to execute, and report an error to the user.
+Figure~\ref{fig:Eclipse-snippet} shows
+how Eclipse sets a security manager to enforce this constraint
+before executing Ant. After Ant closes and any error conditions
+are handled, Eclipse restores the original manager.
+
+While this technique does enforce the
 desired constraint, and appears to be the best solution available
-in Java at the moment, it may cause problems when applications are
-also using the sandbox for security purposes. The technique requires
+in Java at the moment, it is problematic for applications that also 
+use the sandbox as intended, for security purposes. The technique requires
 the application to dynamically change the security manager, which requires either a defenseless manager or for the application
 to be carefully written to prevent malicious code from weakening the sandbox. Defenseless security managers
 are not capable of reliably enforcing a serious security policy.
 
-\subsubsection{Reducing Web Application Development Complexity}\label{sub:Reducing-Web-Application-Complexity}
-
-We found applications that were complicated by the Java security policies
-for web applications (applets and applications launched via JWS). By default, Java executes such an application inside a restrictive
-sandbox that severely limits the operations the application can perform,
+\noindent\textbf{Reducing Web Application Development Complexity}%\label{sub:Reducing-Web-Application-Complexity}
+%
+We also found applications that were complicated by the Java security policies
+for web applications (applets and applications launched via JWS). By default,
+Java executes such applications inside a restrictive 
+sandbox, 
 excluding operations such as accessing local files, retrieving resources
 from any third party server, or changing the security manager. 
 
-Applications in our set that cannot run in a restrictive sandbox universally opted to run outside of the sandbox because the alternative is to painstakingly construct the application to run reasonably without required privileges (e.g. by detecting the sandbox and disabling privileged operations). To avoid executing the applet in a restrictive
+Applications in our set that cannot run in a restrictive sandbox universally
+opted to run outside of the sandbox, because the alternative is to painstakingly
+construct the application to run reasonably without required privileges (e.g. by
+detecting the sandbox and disabling privileged operations). To avoid executing
+the applet in a restrictive 
 sandbox, a developer must get the application digitally signed
 by a recognized certificate authority then specify that the application should
 run outside of the sandbox. We found that applications using this method attempted
@@ -762,9 +768,14 @@ application, causing a restrictive sandbox to catch the security violation and
 terminate the application.
 
 We found two applications that do this: Eclipse and
-Timelag. The rationale for disabling the manager in Eclipse is explained in a code comment that reads, "The launcher to start eclipse using webstart. To use this launcher, the client must accept to give all security permissions." Timelag performs the same operation but does not contain any comments, thus we can only infer their motivation.
+Timelag. The rationale for disabling the manager in Eclipse is explained in a
+code comment that reads, ``The launcher to start eclipse using webstart. To use
+this launcher, the client must accept to give all security permissions.'' Timelag
+performs the same operation but does not contain any comments, thus we can only
+infer the developers' motivations. 
 
-\subsection{Using the Security Manager for Security Purposes}\label{sub:Using-the-Security}
+\subsection{Using the Security Manager for Security Purposes}
+\label{sub:Using-the-Security}
 
 This section describes applications that provide novel insights into benign sandbox interactions related to improving the security
 posture of the application. Several of these applications clearly violate hypotheses 1, 2, and 4: Batik, Eclipse, and Spring-modules provide
@@ -839,7 +850,7 @@ including those requiring \texttt{PropertyPermissions}.
 \end{lstlisting}
 
 \caption{Example Ant build script element to grant all but one permission.
-This specific permission set leads to a defenseless security manager.}
+This permission set results in a defenseless security manager.}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
@@ -865,28 +876,25 @@ JVM as the application itself. As a result, a mind map could potentially
 be crafted to exploit a user that opens the map and runs its scripts.
 
 \begin{figure}
-\begin{lstlisting}[numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=30,xrightmargin={0.1cm},numbersep={-10pt}]
-  /**  
-   * By default, everything is allowed.  
+\begin{lstlisting}[numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=32,xrightmargin={0.1cm},numbersep={-10pt}]
+  /** By default, everything is allowed.  
    * But you can install a different security controller once,  
    * until you install it again. Thus, the code executed in   
    * between is securely controlled by that different security manager.  
    * Moreover, only by double registering the manager is removed. So, no   
    * malicious code can remove the active security manager.  
-   *   
    * @author foltin  
-   *  
-   */
-   public void setFinalSecurityManager(SecurityManager pFinalSecurityManager) {
-	 if(pFinalSecurityManager == mFinalSecurityManager){
-       mFinalSecurityManager = null;
-	   return;
-      } 		
-      if(mFinalSecurityManager != null) {
-      throw new SecurityException("There is a SecurityManager installed already."); 		
-      } 		
-      mFinalSecurityManager = pFinalSecurityManager;
-    }	
+    */
+  public void setFinalSecurityManager(SecurityManager pFinalSecurityManager) {
+    if(pFinalSecurityManager == mFinalSecurityManager){
+      mFinalSecurityManager = null;
+      return;
+     } 		
+     if(mFinalSecurityManager != null) {
+     throw new SecurityException("There is a SecurityManager installed already."); 		
+     } 		
+     mFinalSecurityManager = pFinalSecurityManager;
+   }	
 \end{lstlisting}
 
 
