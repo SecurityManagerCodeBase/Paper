@@ -450,7 +450,7 @@ There are four possibilities:
   policy it enforces.  This could be implemented with a runtime monitor that
   determines if a security manager is self-protecting when an application
   attempts to change the sandbox. This is much easier to implement soundly than
-  the previous mitigation and guards against the same number and types of
+  the previous possible mitigation and guards against the same number and types of
   exploits.
   % This can
   % be easily achieved. While this mitigation has the same outcome as the moderate
@@ -471,11 +471,8 @@ the Java sandbox.
 \subsection{Dataset}\label{sec:Applications-Studied}
 
 \begin{table}
-\caption{Table of applications included in the security manager study.}
-\label{Table:applications-studied}
-
-
-\centering{}%
+\caption{Table of applications included\label{Table:applications-studied}
+in the security manager study.}
 \begin{tabular}{lll}
 \toprule 
 Application Name & Description & Repo\tabularnewline
@@ -530,7 +527,6 @@ Visor & Closure Library & Github\tabularnewline
 \end{tabular}
 \end{table}
 
-
 We used applications from the Qualitas Corpus (QC)
 \cite{QualitasCorpus:APSEC:2010} and GitHub to form a dataset of applications
 that use the security manager.  The Qualitas Corpus is a curated collection of
@@ -547,54 +543,50 @@ and Git commit hashes are available in an online supplement.%
 
 We investigated sandbox interactions in 29 of the 112 applications from QC
 version 20130901.  We used \texttt{grep} on the source code of the full set
-to find instances of the keyword \textit{SecurityManager}, which
+to find instances of the keyword \texttt{SecurityManager}, which
 identified 29 applications of interest.  We performed a similar process on
 GitHub, searching only Java files. We added the keyword
-\textit{System.setSecurityManager(} to remove false positives, and
-\textit{System.setSecurityManager(null)} to find applications that disable the
+\texttt{System.setSecurityManager(} to remove false positives, and
+\texttt{System.setSecurityManager(null)} to find applications that disable the
 manager. We picked the top seven applications from the results for each keyword,
 removed false positives, resulting in an additional 17 applications that
 were not already in QC. We only looked at the latest commit \todo{as of when?}.
 
 \subsection{Methodology}
 
-With the dataset in hand, we created static and dynamic analysis tools
-to assist in the manual inspection of each application. Our static
-analysis tool is a FindBugs \cite{hovemeyer_finding_2004} plugin
-that uses a dataflow analysis to determine where \texttt{System.setSecurityManager}()
-is called, as well as the lines of code where its arguments were initialized.
+We created static and dynamic analysis tools
+to assist in the manual inspection of each application's security manager
+interactions. We created a 
+FindBugs \cite{hovemeyer_finding_2004} plugin
+that uses dataflow analysis to identify the initialization of and calls to \texttt{System.setSecurityManager}().
 We created a dynamic analysis tool using the Java Virtual Machine
-Tool Interface (JVMTI) \cite{_jvmti}. JVMTI is designed to allow
+Tool Interface (JVMTI) \cite{_jvmti}, which allows
 tools to inspect the current state of Java applications and control
-their execution; it is commonly used to create Java debugging and
-profiling tools. Our dynamic analysis tool set a modification watch
+their execution. Our dynamic analysis tool set a modification watch
 on the \texttt{security} field of Java's \texttt{System} class. This
 field holds the current security manager object for the application.
-The watch prints out the class name, source file name, and line of
-code where any change to the field took place. A special notice is
-printed when the field is set to \texttt{null}. 
+% The watch prints out the class name, source file name, and line of
+% code where any change to the field took place. A special notice is
+% printed when the field is set to \texttt{null}. 
 
-We split the dataset between two reviewers. The reviewers both analyzed
+We split the dataset between two reviewers, who each analyzed
 applications using the following steps:
 
-\begin{enumerate}
-\item Run grep on all Java source files in the application
-to output every line containing the keyword \textsl{SecurityManager} and the 5 lines before and after it.
-\item Reject any application where it is clear from the grep output that the keyword is used in ways that are unrelated to the security manager class.
-\item Run the static analysis on retained applications. 
-\item Manually inspect code identified in step 3.
-Start where the manager is set and trace 
-back to locations where potential security
-managers are initialized. 
-\item Manually inspect all of the lines returned in step 1, looking for how the application interacts with
-the sandbox. 
+\begin{flushenum}\setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\itemsep}{0pt}
+\item Run \texttt{grep} on all Java source files in the application.
+Output every line containing the keyword \texttt{SecurityManager} and the 5
+lines before and after it.  Manually inspect the returned code with respect to
+how the application interacts with the sandbox.
+\item Run the static analysis on retained applications. Manually inspect the
+  returned code, focusing on initialization. 
 \item Execute the application with the dynamic analysis using parameters
-and actions steps 4 and 5 show affect the security
-manager to verify conclusions from previous steps.
-\item Summarize the operations performed
-on the security manager with an emphasis on points that support or
-reject each hypothesis.
-\end{enumerate}
+  informed by the previous steps, 
+to verify conclusions.
+\item Summarize operations performed
+on the security manager.
+\end{flushenum}
 
 We undertook a pilot study where each reviewer
 independently inspected the same six applications and compared their
@@ -605,8 +597,10 @@ consistent results.
 \section{Study Results}\label{sec:Study-results}
 
 \begin{table}
-\caption{Classification of application interactions with the security manager.}
-\label{tab:Classification-of-Application}
+\caption{Classification of application
+  interactions \label{tab:Classification-of-Application}
+with the security manager.}
+
 
 \centering{}%
 \begin{tabular}{lrrr}
@@ -617,20 +611,22 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 2. Changes set security manager & 5 & 3 & 8\tabularnewline
 3. Support being sandboxed & 10 & 3 & 13\tabularnewline
 4. Interactions only in unit tests & 3 & 5 & 8\tabularnewline
-5. No interactions (false positive) & 5 & 5 & 10\tabularnewline
+%5. No interactions (false positive) & 5 & 5 & 10\tabularnewline
 \bottomrule
 \end{tabular}
 \end{table}
 
 
 
-We characterized the security manager interactions of the applications in our dataset by assigning each one of five types. The
+We characterized the security manager interactions of the applications in our
+dataset by assigning each one of four types. The
 types are summarized as follows: (1) applications that set a
 security manager that does not get changed later in the application's
 execution, (2) applications that change a set manager at some point
 in the program's execution, (3) applications that interact with a
-security manager in production code if one is set but do not modify the manager or its policy, (4) applications
-that only interact with the manager in unit tests, and (5) applications that do not actually interact with the manager. Table \ref{tab:Classification-of-Application}
+security manager in production code if one is set but do not modify the manager
+or its policy, and (4) applications
+that only interact with the manager in unit tests. Table \ref{tab:Classification-of-Application}
 summarizes our dataset using these types.
 
 Type 3, 4, and 5 applications will not be discussed further because their interactions with the sandbox cannot violate our hypotheses.
