@@ -595,13 +595,16 @@ consistent results.
 
 \section{Study Results}\label{sec:Study-results}
 
+In this section, we describe the results of our empirical study of open-source
+Java programs and how they interact with the security manager. \todo{actual road map}
+
+\subsection{Summary of benign behaviors}\label{sub:Evaluation-of-the-hypotheses}
+
+
 \begin{table}
 \caption{Classification of application
   interactions \label{tab:Classification-of-Application}
 with the security manager.}
-
-
-\centering{}%
 \begin{tabular}{lrrr}
 \toprule 
 Type of Interaction & QC & GitHub & Total\tabularnewline
@@ -615,46 +618,61 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 \end{tabular}
 \end{table}
 
-
-
-We characterized the security manager interactions of the applications in our
-dataset by assigning each one of four types. The
-types are summarized as follows: (1) applications that set a
+We characterize each application along one of four types, depending on how they
+interact with the security manager:
+(1) applications that set a
 security manager that does not get changed later in the application's
 execution, (2) applications that change a set manager at some point
 in the program's execution, (3) applications that interact with a
 security manager in production code if one is set but do not modify the manager
 or its policy, and (4) applications
-that only interact with the manager in unit tests. Table \ref{tab:Classification-of-Application}
-summarizes our dataset using these types.
+that only interact with the manager in unit tests. 
 
-Type 3, 4, and 5 applications will not be discussed further because their interactions with the sandbox cannot violate our hypotheses.
+Table \ref{tab:Classification-of-Application}
+summarizes our dataset using these types. \todo{one-sentence summary}  We will
+not discuss types 3 or 4 applications further, because their interactions with
+the sandbox are not interesting from the perspective of improving the JVM to
+reduce security vulnerabilities: none of the considered mitigations could break
+backwards-compatability.  
 
-Type 2 applications can violate our hypotheses and therefore provide the bulk of our discussion below. However, a few Type 1 applications are discussed due to the novel insights they provide into benign interactions with the sandbox. We discuss application that use the sandbox for purposes that are not security related in Section \ref{sub:Non-security-uses-of}
-and applications that use the sandbox for its intended security purposes in Section \ref{sub:Using-the-Security}.
+Of the four possible scenarios outlined in
+Section~\ref{sec:Security-Manager-Study}, Type 2 applications are the most
+interesting, because they change pre-configured and running security managers.
+We therefore focuse on these applications therefore in our discussion below. 
+However, a few Type 1 applications are discussed due to
+the interesting insights they provide into benign sandbox interactions. We
+discuss application that use the sandbox for purposes that are not security
+related in Section \ref{sub:Non-security-uses-of} and applications that use the
+sandbox for its intended security purposes in Section
+\ref{sub:Using-the-Security}.
 
-\subsection{Evaluation of the Hypotheses}\label{sub:Evaluation-of-the-hypotheses}
+Recall that in Section~\ref{sec:Security-Manager-Study}, we refined the
+high-level research question---how do benign applications interact with the
+security manager?---into four possibilities, and that the possible mitigations
+required in each case varied by strength and complexity.  Revisiting those
+possibilities with respect to our dataset, we found that:
+\begin{flushenum}\setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\itemsep}{0pt}
+\item Benign applications \emph{do} sometimes disable the security manager.
+  However, we found that such applications typically use the sandbox for
+  non-security purposes; we discuss further below.
 
-We only require one counterexample to falsify a hypothesis from Section
-\ref{sec:Security-Manager-Study}. This section summarizes how our
-hypotheses held up against the results of this study.
+\item Several benign applications \emph{do} provide methods for the user to
+  dynamically change the security policy or the manager in ways that can reduce
+  the security of the sandbox.
 
-\textbf{Hypothesis 1}: \emph{Benign applications do not disable
-the security manager.} The investigation determined
-that some benign applications do disable the security manager, but these were typically were not using the sandbox for security purposes.
+\item Benign applications do \emph{not} change the
+security manager if a self-protecting security manager has been set.  
 
-\textbf{Hypothesis 2}: \emph{Benign applications do not weaken the
-security manager.} Several applications provided methods for the user to dynamically change the security policy or the manager in ways that can reduce the security of the sandbox.
+\item Benign applications do sometimes change a set security manager.  We
+  observed multiple applications that changed a set security manager.
+\end{flushenum}
 
-\textbf{Hypothesis 3}: \emph{Benign applications do not change the
-security manager if a self-protecting security manager has been set}.
-This hypothesis was supported by both datasets.
-
-\textbf{Hypothesis 4}: \emph{Benign applications do not change a
-set security manager.} This hypothesis was falsified by multiple applications that changed the security manager.
-
-In short, the strong mitigation is the only proposed mitigation that
-can be implemented without breaking benign applications.
+In short, the strong mitigation is the only proposed mitigation that can be
+implemented without breaking the benign applications in our dataset;
+fortunately, the implementation does not require complex, context-sensitive
+information about whether a change to a policy weakens the sandbox or not. 
 
 \subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
