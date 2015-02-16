@@ -339,7 +339,7 @@ While the Java sandbox \textit{should} prevent malicious applets from
 executing their payloads, defects in the
 Java Runtime Environment (JRE) enforcement of these security mechanisms permit
 malicious code to set a security manager to \texttt{null}.  
-Setting the security manager to \texttt{null} disables the sandbox, allowing
+This disables the sandbox, allowing
 previously constrained classes to perform operations with the privileges of 
 the JRE itself. 
 This approach was taken in a large proportion of drive-by downloads exploiting
@@ -373,8 +373,7 @@ because it is rare that a vulnerable privilege class is directly accessible
 to all Java applications; doing so violates the \textit{access
 control} principle that is part of the Java development culture.%
 \footnote{\url{https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm}%
-} Once an exploit gains access to a vulnerable privileged class, that
-class can be ``tricked'' into executing code that disables the sandbox
+} 
 
 The confused deputy attack is an example of privilege escalation.  Most
 privileged classes in the JRE implement features that can be accessed via
@@ -396,9 +395,9 @@ directly unless malicious code succeeds in modifying its privileges first.
 This redundancy is implicit in the Java security model: If any class
 could load more privileged classes and directly cause the execution
 of privileged operations, the sandbox in its current form would serve
-little purpose. In sections \ref{sec:Rules-for-Fortifying} and \ref{sec:Mitigations}
+little purpose. \todo{In sections \ref{sec:Rules-for-Fortifying} and \ref{sec:Mitigations}
 we discuss how we can leverage these distinctions to further fortify
-the sandbox.
+the sandbox.}
 
 % In the rest of this paper, we do not concern ourselves with the specifics of
 % particular exploits. We will now explore how benign applications interact with
