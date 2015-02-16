@@ -31,7 +31,7 @@ basicstyle=\ttfamily\bfseries\scriptsize,
   breaklines=true,
   numberstyle=\ttfamily\footnotesize\color{gray},
   stepnumber=1,
-  numbersep=10pt,
+  numbersep=6pt,
   backgroundcolor=\color{white},
   tabsize=4,
   showspaces=false,
@@ -802,35 +802,28 @@ methods that allow the user to set and change an existing manager,
 and Ant, Freemind, and Netbeans explicitly set then change the manager.
 
 \begin{figure}
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=156,xrightmargin={0.1cm},numbersep={-10pt}]
-    public void enforceSecurity(boolean enforce){ 
-    SecurityManager sm = System.getSecurityManager();
-
-    if (sm != null && sm != lastSecurityManagerInstalled){
-        ...
+\begin{lstlisting}[firstnumber=156]
+public void enforceSecurity(boolean enforce){ 
+  SecurityManager sm=System.getSecurityManager();
+  if (sm != null && sm != lastManagerInstalled){ // ...
 \end{lstlisting}
-
-
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=163,xrightmargin={0.1cm},numbersep={-10pt}]
-        throw new SecurityException
-            (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
-    }                  
-    if (enforce) { 
-        ...
+\vspace{-0.3cm}
+\begin{lstlisting}[firstnumber=163]
+   throw new SecurityException
+     (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
+  }                  
+  if (enforce) { // ...
 \end{lstlisting}
-
-
-\begin{lstlisting}[language=Java,numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=173,xrightmargin={0.1cm},numbersep={-10pt}]
-        installSecurityManager();         
-    } else {             
-        if (sm != null) {                 
-           System.setSecurityManager(null);
-           lastSecurityManagerInstalled = null;             
-           ...
+\vspace{-0.3cm}
+\begin{lstlisting}[firstnumber=173]
+    installSecurityManager();         
+  } else {             
+    if (sm != null) {                 
+      System.setSecurityManager(null);
+      lastSecurityManagerInstalled = null;             
 \end{lstlisting}
-
-
-\protect\caption{Security manager interactions in Batik.}\label{fig:Batik-snippet}
+\caption{Security manager interactions \label{fig:Batik-snippet} in
+  Batik.\todo{Why is this interesting?}}
 \end{figure}
 
 
@@ -895,31 +888,29 @@ JVM as the application itself. As a result, a mind map could potentially
 be crafted to exploit a user that opens the map and runs its scripts.
 
 \begin{figure}
-\begin{lstlisting}[numbers=left,basicstyle={\scriptsize},breaklines=true,firstnumber=32,xrightmargin={0.1cm},numbersep={-10pt}]
-  /** By default, everything is allowed.  
-   * But you can install a different security controller once,  
-   * until you install it again. Thus, the code executed in   
-   * between is securely controlled by that different security manager.  
-   * Moreover, only by double registering the manager is removed. So, no   
-   * malicious code can remove the active security manager.  
-   * @author foltin  
-    */
-  public void setFinalSecurityManager(SecurityManager pFinalSecurityManager) {
-    if(pFinalSecurityManager == mFinalSecurityManager){
-      mFinalSecurityManager = null;
-      return;
-     } 		
-     if(mFinalSecurityManager != null) {
+\begin{lstlisting}[language=Java,firstnumber=31]
+/** By default, everything is allowed. But you
+ * can install a different security controller
+ * once, until you install it again. Thus, the
+ * code executed in between is securely
+ * controlled by that different security manager.  
+ * Moreover, only by double registering the
+ * manager is removed. So, no  malicious code 
+ * can remove the active security manager.  
+ * @author foltin */
+public void setFinalSecurityManager(SecurityManager pFinalSM) {
+  if(pFinalSM == mFinalSM){
+    mFinalSM = null;
+    return;
+   } 		
+   if(mFinalSM != null) {
      throw new SecurityException("There is a SecurityManager installed already."); 		
-     } 		
-     mFinalSecurityManager = pFinalSecurityManager;
-   }	
+   } 		
+   mFinalSM = pFinalSM;
+ }	
 \end{lstlisting}
-
-
-\caption{Initialization of the field in Freemind's custom security manager
-that stores the proxy security manager.}
-\label{fig:Freemind-Security-Manager}
+\caption{Initialization of the field in Freemind's custom security manager\label{fig:Freemind-Security-Manager}
+that stores the proxy security manager. \todo{It is interesting because...}}
 \end{figure}
 
 Freemind attempted to implement an architecture that would allow the
