@@ -15,6 +15,7 @@
 
 \begin{document}
 
+\newcommand{\minisec}[1]{\vspace{2ex}\noindent\textbf{#1}}
 
 \lstset{language=Java}
 \definecolor{dkgreen}{rgb}{0,0.5,0}
@@ -82,7 +83,7 @@ a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
 \end{figure}
 \fi
 
-Java applications are very popular targets for malicious attackers,% (see
+Java applications are very popular targets for malicious attackers, % (see
 %Figure~\ref{fig:most-targeted-applications}), 
 for three broad reasons.  First,
 it is the Java Runtime Environment (JRE) is widely installed on user endpoints.
@@ -1177,9 +1178,7 @@ techniques for additional types of exploits.
 
 \section{Threats to Validity}
 
-\subsection{Study limitations}\label{sub:Limitations-Study}
-\subsubsection{Internal Validity}
-
+\minisec{Internal Validity.} 
 Our results are dependent on accurately studying the source code of
 applications and their comments. In most cases, security manager interactions
 are easily understood, but there are a few particularly complex interactions
@@ -1195,16 +1194,14 @@ we inspected entire source files that contained
 security manager operations. We tested our tools and processes in a pilot study
 to find and mitigate sources of inconsistencies.
 
-\subsubsection{External Validity}
-
+\minisec{External Validity.}
 The study only includes open source applications. It is possible
 that closed source applications interact with the security manager
 in ways that we did not see in the open source community. However,
 we inspected a few small applications with our aerospace collaborators.
 We did not find any code that suggested this is the case. 
 
-\subsubsection{Reliability}
-
+\minisec{Reliability.}
 While the majority of the study is easily replicable, GitHub search results are constantly
 changing. Using GitHub to generate a new dataset using our method
 would likely generate a different dataset. Furthermore, over the course of our security
