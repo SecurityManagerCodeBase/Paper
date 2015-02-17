@@ -86,12 +86,11 @@ a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
 
 Java applications are very popular targets for malicious attackers, % (see
 %Figure~\ref{fig:most-targeted-applications}), 
-for three broad reasons.  First,
-it is the Java Runtime Environment (JRE) is widely installed on user endpoints.
+for three broad reasons.  First, the Java Runtime Environment (JRE) is widely installed on user endpoints.
 Second, the JRE can (and often does) execute external code, in the form of
 applets and Java Web Start (JWS)~\cite{_java_web_start}
 applications~\cite{gong1997going,gong2003inside}.  Finally, Java contains
-hundreds of vulnerabilities, including zero-day vulnerabilities (e.g. CVE-2013-0422)~\cite{xforceQ12013}.  In the
+hundreds of known and zero-day vulnerabilities (e.g. CVE-2013-0422)~\cite{xforceQ12013}. In the
 common scenario, often referred to as a ``drive-by download'', attackers lure
 users to a website that contains a hidden malicious applet. Such malicious
 applets exploit security vulnerabilities in the JRE to deliver malware,
@@ -103,8 +102,8 @@ components from one another. Both the host application and machine should
 therefore be protected from malicious behavior.
 In practice, these security mechanisms are problematically
 buggy, such that Java malware typically operate by altering the sandbox's
-settings~\cite{garber_2012}.  Such exploits take advantage of defects in either
-the JRE's implementation the application's configuration of the sandbox to 
+settings~\cite{garber_2012}. Such exploits take advantage of defects in either
+the JRE itself or the application's configuration of the sandbox to 
 disable the security manager, the component of the sandbox responsible for enforcing the
 security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012}.
 
@@ -129,9 +128,9 @@ those interactions.
 
 We discovered two types of security managers in
 practice. \emph{Defenseless} managers enforce a policy that allows sandboxed code
-to modify sandbox settings.  Such applications
+to modify sandbox settings. Such applications
 are inherently insecure, because externally-loaded malicious code can
-modify or disable the security manager.  In our study, this situation typically
+modify or disable the security manager. In our study, this situation typically
 arose in applications that modified sandbox settings at runtime, often because
 they use the security manager to enforce policies unrelated to security.
 The sandbox is not intended to be used this way, 
@@ -147,14 +146,12 @@ such applications due to defects in the JRE code that enforces security
 policies, but not due to poorly-deployed local security settings.
 
 Overall, we found that applications that attempt to use the sandbox for its intended
-purpose---protection from exploitative external code---do not make use of its
+purpose---protection from malicious external code---do not make use of its
 vast flexibility.  We therefore propose two runtime rules to fortify the Java
 sandbox against the two most common modern attack types. We evaluate our rules
 with respect to their ability to guard against the ten applets in Metasploit
 4.10.0%
-\footnote{http://www.metasploit.com/%
-} that successfully exploit unpatched versions of Java 7. Taken together, the
-monitors detected and stopped all ten exploits, and neither monitor produces
+\footnote{http://www.metasploit.com/} that successfully exploit unpatched versions of Java 7. Taken together, the rules stopped all ten exploits, and neither produces
 false-positives for a corpus of benign JWS applications.
 We are engaged in an
 on-going discussion on the security-dev mailing list for OpenJDK about
@@ -180,7 +177,7 @@ programs (Section \ref{sec:Rules-for-Fortifying}).
 In this section, we describe the Java sandbox
 (Section~\ref{sec:sandbox}), distinguish between defenseless and self-protecting
 Security Managers (Section~\ref{sec:secmanagers}) and provide a high-level
-description on how Java exploits commonly work
+description of how Java exploits commonly work
 (Section~\ref{sec:javaexploits}). 
 
 \subsection{The Java sandbox}
@@ -237,7 +234,7 @@ Missing checks in code that \emph{should} be protected are a common
 source of Java vulnerabilities, because the security-critical code must initiate
 the check.  Note that such vulnerabilities lie in the JVM itself (i.e., the code
 written by the Java developers), not in the code that uses the sandbox to
-execute untrusted external code.
+execute untrusted code.
 
 \subsection{Defenseless vs. self-protecting managers}
 \label{sec:secmanagers}
@@ -326,6 +323,9 @@ public class Payload
 Java exploit payload from http://pastebin.com/QWU1rqjf.}
 % CLG isn't convinced that this figure is adding enough to justify the amount of
 % space it's taking up.
+% MM Would probably get rid of Fig 3 (Batik) first. This links to source
+% code of what was an actual 0-day exploit, in its original form. This is %  the only place we directly reference such a thing for people who want
+% to something really concrete.
 \end{figure}
 \fi
 
@@ -338,13 +338,13 @@ Java exploit payload from http://pastebin.com/QWU1rqjf.}
 % security model and recent Java exploits. 
 While the Java sandbox \textit{should} prevent malicious applets from
 executing their payloads, defects in the
-Java Runtime Environment (JRE) enforcement of these security mechanisms permit
+Java Runtime Environment (JRE) implementation of these security mechanisms permit
 malicious code to set a security manager to \texttt{null}.  
 This disables the sandbox, allowing
 previously constrained classes to perform operations with the privileges of 
 the JRE itself. 
 This approach was taken in a large proportion of drive-by downloads exploiting
-Java applets between 2011 and 2013. 
+Java applets between 2011 and 2013~\cite{fireeye_2013}. 
 %Figure \ref{fig:A-typical-exploit-payload}
 %shows a typical payload class whose privileges have been elevated
 %by an exploit to allow it to disable the sandbox. This example payload
@@ -370,13 +370,13 @@ known to contain a vulnerability (such as a missing security check).  The
 attacker then takes advantage of that vulnerability to disable the sandbox 
 (see CVE-2012-4681 \cite{_vulnerability_2012_4681}).
 The ``convincing'' is necessary
-because it is rare that a vulnerable privilege class is directly accessible
+because it is rare that a vulnerable privileged class is directly accessible
 to all Java applications; doing so violates the \textit{access
 control} principle that is part of the Java development culture.%
 \footnote{\url{https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm}%
 } 
 
-The confused deputy attack is an example of privilege escalation.  Most
+The confused deputy exploit is an example of privilege escalation.  Most
 privileged classes in the JRE implement features that can be accessed via
 less-privileged code paths; benign applications therefore rarely need to
 directly access them. 
@@ -391,7 +391,7 @@ directly access them.
 Because a privileged class loader must be used to load a privileged class, 
 a non-privileged class does not typically have access to vulnerable
 privileged classes anyway. The danger of vulnerabilities in privileged
-classes is therefore mitigated, because such vulnerabilites cannot be exploited
+classes is therefore mitigated, because such vulnerabilities cannot be exploited
 directly unless malicious code succeeds in modifying its privileges first. 
 This redundancy is implicit in the Java security model: If any class
 could load more privileged classes and directly cause the execution
@@ -420,7 +420,7 @@ dynamic, and manual inspections of the open source Java application landscape
 that aims to understand the operations benign applications perform on the
 manager. We focus our efforts on the security manager, as it is the
 means by which applications interact with the sandbox.
-%
+
 Our basic research question is: How do benign open source Java applications interact
 with the security manager? The answer to this question informs which JVM-level
 modifications can be deployed to mitigate the ability of exploitative code to
@@ -671,12 +671,12 @@ that only interact with the manager in unit tests.
 
 Table \ref{tab:Classification-of-Application}
 summarizes our dataset using these types. Eight applications eliminate one or more possible mitigation, while the rest cannot cause backwards-compatibility issues. We will
-not discuss type 3 or 4 applications further, because their interactions with
+not discuss Type 3 or 4 applications further, because their interactions with
 the sandbox can not eliminate a possible mitigation and they do not provide insights useful to mitigation implementers.  
 
 Of the four categories, Type 2 applications are the most interesting, because
 they change pre-configured and running security managers.  We therefore focus
-on these applications therefore in our discussion. A few Type 1
+on these applications in our discussion. A few Type 1
 applications also provide interesting insights into
 benign sandbox interactions. We discuss application that use the sandbox for
 purposes that are not security related in Section \ref{sub:Non-security-uses-of}
@@ -721,7 +721,7 @@ used as a library: The \texttt{System.exit()} will close the calling
 application as well, because both applications
 are running in the same JVM. This is often not the desired
 outcome.
-%
+
 To prevent this outcome without modifying the library application,
 the calling application needs to enforce the architectural constraint
 that libraries cannot terminate the JVM. 
@@ -782,7 +782,7 @@ infer the developers' motivations.
 \label{sub:Using-the-Security}
 
 This section describes applications that provide novel insights into benign sandbox interactions related to improving the security
-posture of the application. Several of these applications clearly violate hypotheses 1, 2, and 4: Batik, Eclipse, and Spring-modules provide
+posture of the application. Several of these applications eliminate all possible mitigations that do not consider if the manager is self-protecting: Batik, Eclipse, and Spring-modules provide
 methods that allow the user to set and change an existing manager,
 and Ant, Freemind, and Netbeans explicitly set then change the manager.
 
@@ -952,8 +952,8 @@ to execute arbitrary code.\todo{What language is this actually in so I can
 
 \section{Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
-Given the results of our investigation in Section \ref{sec:Security-Manager-Study}
-and the discussion in Section \ref{sub:Java-Exploits}, we can fortify
+Given the results of our investigation in Section \ref{sec:Study-results}
+and the discussion in Section \ref{sec:javaexploits}, we can fortify
 the sandbox for applications that set a \emph{self-protecting} security
 manager. In this section, we define two rules to stop Java exploits
 from disabling the manager. These rules are backwards-compatible with
