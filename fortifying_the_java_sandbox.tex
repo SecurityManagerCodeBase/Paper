@@ -167,7 +167,7 @@ The contributions of this papers are as follows:
   \setlength{\parsep}{0pt}
   \setlength{\itemsep}{0pt}
 \item An analysis of privilege escalation in the Java security model and
-recent Java exploits (Section \ref{sub:Java-Exploits}).
+recent Java exploits (Section~\ref{sec:javaexploits}).
 \item An empirical study of Java sandbox usage in benign, open-source applications
 (Sections \ref{sec:Security-Manager-Study} and \ref{sec:Study-results}).
 \item Two novel rules for distinguishing between benign and malicious Java
@@ -181,7 +181,7 @@ In this section, we describe the Java sandbox
 (Section~\ref{sec:sandbox}), distinguish between defenseless and self-protecting
 Security Managers (Section~\ref{sec:secmanagers}) and provide a high-level
 description on how Java exploits commonly work
-(Section~\ref{sec:Java-Exploits}). 
+(Section~\ref{sec:javaexploits}). 
 
 \subsection{The Java sandbox}
 \label{sec:sandbox}
@@ -290,9 +290,8 @@ that distinguish between self-protecting and defenseless security
 managers. We consider any security manager that enforces a policy
 containing any of these permissions defenseless.
 
-
 \subsection{Exploiting Java Code}
- \label{sec:Java-Exploits}
+\label{sec:javaexploits}
 
 \iffalse
 \begin{figure}
@@ -345,7 +344,7 @@ This disables the sandbox, allowing
 previously constrained classes to perform operations with the privileges of 
 the JRE itself. 
 This approach was taken in a large proportion of drive-by downloads exploiting
-Java applets between 2011 and 2013~\cite{fixme-metasploit}. 
+Java applets between 2011 and 2013. 
 %Figure \ref{fig:A-typical-exploit-payload}
 %shows a typical payload class whose privileges have been elevated
 %by an exploit to allow it to disable the sandbox. This example payload
@@ -408,19 +407,13 @@ the sandbox.}
 
 \section{Security Manager Study}\label{sec:Security-Manager-Study}
 
-Modern exploits that manipulate on the Java security manager perform one
+Modern exploits that manipulate the Java security manager perform one
 operation: They disable it.  This is possible because the Java security model is extremely
 complex and grants enormous flexibility to application developers to
 set, reconfigure, manipulate, weaken, strengthen, or otherwise change a security
 manager after it has been created.
 Do applications need this power?  Do they regularly take advantage of the
-ability to disable or weaken the sandbox?  If not, we can design
-backwards-compatible JVM enhancements that can stop even zero-day exploits by
-eliminating the operations on which exploits depend.  \todo{CLG says: I'm not
-  sure I understand this sentence, but I think it's important.  Can we simplify
-  it? This strategy would allow the sandbox to enforce policies on a given
-  execution without having to deal with the wide diversity in the manifestations
-  of vulnerabilities within the JRE or the subtleties of their exploits. } 
+ability to disable or weaken the sandbox?  If not, we can stop exploits for even currently unknown vulnerabilities by eliminating these operations without breaking backwards-compatibility with benign applications.
 
 In this section, we describe an empirical analysis consisting of static,
 dynamic, and manual inspections of the open source Java application landscape
@@ -569,7 +562,7 @@ GitHub, searching only Java files. We added the keyword
 \texttt{System.setSecurityManager(null)} to find applications that disable the
 manager. We picked the top seven applications from the results for each keyword,
 removed false positives, resulting in an additional 17 applications that
-were not already in QC. We only looked at the latest commit \todo{as of when?}.
+were not already in QC. We only looked at the latest commit as of June 2014.
 
 \subsection{Methodology}
 
@@ -638,8 +631,6 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 \end{tabular}
 \end{table}
 
-\todo{How many applications set or require a defenseless manager?  Is that interesting?}
-
 Recall that in Section~\ref{sec:Security-Manager-Study}, we refined the
 high-level research question---how do benign applications interact with the
 security manager?---into four possibilities, and that the possible mitigations
@@ -679,11 +670,9 @@ or its policy, and (4) applications
 that only interact with the manager in unit tests. 
 
 Table \ref{tab:Classification-of-Application}
-summarizes our dataset using these types. \todo{one-sentence summary}  We will
-not discuss types 3 or 4 applications further, because their interactions with
-the sandbox are not interesting from the perspective of improving the JVM to
-reduce security vulnerabilities: none of the considered mitigations could break
-backwards-compatability.  
+summarizes our dataset using these types. Eight applications eliminate one or more possible mitigation, while the rest cannot cause backwards-compatibility issues. We will
+not discuss type 3 or 4 applications further, because their interactions with
+the sandbox can not eliminate a possible mitigation and they do not provide insights useful to mitigation implementers.  
 
 Of the four categories, Type 2 applications are the most interesting, because
 they change pre-configured and running security managers.  We therefore focus
@@ -906,7 +895,7 @@ public void setFinalSecurityManager(SecurityManager pFinalSM) {
  }	
 \end{lstlisting}
 \caption{Initialization of the field in Freemind's custom security manager\label{fig:Freemind-Security-Manager}
-that stores the proxy security manager. \todo{It is interesting because...}}
+that stores the proxy security manager. This shows two common problems with the sandbox: (1) the developers did not understand that using Java policies as a blacklist is dangerous and (2) the ability to modify the manager at runtime required the use of an insufficient work-around to try to defend against malicious changes. In this case, these problems were fatal to the security of the application.}
 \end{figure}
 
 Freemind attempted to implement an architecture that would allow the
@@ -958,10 +947,10 @@ new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 
 \caption{Exploit that breaks out of the scripting sandbox in Freemind\label{fig:Example-Exploit-for-Freemind}
 to execute arbitrary code.\todo{What language is this actually in so I can
-  format it properly?}}
+  format it properly? MM: It's Groovy script}}
 \end{figure}
 
-\section{ Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
+\section{Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
 Given the results of our investigation in Section \ref{sec:Security-Manager-Study}
 and the discussion in Section \ref{sub:Java-Exploits}, we can fortify
@@ -1031,10 +1020,7 @@ own. JVMTI implementations can avoid this limitation, but avoidance would likely
 increase implementation complexity beyond what is reasonable for a diagnostic
 interface. We are currently in communication with the OpenJDK developers on
 their security-dev mailing list regarding enforcement of our rules in the JVM
-itself to avoid overhead issues.
-\todo{Note: I moved the next sentence from the intro, which was too long. It may
-not belong here and definitely needs to be integrated into the surrounding text.}
- This implementation strategy is motivated by
+itself to avoid overhead issues. This implementation strategy is motivated by
 two concerns: Existing mechanisms for monitoring the execution of Java
 applications are either (1) insufficient to securely enforce the rules
 (e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade
