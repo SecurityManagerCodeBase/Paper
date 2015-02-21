@@ -1163,6 +1163,26 @@ future work will be able to build upon these results to create mitigation
 techniques for additional types of exploits.
 
 
+\subsection{Validating the tool with web applications}
+\begin{table*}
+\caption{\label{tab:validation-programs}
+Application information for programs which we tested with our tool.}
+
+\begin{tabular}{lllll}
+\toprule 
+\textbf{Name} & \textbf{Purpose} & \textbf{KLOC} & \textbf{Number of Test Cases} & \textbf{Latest Commit Date}\tabularnewline
+\midrule
+ArgoUML& UML Diagramming Tool& -having problems getting this number-& 1244& 1/11/15 \tabularnewline
+JavaOpenStreetMap& Interactive Map Display& 343& 406& 1/18/15 \tabularnewline
+JabRef& Reference Manager& 148& 3& 3/11/14 \tabularnewline 
+mucommander& File Manager & 106& 27& 1/23/14 \tabularnewline
+\bottomrule
+\end{tabular}
+\vspace{-0.5cm}
+\end{table*}
+
+For each of the 4 applications listed in Table \ref{tab:validation-programs}, the applications contained test cases or sample workloads in their source distribution.  We first confirmed that the application's test cases pass without a security manager set.  Then we set a security manager that printed all the permissions required by the application.  We then put each unique permissions into a policy file, and granted folder access instead of specific file access.  We then confirmed that the test cases pass when a security manager was set with the required permissions.  Finally, we set our tool and ran the application with our tool and the security manager set.  All test cases passed for all applications when using our tool.
+
 \section{Threats to Validity}
 
 \minisec{Internal Validity.} 
