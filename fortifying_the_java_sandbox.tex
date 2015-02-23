@@ -84,7 +84,7 @@ a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
 \end{figure}
 \fi
 
-Java applications are very popular targets for malicious attackers, % (see
+Java is a popular target for malicious attackers, % (see
 %Figure~\ref{fig:most-targeted-applications}), 
 for three broad reasons.  First, the Java Runtime Environment (JRE) is widely installed on user endpoints.
 Second, the JRE can (and often does) execute external code, in the form of
@@ -978,8 +978,7 @@ loaded when accessed by a trusted proxy class.
 The \textit{Security Manager rule} states that the manager cannot
 be changed if a \emph{self-protecting} security manager has been set
 by the application. This rule is violated when code causes a change
-in the sandbox's configuration, the goal of many exploits. This rule
-is an implementation of the strong mitigation.
+in the sandbox's configuration, the goal of many exploits.
 
 \subsection{Validating the Rules}\label{sec:Mitigations}
 
@@ -990,14 +989,12 @@ Hypothesis 3 and rejected all of the others. Along the way, we learned
 practical lessons about how applications use the Java sandbox that
 are useful to exploit mitigation implementers. 
 
-In this section, we evaluate the protection merits and backwards-compatibility of the rules presented in Section \ref{sec:Rules-for-Fortifying} through an implementation of runtime monitors that enforce them. This evaluation was done in collaboration
+In this section, we evaluate the protection merits and backwards-compatibility of the rules presented above through an implementation of runtime monitors that enforce them. This evaluation was done in collaboration
 with a large aerospace company.
 
 Section \ref{sub:Implementation-Using-JVMTI} discusses how we implemented
-our runtime monitors using JVMTI. Section \ref{sub:Effectiveness-at-Fortifying}
-explains the methodology behind and results of an experiment we conducted
-to determine how effective the rules are at stopping existing exploits without breaking benign applications. Finally, Section
-\ref{sub:Related-Work-Mitigation} covers prior work related to Java exploit mitigations.
+our runtime monitors using JVMTI. Sections \ref{sub:Effectiveness-at-Fortifying} and \ref{sec:backcompat} explain the methodology behind and results of experiments we conducted
+to determine how effective the rules are at stopping existing exploits without breaking benign applications. We conclude this section with a  brief discussion of the rules' limitations.
 
 \subsection{Implementation Using JVMTI}\label{sub:Implementation-Using-JVMTI}
 
@@ -1009,7 +1006,7 @@ the application's lifecycle. The interface allows an agent to set
 capabilities, enabling the tool to intercept events such as class
 or thread creation, field access or modification, breakpoints, etc.
 
-Our agent \footnote{Our agent is open source. An anonymized version
+Our agent\footnote{Our agent is open source. An anonymized version
 of the tool can be found at http://goo.gl/In6Di0} must intercept three events to enforce the Privilege Escalation
 and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
 and \texttt{FieldModification}. Enforcement of these rules is discussed in subsections \ref{sub:Enforcing-the-Privilege} and \ref{sub:Enforcing-the-SecurityManager}.
@@ -1151,19 +1148,7 @@ summarizes our results using the specific CVEs each exploit targeted.
 \end{tabular}
 \end{table}
 
-\subsection{Limitations}
-
-Neither of these rules will stop all Java exploits. While the rules
-catch all of the exploits in our set, some Java vulnerabilities can
-be exploited to cause significant damage without disabling the security
-manager. For example, our rules will not detect type confusion exploits
-that mimic privileged classes to perform their operations directly.
-However, our rules substantially improve Java sandbox security, and
-future work will be able to build upon these results to create mitigation
-techniques for additional types of exploits.
-
-
-\subsection{Validating the tool with web applications}
+\subsection{Validating Backwards-Compatibility}\label{sec:backcompat}
 \begin{table*}
 \caption{\label{tab:validation-programs}
 Application information for programs which we tested with our tool.}
@@ -1181,7 +1166,18 @@ mucommander& File Manager & 106 & 27 & 1/23/14 \tabularnewline
 \vspace{-0.5cm}
 \end{table*}
 
-For each of the 4 applications listed in Table \ref{tab:validation-programs}, the applications contained test cases or sample workloads in their source distribution.  We first confirmed that the application's test cases pass without a security manager set.  Then we set a security manager that printed all the permissions required by the application.  We then put each unique permissions into a policy file, and granted folder access instead of specific file access.  We then confirmed that the test cases pass when a security manager was set with the required permissions.  Finally, we set our tool and ran the application with our tool and the security manager set.  All test cases passed for all applications when using our tool.
+To validate the backwards-compatibility of our rules, we attached our monitors to the execution of any test cases provided with each application in table \ref{tab:validation-programs} or ran sample workloads when tests were unavailable.  After confirming that the tests or sample workloads worked without a security manager, we developed a reasonable security policy for each by using a custom security manager to print out unique permissions during their execution.  Finally, we ran each case a third time using our policy and the standard Java security manager with our monitors attached and enforcing the rules. The rules did not break any unit tests or sample workloads.
+
+\subsection{Limitations}
+
+Neither of these rules will stop all Java exploits. While the rules
+catch all of the exploits in our set, some Java vulnerabilities can
+be exploited to cause significant damage without disabling the security
+manager. For example, our rules will not detect type confusion exploits
+that mimic privileged classes to perform their operations directly.
+However, our rules substantially improve Java sandbox security, and
+future work will be able to build upon these results to create mitigation
+techniques for additional types of exploits.
 
 \section{Threats to Validity}
 
@@ -1221,7 +1217,7 @@ or were removed from GitHub (FileManagerFtpHttpServer and Visor).
 % soooooo long to get to the actual meat of the paper.  Can we try it like this
 % to see if it works?  I'll concede if you insist. 
 
-\subsection{Study}
+\subsection{Security Library and Tool Studies}
 
 Several recent studies have examined the use of security libraries
 and discovered rampant library misuse, which caused severe vulnerabilities.
@@ -1243,7 +1239,7 @@ know how or how extensively the ``fine grained access control mechanism''
 (i.e. the Java sandbox) is used \cite{gong2009java}. We fill in that
 gap. 
 
-\subsection{Mitigation}\label{sub:Related-Work-Mitigation}
+\subsection{Java Exploit Mitigations}\label{sub:Related-Work-Mitigation}
 
 Our rules increase the security of the sandbox
 by effectively removing unnecessary features. Prior work has taken a different
