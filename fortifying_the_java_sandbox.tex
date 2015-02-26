@@ -1151,27 +1151,28 @@ summarizes our results using the specific CVEs each exploit targeted.
 \subsection{Validating Backwards-Compatibility}\label{sec:backcompat}
 \begin{table*}
 \caption{\label{tab:validation-programs}
-Application information for programs which we tested with our tool.}
+Backwards compatibility dataset.}
+\centering
 
 \begin{tabular}{lllll}
 \toprule 
-\textbf{Name} & \textbf{Purpose} & \textbf{KLOC} & \textbf{Number of Test Cases} & \textbf{Latest Commit Date}\tabularnewline
+\textbf{Name} & \textbf{Description} & \textbf{KLOC} & \textbf{Number of Test Cases} & \textbf{Latest Commit}\tabularnewline
 \midrule
-ArgoUML& UML diagramming tool & 389 & 1244 test cases& 1/11/15 \tabularnewline
-Costello& GUI for GUI unit tests & not open source & 9 provided examples & 5/09/12 \tabularnewline
-CrossFTP& FTP client & not open source & 30 min. random GUI interaction and sample workload& 1/18/15 \tabularnewline
-JavaOpenStreetMap & interactive map display & 343 & 406 test cases& 1/18/15 \tabularnewline
-JabRef& reference manager & 148 & 3 provided examples & 3/11/14 \tabularnewline 
-mucommander& file manager & 106 & 27 test cases& 1/23/14 \tabularnewline
+ArgoUML & UML Tool & 389 & 1244 test cases & 1/11/15 \tabularnewline
+Costello & GUI Testing Frontend & closed source & 9 provided examples & 5/09/12 \tabularnewline
+CrossFTP & FTP Client & closed source & GUI fuzzing, sample workload & 1/18/15 \tabularnewline
+JavaOpenStreetMap & Map Editor & 343 & 406 test cases & 1/18/15 \tabularnewline
+JabRef & Reference Manager & 148 & 3 provided examples & 3/11/14 \tabularnewline 
+mucommander & File Manager & 106 & 27 test cases & 1/23/14 \tabularnewline
 \bottomrule
 \end{tabular}
 \vspace{-0.5cm}
 \end{table*}
 
-To validate the backwards-compatibility of our rules, we attached our monitors to the execution of any test cases provided with each application in table \ref{tab:validation-programs} or ran examples provided with the application download when tests were unavailable.  After confirming that the tests or sample workloads worked without a security manager, we developed a reasonable security policy for each by using a custom security manager to print out unique permissions during their execution.  Finally, we ran each case a third time using our policy and the standard Java security manager with our monitors attached and enforcing the rules. The rules did not break any unit tests or sample workloads.
+We validated that our rules are backwards compatible with benign applications by attaching our monitors to executions of each application in table~\ref{tab:validation-programs}. ArgoUML, JavaOpenStreetMap, and mucommand contained unit tests that we ran in the presence of our monitors. Costello, and JabRef did not contain tests, but did come with example workloads that we used instead. CrossFTP contained neither tests nor sample workloads, thus we fuzzed the GUI for 30 minutes using a custom fuzzer and uploaded a file to a remote FTP server as a sample workload. \todo{Add footnote linking to anonymized version of fuzzer source code: https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java
+} 
 
-%Zack - I'm not sure exactly what is needed here so I'm trying to give whoever is writing it, all the information.
-CrossFTP was the only application without test cases or provided examples in our dataset.  To test CrossFTP, we first created an automated GUI tester that randomly clicked and typed into different places in the GUI.  The code for this random GUI tester is in the GitHub repository.  When running the random GUI interaction test, we first set a policy for the application that allowed all permissions.  We then confirmed that our tool did not prevent CrossFTP handling random, unbiased GUI interactions. We also wanted to ensure that CrossFTP was still working while using our tool.  Thus, we transmitted a text file from the virtual machine we were testing on to the host computer using FTP.  Both the random GUI interaction test and the file transmission test completed successfully.
+In each case we confirmed that the tests, sample workloads, or fuzzed executions worked without a security manager. We then developed a reasonable security policy for each by using a custom security manager to print out unique permissions during their executions. Finally, we ran each case a third time using our policy and the standard Java security manager with our monitors attached and enforcing the rules. The rules did not break any unit tests, sample workloads, or fuzzed executions.
 
 \subsection{Limitations}
 
