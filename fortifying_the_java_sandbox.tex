@@ -477,7 +477,7 @@ There are four possibilities:
 
 In this section, we describe the
 methodology for and limitations of our empirical study
-study on open-source Java projects to validate this strategy, answer our
+on open-source Java projects to validate this strategy, answer our
 motivating question, and provide data in support of JVM enhancements to fortify
 the Java sandbox.  
 
@@ -567,13 +567,13 @@ were not already in QC. We only looked at the latest commit as of June 2014.
 
 We created static and dynamic analysis tools
 to assist in the manual inspection of each application's security manager
-interactions. We created a 
-FindBugs \cite{hovemeyer_finding_2004} plugin
-that uses dataflow analysis to identify the initialization of and calls to \texttt{System.setSecurityManager}().
-We created a dynamic analysis tool using the Java Virtual Machine
-Tool Interface (JVMTI) \cite{_jvmti}, which allows
-tools to inspect the current state of Java applications and control
-their execution. Our dynamic analysis tool set a modification watch
+interactions. The static analysis tool we created, a 
+FindBugs \cite{hovemeyer_finding_2004} plugin,
+uses dataflow analysis to identify security manager initialization and calls to \texttt{System.setSecurityManager}().
+The dynamic analysis tool we created uses the Java Virtual Machine
+Tool Interface (JVMTI) \cite{_jvmti}
+to inspect the current state of Java applications and control
+their execution. The dynamic analysis tool sets a modification watch
 on the \texttt{security} field of Java's \texttt{System} class. This
 field holds the current security manager object for the application.
 % The watch prints out the class name, source file name, and line of
@@ -587,8 +587,8 @@ applications using the following steps:
   \setlength{\parsep}{0pt}
   \setlength{\itemsep}{0pt}
 \item Run \texttt{grep} on all Java source files in the application.
-Output every line containing the keyword \texttt{SecurityManager} and the 5
-lines before and after it.  Manually inspect the returned code with respect to
+Output every line containing the keyword \texttt{SecurityManager}.
+Manually inspect the lines in their original source code files understand
 how the application interacts with the sandbox.
 \item Run the static analysis on retained applications. Manually inspect the
   returned code, focusing on initialization. 
@@ -621,10 +621,10 @@ with the security manager.}
 \toprule 
 Type of Interaction & QC & GitHub & Total\tabularnewline
 \midrule
-1. Sets manager, nothing else & 6 & 1 & 7\tabularnewline
-2. Changes set security manager & 5 & 3 & 8\tabularnewline
-3. Support being sandboxed & 10 & 3 & 13\tabularnewline
-4. Interactions only in unit tests & 3 & 5 & 8\tabularnewline
+1. Sets an immutable manager & 6 & 1 & 7\tabularnewline
+2. Changes set manager & 5 & 3 & 8\tabularnewline
+3. Supports being sandboxed & 10 & 3 & 13\tabularnewline
+4. Interacts only in unit tests & 3 & 5 & 8\tabularnewline
 %5. No interactions (false positive) & 5 & 5 & 10\tabularnewline
 \bottomrule
 \end{tabular}
@@ -746,7 +746,8 @@ desired constraint, and appears to be the best solution available
 in Java at the moment, it is problematic for applications that also 
 use the sandbox as intended, for security purposes. The technique requires
 the application to dynamically change the security manager, which requires either a defenseless manager or for the application
-to be carefully written to prevent malicious code from weakening the sandbox. Defenseless security managers
+to be carefully written to prevent malicious code from weakening the sandbox. \todo{Zack - the end of this sentence contradicts what has been said in the paper}
+Defenseless security managers
 are not capable of reliably enforcing a serious security policy.
 
 \subsubsection{Reducing Web Application Development Complexity}\label{sub:Reducing-Web-Application-Complexity}
@@ -894,7 +895,7 @@ public void setFinalSecurityManager(SecurityManager pFinalSM) {
  }	
 \end{lstlisting}
 \caption{Initialization of the field in Freemind's custom security manager\label{fig:Freemind-Security-Manager}
-that stores the proxy security manager. This shows two common problems with the sandbox: (1) the developers did not understand that using Java policies as a blacklist is dangerous and (2) the ability to modify the manager at runtime required the use of an insufficient work-around to try to defend against malicious changes. In this case, these problems were fatal to the security of the application.}
+that stores the proxy security manager. This case shows two common problems with the sandbox: (1) the developers did not understand that using Java policies as a blacklist is dangerous and (2) the ability to modify the manager at runtime required the use of an insufficient work-around to try to defend against malicious changes. In this case, these problems were fatal to the security of the application.}
 \end{figure}
 
 Freemind attempted to implement an architecture that would allow the
