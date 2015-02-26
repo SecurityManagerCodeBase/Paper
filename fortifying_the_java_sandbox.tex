@@ -732,7 +732,7 @@ that prevents \texttt{System.exit()} calls.
 We found 3 applications that use a variation of this technique:
 Eclipse, GJMan, and AspectJ.\footnote{%
 GJMan contains a code comment referencing a
-blog post that we believe is the origin of this solution. \url{http://www.jroller.com/ethdsy/entry/disabling\_system\_exit}}
+blog post that we believe is the origin of this solution. \url{http://www.jroller.com/ethdsy/entry/disabling_system_exit}}
 For example, Eclipse uses Ant as a library.  Ant calls \texttt{System.exit()} to
 terminate a currently-running build script in the event of an unrecoverable
 error.  However, when Eclipse uses Ant as a library, it
