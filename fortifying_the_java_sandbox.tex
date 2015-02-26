@@ -158,18 +158,13 @@ on-going discussion on the security-dev mailing list for OpenJDK about
 implementing runtime enforcement of these rules in the JVM itself.
 
 The contributions of this papers are as follows:
-\todo{CLG would like us to rethink these contributions once the rest of the paper
-  has been modified.}
 \begin{flushitem}	\setlength{\parskip}{0pt}
   \setlength{\parsep}{0pt}
   \setlength{\itemsep}{0pt}
-\item An analysis of privilege escalation in the Java security model and
-recent Java exploits (Section~\ref{sec:javaexploits}).
-\item An empirical study of Java sandbox usage in benign, open-source applications
-(Sections \ref{sec:Security-Manager-Study} and \ref{sec:Study-results}).
-\item Two novel rules for distinguishing between benign and malicious Java
-programs (Section \ref{sec:Rules-for-Fortifying}).
-\item A case study evaluation of the protection merits of our rules with a discussion of practical implementation considerations (Section \ref{sec:Mitigations}).
+\item A catalog of open source applications that enforce constraints on sub-components by way of the Java sandbox (Section \ref{sec:Study-results}).
+\item An enumeration of Java permissions that make security policies difficult to enforce (Section \ref{sec:secmanagers}), a discussion of real-world cases where these permissions are used (Sections \ref{sub:Non-security-uses-of} and \ref{sub:Using-the-Security}), and a sandbox-bypassing exploit for a popular open source application made vulnerable due to their use (Section \ref{sub:Using-the-Security}).
+\item Two novel rules for distinguishing between benign and malicious Java programs, which we validated with an empirical evaluation (Section \ref{sec:Rules-for-Fortifying}).
+\item A discussion of the various tactics for practically implementing the rules, with a case for adoption directly in the JVM (Section \ref{sub:Implementation-Using-JVMTI}).
 \end{flushitem}
 
 \section{Background}\label{sec:Background}
@@ -588,7 +583,7 @@ applications using the following steps:
   \setlength{\itemsep}{0pt}
 \item Run \texttt{grep} on all Java source files in the application.
 Output every line containing the keyword \texttt{SecurityManager}.
-Manually inspect the lines in their original source code files understand
+Manually inspect the lines in their original source code files to understand
 how the application interacts with the sandbox.
 \item Run the static analysis on retained applications. Manually inspect the
   returned code, focusing on initialization. 
