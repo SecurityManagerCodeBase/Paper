@@ -8,8 +8,13 @@
 \usepackage[english]{babel}
 \usepackage{listings}
 \usepackage{myref}
-\usepackage{todos}
+%\usepackage{todos}
 \usepackage{microtype}
+
+\usepackage{marginnote}
+\usepackage[textsize=tiny]{todonotes}
+\renewcommand{\marginpar}{\marginnote}
+\setlength{\marginparwidth}{1.5cm}
 
 \makeatletter
 \makeatother
