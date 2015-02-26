@@ -557,10 +557,9 @@ We investigated sandbox interactions in 29 of the 112 applications from QC
 version 20130901.  We used \texttt{grep} on the source code of the full set
 to find instances of the keyword \texttt{SecurityManager}, which
 identified 29 applications of interest.  We performed a similar process on
-GitHub, searching only Java files. We added the keyword
-\texttt{System.setSecurityManager(} to remove false positives, and
-\texttt{System.setSecurityManager(null)} to find applications that disable the
-manager. We picked the top seven applications from the results for each keyword,
+GitHub, searching only Java files. The keywords
+\texttt{System.setSecurityManager(} and \texttt{System.setSecurityManager(null)} were added to remove false positives and find applications that disable the
+manager respectively. We picked the top seven applications from the results for each keyword,
 removed false positives, resulting in an additional 17 applications that
 were not already in QC. We only looked at the latest commit as of June 2014.
 
