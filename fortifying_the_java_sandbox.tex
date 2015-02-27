@@ -1036,16 +1036,14 @@ enforce them. This evaluation was done in collaboration with a large aerospace
 company.
 Section~\ref{sub:Implementation-Using-JVMTI} discusses how we implemented
 our runtime monitors using JVMTI. Sections~\ref{sub:Effectiveness-at-Fortifying} and~\ref{sec:backcompat} explain the methodology behind and results of experiments we conducted
-to determine how effective the rules are at stopping existing exploits without breaking benign applications. We conclude this section with a  brief discussion of the rules' limitations.
+to determine how effective the rules are at stopping existing exploits without
+breaking benign applications. 
 
 \subsection{Implementation Using JVMTI}\label{sub:Implementation-Using-JVMTI}
 
-JVMTI is a native interface used to create
-analysis tools such as profilers, debuggers, monitors, and thread
-analyzers. Tools that use JVMTI are called agents, and are attached
-to a running Java application at a configuration-specific point in
-the application's lifecycle. The interface allows an agent to set
-capabilities, enabling the tool to intercept events such as class
+JVMTI is a native interface that enables the creation of
+dynamic analysis tools, called agents, such as profilers, debuggers, monitors, and thread
+analyzers. JVMTI agents can intercept and respond to events such as class
 or thread creation, field access or modification, breakpoints, etc.
 
 Our agent\footnote{Our agent is open source. An anonymized version
@@ -1063,7 +1061,7 @@ itself to avoid overhead issues. This implementation strategy is motivated by
 two concerns: Existing mechanisms for monitoring the execution of Java
 applications are either (1) insufficient to securely enforce the rules
 (e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade
-performance by disabling the just-in-time compiler (JIT). 
+performance by disabling the just-in-time compiler (JIT).%
 \footnote{REVIEWERS: This discussion will be referenced in the final version of the paper. At this time, the OpenJDK developers are very receptive to the idea, were already considering implementing something similar to our SecurityManager rule, and have stated the lessons from the empirical study we shared with in an early manuscript of this paper are valuable to their efforts.}
 
 \subsubsection{Enforcing the Privilege Escalation Rule}\label{sub:Enforcing-the-Privilege}
@@ -1077,80 +1075,89 @@ use only. These packages are listed in the \texttt{package.access}
 property in the \texttt{java.security.Security} class. There are two
 ways to unsafely and directly access packages listed in this property:
 (1) exploit a vulnerability in a class that can access them or (2)
-allow access via the \texttt{accessClassInPackage} permission.
+allow access via the \texttt{accessClassInPackage} permission.\todo{Question:
+  wouldn't that permission result in a defenseless manager?}
 
-GRABBED FROM ABOVE, MUST INTEGRATE
-If all classes in the Java Virtual Machine (JVM) instance were loaded
-at the start of an application, this rule would never be broken. However,
-the JVM loads certain classes on demand, and some of the JVM classes
-have the full privileges. Classes in
-packages that are listed in the \texttt{package.access} property of
-\texttt{java.security.Security} are not subject to this rule because they are intended to be
-loaded when accessed by a trusted proxy class. 
-END GRABBED FROM ABOVE, MUST INTEGRATE
+% CLG moved this text from above, because it seemed really repetitive; not sure
+% if any of the material it covers is critical/should be included here?
+% If all classes in the Java Virtual Machine (JVM) instance were loaded
+% at the start of an application, this rule would never be broken. However,
+% the JVM loads certain classes on demand, and some of the JVM classes
+% have the full privileges. Classes in
+% packages that are listed in the \texttt{package.access} property of
+% \texttt{java.security.Security} are not subject to this rule because they are intended to be
+% loaded when accessed by a trusted proxy class. 
 
-Applications use JRE classes which call restricted access package
-classes. Thus, we must allow JRE to load restricted-access packages
-at runtime. For example, many of the classes in the \texttt{java.lang.reflect}
-package are backed by classes in the \texttt{sun} package, which is
-a restricted-access package containing the internal implementations
-for many Java features. However, enforcing the Privilege Escalation
-rule prevents exploits from elevating the privileges of their payloads
-because the payloads can not be in restricted-access packages with
-default JRE configurations. 
+Benign applications can and often do use JRE classes to access these implementations by
+calling restricted access package
+classes (e.g., many of the classes in the \texttt{java.lang.reflect}
+package are backed by classes in the restricted-access \texttt{sun} package, which
+contains the internal implementations
+for many Java features). We must therefore allow the JRE to load restricted-access packages
+at runtime, while preventing such loading from the application classes.
+Because exploit payloads are not implemented in restricted-access JRE packages,
+the Privilege Escalation rule can permit this standard behavior while preventing
+attacks. 
+%However, enforcing the Privilege Escalation
+%rule prevents exploits from elevating the privileges of their payloads
+%because the payloads can not be 
+%default JRE configurations. 
 
-To enforce the Privilege Escalation rule, our agent registers for
+To enforce the rule, our agent registers for
 the \texttt{ClassPrepare} event, which allows the agent to inspect
 a class after it is fully loaded but just before any of its code is
 executed. Assuming the loaded class is not in a restricted-access
 package, the agent inspects the stack frame to determine which class
 caused the new class to be loaded. The agent must then get the protection
 domains for both classes to ensure the loaded class is not more privileged.
+\todo{Content question: how is this different from the usual stack-walking thing
+  that we describe in background?}
 
 \subsubsection{Enforcing the SecurityManager Rule}\label{sub:Enforcing-the-SecurityManager}
 
 The SecurityManager rule is enforced by monitoring every read from
-and write to the \texttt{security} field of the \texttt{System} class:
-This field stores the security manager that is used by protected code.
-The agent implements the read and write monitors by respectively registering
-\texttt{FieldAccess and FieldModification} events for the field. Typically
-the field is accessed via \texttt{System.getSecurityManager()}
-and modified using \texttt{System.setSecurityManager()}, but we must
-monitor the field instead of instrumenting these methods to detect
-type confusion attacks. 
+and write to the \texttt{security} field of the \texttt{System} class.
+This field stores the security manager.
+The agent implements the read and write monitors by registering
+\texttt{FieldAccess} and \texttt{FieldModification} events for the field. We 
+monitor the field directly instead of instrumenting its getter and setter
+methods to protect against type confusion attacks. 
 
-The agent stores a shadow copy of the application's most recent security
-manager to have a trusted copy of the manager that can be used to
-check for rule violations. This copy is only
-updated by the modification event, which receives the new manager
-as a parameter from JVMTI whenever the event is triggered.
+The agent stores a shadow copy of the most recent security
+manager. This copy is checked and updated via the JVMTI \texttt{FieldModification} event.
+Whenenver the \texttt{security} field is written, the agent checks its
+shadow copy of the manager.  If it is \texttt{null},
+the manager is being set for the first time; the agent therefore checks
+if the new manager is self-protecting. If so, 
+the agent updates the shadow copy. If not, the agent stops monitoring the
+application because the rule does not apply in the presence of a defenseless
+manager. Any further changes to the self-protecting manager are logged.\todo{you
+  mean even in the presence of a defenseless manager?}
 
-Modification events are used to detect any change to a self-protecting
-security manager. When the field is written, the agent checks the
-shadow copy of the manager. Assuming the shadow copy is \texttt{null},
-the agent knows the manager is being set for the first time and checks
-to see if the new manager is self-protecting. If the manager is self-protecting
-the agent simply updates the shadow copy. Otherwise the agent stops monitoring the application because the rule does not apply in the presence of a defenseless manager. Any further changes to the self-protecting manager are logged.
-
-Access events are used to detect type confusion attacks against the
-manager. The modification event we register will not be triggered
-when the manager is changed due to a type confusion attack. When a
-type confusion attack is used to masquerade a malicious class as the
-\texttt{System} class, the malicious copy will have different internal
-JVM identifiers for the class itself and its methods. Even given these
-differences, updating a field in one version of the class updates
-the value the JVM stores for the field in both classes because \texttt{System} is static and both classes appear to have the same type. The
+The agent also registers and checks modifications to the field via
+\texttt{FieldAccess} events, 
+because the \texttt{FieldModification} event will not be triggered
+when the manager is changed due to a type confusion attack.  Type confusion attacks
+masquerade a malicious class as the
+\texttt{System} class.  The masqueraded copy will have different internal
+JVM identifiers for the class itself and its methods as compared to the legitimate
+\texttt{System} class. However, because \texttt{System} is static, updating a
+field in the masqueraded copy modifies the value in the legitimate copy. 
+The
 modification and access events are registered for specific field and
 class identifiers, thus the events are not triggered for operations
 on the malicious version. We leverage the mismatch this causes between
 the set security manager and our shadow copy by checking to see if
-the manager that is read in the access event has the same internal
+the manager that is read in an access event has the same internal
+\todo{Content question: does this mean that we detect it the next time the
+  security manager is checked, and not at the point that it is modified?  If so,
+I think that could be clearer; if not, I'm confused.}
 JVM reference as our shadow copy. When the two references do not match,
 the manager has been changed by a malicious class masquerading as
 \texttt{System}. Type confusion attacks may also be used to masquerade
 a class as a privileged class loader to elevate the privileges of
-a payload class that disables the manager; this scenario is detected
-by the modification event.
+a payload class that disables the manager; this scenario is also detected
+by the modification event.\todo{Do we do anything about it?}
 
 
 \subsection{Effectiveness at Fortifying the Sandbox}\label{sub:Effectiveness-at-Fortifying}
@@ -1228,9 +1235,10 @@ In each case we confirmed that the tests, sample workloads, or fuzzed executions
 
 We then confirmed that our tool could run around the Dacapo Benchmarks~\ref{DaCapo:paper}~(avrora, batik, eclipse, fop, h2, jython, luindex, lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan).  For all applications but batik, we set a security manager that allowed for all permissions and ran our tool around the application.  Batik was the only exception, since the application was written to terminate if a security manager was set before starting the application, as batik wanted to set a security manager itself.  Thus, we set our tool around batik and allowed batik to set its own security manager.  All applications successfully completed when using our tool.
 
-\subsection{Limitations}
+\section{Limitations and Threats}
 
-Neither of these rules will stop all Java exploits. While the rules
+\minisec{Limitations.}
+Neither of the rules we propose in \secref{Rules-for-Fortifying} will stop all Java exploits. While the rules
 catch all of the exploits in our set, some Java vulnerabilities can
 be exploited to cause significant damage without disabling the security
 manager. For example, our rules will not detect type confusion exploits
@@ -1238,8 +1246,6 @@ that mimic privileged classes to perform their operations directly.
 However, our rules substantially improve Java sandbox security, and
 future work will be able to build upon these results to create mitigation
 techniques for additional types of exploits.
-
-\section{Threats to Validity}
 
 \minisec{Internal Validity.} 
 Our results are dependent on accurately studying the source code of
@@ -1273,22 +1279,25 @@ or were removed from GitHub (FileManagerFtpHttpServer and Visor).
 
 \section{Related work}
 \label{sec:related}
-% CLG: I know you guys like to put the related work inline, but it's just taking
-% soooooo long to get to the actual meat of the paper.  Can we try it like this
-% to see if it works?  I'll concede if you insist. 
+\todo{There's a possibility that there are references closer-to-SE-home that
+  might reasonably be inserted here.  I'll take a look this weekend to see what
+  I can find.}
 
 \subsection{Security Library and Tool Studies}
 
 Several recent studies have examined the use of security libraries
+\todo{...I'm possibly being stupid, but the connection between security
+  libraries here and our work is not obvious/could be more explicit.  Half
+  sentence more?}
 and discovered rampant library misuse, which caused severe vulnerabilities.
 Georgiev et al. uncovered vulnerabilities in dozens of security critical
-applications caused by SSL library protocol violations \cite{georgiev12most-dangerous}.
+applications caused by SSL library protocol violations~\cite{georgiev12most-dangerous}.
 These applications misconfigured high-level libraries such that the
 high-level libraries misused low-level SSL libraries which in turn
 failed silently. Somorovsky et al. demonstrate vulnerabilities in
 11 security frameworks such that Security Assertion Markup Language
 (SAML) assertions are not checked properly when certain API mis-orderings
-are triggered \cite{somorovsky12breaking}. Li et al. examined browser-based
+are triggered~\cite{somorovsky12breaking}. Li et al. examined browser-based
 password managers and found that many of their features relied on
 an incorrect version of the same-origin policy, which could allow
 attackers to steal user credentials \cite{li2014emperor}. As far
@@ -1296,8 +1305,9 @@ as we are aware no study has examined Java applications' use of the
 sandbox. Li Gong, the main designer of the Java security architecture,
 admitted in a ten year retrospective on Java Security that he didn't
 know how or how extensively the ``fine grained access control mechanism''
-(i.e. the Java sandbox) is used \cite{gong2009java}. We fill in that
-gap. 
+(i.e. the Java sandbox) is used~\cite{gong2009java}. We fill in that
+gap. \todo{this is a pretty important motivating sentence, to the point that I
+  wonder if we can't put it somewhere more prominent...conclusion, maybe?}
 
 \subsection{Java Exploit Mitigations}\label{sub:Related-Work-Mitigation}
 
