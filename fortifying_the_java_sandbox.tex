@@ -983,12 +983,12 @@ final_sm.setAccessible(true)
 final_sm.set(sm, null)
 new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 \end{lstlisting}
-
-
 \caption{Exploit that breaks out of the scripting sandbox in Freemind\label{fig:Example-Exploit-for-Freemind}
-to execute arbitrary code.\todo{What language is this actually in so I can
-  format it properly? MM: It's Groovy script}}
+to execute arbitrary code.}
 \end{figure}
+
+\todo{Possibly a bit of summary/discussion?  Depends on how/whether we address
+  my concern at the top of the subsection regarding structure of this content.}
 
 \section{Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
