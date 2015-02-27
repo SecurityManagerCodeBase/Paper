@@ -163,11 +163,10 @@ purpose---protection from malicious external code---does not use its
 vast flexibility.  For these applications, the flexibility decreases their security without
 obviously benefiting the developers or application functionality.  We therefore propose two runtime rules to fortify the Java
 sandbox against the two most common modern attack types. We evaluate our rules
-with respect to their ability to guard against the ten applets in Metasploit
+with respect to their ability to guard against ten applets in a popular exploit development and delivery framework, Metasploit
 4.10.0%
-\footnote{http://www.metasploit.com/} that successfully exploit unpatched
+\footnote{http://www.metasploit.com/}, that successfully attack unpatched
 versions of Java 7. 
-\someone{what is Metasploit?  Need a half-sentence}
 Taken together, the rules stopped all ten exploits, and did not break
 backwards-compatability 
 when tested against a corpus of benign JWS applications.
