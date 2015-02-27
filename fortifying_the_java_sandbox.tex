@@ -559,6 +559,7 @@ Visor & Closure Library & Github\tabularnewline
 \end{tabular}
 \end{table}
 
+\zfc{we need to address reviewer concerns of our dataset}
 The goal of this study is to understand how benign open source Java programs use
 and interact with the security manager.  This study thus requires a varied set
 of such programs to support our claim of generalizable and indicative results.  
@@ -592,11 +593,46 @@ and Git commit hashes are available in an online supplement.%
 \subsection{Methodology}
 \label{sec:methodology}
 
-TODO: so important, it gets a real todo: what was the high-level goal of this
-  study?  To categorize the interactions, right?  First, we should open with
-  that.  Second, what were the categories?  What were the inclusion criteria for
-  each category?  Doesn't have to all be at the top, here, but should be in this
-  subsection somewhere.
+%TODO: so important, it gets a real todo: what was the high-level goal of this
+%  study?  To categorize the interactions, right?  First, we should open with
+%  that.  Second, what were the categories?  What were the inclusion criteria for
+%  each category?  Doesn't have to all be at the top, here, but should be in this
+%  subsection somewhere.
+In attempt to answer our basic research question, we created a process 
+for investigating how applications interacted with the security manager.  
+Once we studied the applications individually, we group the applications
+into qualitative categories to gain a better understanding of our dataset
+as a whole.  We grouped the applications into 
+different categories based on how and where they interacted with the security 
+manager. Because our research question was designed to focus on cases 
+where applications changed the security manager during execution, we made a 
+specific category for applications which change the security manager during
+execution.  We also wanted to know how many applications set static 
+security managers. If an application did not change the security manager, 
+then we looked to see if the application set a single security manager 
+during execution.  If so, the
+application was categorized as setting an immutable manager (since the 
+application set a security manager but never changed the manager).  We also 
+wanted to understand how applications which did not set or change a 
+security manager were designed to work with the security manager.  If an
+application interacts with a security manager the application doesn't set, 
+then the application contains logic to adjust to different security settings.
+For application which did not fit into either of the previous two categories, 
+we checked to see if the code contained security manager interactions.  If the 
+application contained security manager interactions but never set a security 
+manager (and there-fore never changed a manager), the application was 
+categorized as supporting being sandboxed.  Finally, we wanted to determine
+which applications only tested for specific security settings and designed
+the program to conform to those specific security settings. 
+For the final category, if the
+application did not contain any interaction with the security manager in 
+the main applications, but did contain any form of security manager 
+interactions in test cases, including changing the security manager (which 
+allows for testing multiple security settings), the 
+application was categorized as only interacting in unit tests.  
+
+
+
 We created static and dynamic analysis tools
 to assist in a manual inspection of each application's security manager
 interactions. The static analysis tool we created, a 
