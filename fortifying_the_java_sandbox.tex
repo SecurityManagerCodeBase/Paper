@@ -1181,31 +1181,39 @@ by the modification event.\todo{Do we do anything about it?}
 
 %%Need to integrate backwards-compatibility experiment here and mention proprietary applications tested through aerospace collaborator.
 
-We performed an experiment to evaluate how effective our rules are
-at blocking exploits that disable the sandbox. In our experiment,
-we ran Java 7 exploits for the browser from Metasploit 4.10.0 on 64-bit
-Windows 7 against the initial release of version 7 of the JRE. This
-version of Metasploit contains twelve applets that are intended to
-exploit JRE 7 or earlier, but two did not successfully run due to
-Java exceptions we did not debug. Metasploit contains many Java exploits
+To evaluate evaluate our rules' ability to 
+block sandbox-disabling exploits, 
+we ran ten Java 7 exploits for the browser from Metasploit 4.10.0 on 64-bit
+\todo{half-sentence reminding the reader of what metasploit is.}
+Windows 7 against the initial release of version 7 of the JRE. %This
+%version of Metasploit contains twelve applets that are intended to
+%exploit JRE 7 or earlier, but two did not successfully run due to
+%Java exceptions we did not debug. 
+Metasploit contains many Java exploits
 outside of the subset we used, but the excluded exploits either only
 work against long obsolete versions of the JRE or are not well positioned
 to be used in drive-by downloads. 
 
-We ran the ten exploits in our set under the following conditions:
+We ran the ten exploits under the following conditions:
 (1) without the agent, (2) with the agent but only enforcing the Privilege
-Escalation rule, and (3) while enforcing both rules. We tested the Privilege Escalation rule separately from the Security Manager rule because the latter stops all of the exploits on its own. All
-ten of the exploits succeed against our JRE without the agent. Four
+Escalation rule, and (3) while enforcing both rules. We tested the Privilege
+Escalation rule separately from the Security Manager rule because the latter
+stops all of the exploits on its own.\todo{then why have the other one?  IIRC
+  the ansewr is ``because SM is hella slow and PE is not'', but we haven't said
+  that at any point, and I'm pretty sure we don't.  Without that explanation,
+  the reader is left wondering why we have the PE rule at all.}  All  
+ten of the exploits succeeded without the agent. Four
 were stopped by the Privilege Escalation rule. All ten were stopped
 when both rules were enforced. The exploits that were not stopped
 by the Privilege Escalation rule were either type confusion exploits
 or exploits that did not need to elevate the privileges of the payload
 class. The payload class does not need elevated privileges when it
-can directly access a privileged class to exploit. Table \ref{tab:Exploit-experiment-summary}
-summarizes our results using the specific CVEs each exploit targeted.
+can directly access a privileged class to exploit. Table~\ref{tab:Exploit-experiment-summary}
+summarizes our results.
+\todo{``These results are interesting because...}
 
 \begin{table}
-\caption{Effectiveness test results.}\label{tab:Exploit-experiment-summary}
+\caption{Effectiveness\label{tab:Exploit-experiment-summary} test results.}
 \begin{tabular}{l>{\raggedright}p{3cm}l}
 \toprule 
 \textbf{CVE-ID} & \textbf{Privilege Escalation Monitor} & \textbf{Both Monitors}\tabularnewline
@@ -1245,12 +1253,43 @@ mucommander & File Manager & 106 & 27 test cases & 1/23/14 \tabularnewline
 \vspace{-0.5cm}
 \end{table*}
 
-We validated that our rules are backwards compatible with benign applications by attaching our monitors to executions of each application in table~\ref{tab:validation-programs}. ArgoUML, JavaOpenStreetMap, and mucommand contained unit tests that we ran in the presence of our monitors. Costello, and JabRef did not contain tests, but did come with example workloads that we used instead. CrossFTP contained neither tests nor sample workloads, thus we fuzzed the GUI for 30 minutes using a custom fuzzer and uploaded a file to a remote FTP server as a sample workload. \todo{Add footnote linking to anonymized version of fuzzer source code: https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java
-} 
+We validated that our rules are backwards compatible with benign applications by
+attaching our monitors to executions of each application in
+table~\ref{tab:validation-programs}. \todo{More detail needed in step two.  Why
+  did we develop a separate set of validation programs instead of just using the
+  original programs?  The answer only helps us in terms of the validity of the
+  study.  It also mitigates the threat that we've overfitted our conclusions to
+  the original dataset, which we might mention in the next section.}  ArgoUML, JavaOpenStreetMap, and mucommand
+contained unit tests that we ran in the presence of our monitors. Costello, and
+JabRef did not contain tests, but did come with example workloads that we used
+instead. CrossFTP contained neither tests nor sample workloads, thus we fuzzed
+the GUI for 30 minutes using a custom fuzzer and uploaded a file to a remote FTP
+server as a sample workload. \todo{Add footnote linking to anonymized version of
+  fuzzer source code:
+  https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java
+}
 
-In each case we confirmed that the tests, sample workloads, or fuzzed executions worked without a security manager. We then developed a reasonable security policy for each by using a custom security manager to print out unique permissions during their executions. Finally, we ran each case a third time using our policy and the standard Java security manager with our monitors attached and enforcing the rules. The rules did not break any unit tests, sample workloads, or fuzzed executions.
+In each case we confirmed that the tests, sample workloads, or fuzzed executions
+worked without a security manager. We then developed reasonable security
+policies for each by using a custom security manager to print out unique
+permissions during their executions.\todo{the preceding sentence doesn't make
+  much sense on its own, I'm afraid.  Uh, what?} Finally, we ran each case a third time
+using our policy and the standard Java security manager with our monitors
+attached and enforcing the rules. The rules did not break any unit tests, sample
+workloads, or fuzzed executions.
 
-We then confirmed that our tool could run around the Dacapo Benchmarks~\ref{DaCapo:paper}~(avrora, batik, eclipse, fop, h2, jython, luindex, lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan).  For all applications but batik, we set a security manager that allowed for all permissions and ran our tool around the application.  Batik was the only exception, since the application was written to terminate if a security manager was set before starting the application, as batik wanted to set a security manager itself.  Thus, we set our tool around batik and allowed batik to set its own security manager.  All applications successfully completed when using our tool.
+We then confirmed that our tool could run around the Dacapo
+Benchmarks~\ref{DaCapo:paper}~(avrora, batik, eclipse, fop, h2, jython, luindex,
+lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan). \todo{A: typeset
+  all program names.  That applies above, too.  B: why Dacapo on top of the others?} For all
+applications but batik, we set a security manager that allowed for all
+permissions and ran our tool around the application.\todo{Does dacapo come with
+  indicative workloads?  I genuinely don't remember.}  Batik was the only
+exception, since the application was written to terminate if a security manager
+was set before starting the application, as batik wanted to set a security
+manager itself.  Thus, we set our tool around batik and allowed batik to set its
+own security manager.  All applications successfully completed when using our
+tool.
 
 \section{Limitations and Threats}
 
@@ -1416,6 +1455,7 @@ often do so incorrectly. One intriguing possibility is to allow programmers
 to strengthen the policy temporarily (e.g. by adding a permission). 
 
 We indirectly observed many developers struggling to understand and
+\todo{Where did we observe this?}
 use the security manager for any purpose. This is perhaps why there
 were only 36 applications in our sample. Some developers seemed to
 misunderstand the interaction between policy files and the security
