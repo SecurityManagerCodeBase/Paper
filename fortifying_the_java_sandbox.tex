@@ -585,11 +585,9 @@ removing manually-identified false positives and applications that were
 already included in the QC set. We looked at the latest commit as of June 2014.
  Table
 \ref{Table:applications-studied} lists the 36 applications that comprise the
-dataset we studied.
- Version numbers
+dataset.  Version numbers
 and Git commit hashes are available in an online supplement.%
-\footnote{http://goo.gl/dtcqTM%
-}
+\footnote{\url{http://goo.gl/dtcqTM}}
 
 \subsection{Methodology}
 \label{sec:methodology}
@@ -687,9 +685,11 @@ security manager if a self-protecting security manager has been set.
   observed multiple applications that changed a set security manager.
 \end{flushenum}
 
-The strong mitigation is thus the only proposed mitigation that can be
-implemented without breaking the benign applications in our dataset;
-fortunately, the implementation does not require complex, context-sensitive
+In terms of the four possible mitigation strategies,
+only the third---a runtime monitor that
+determines blocks modifications to a self-protecting security manager---can
+improve security without breaking benign behavior. 
+Fortunately, this technique does not require complex, context-sensitive
 information about whether a change to a policy weakens the sandbox or not. 
 
 We characterize each application in our dataset along one of four types, depending on how they
@@ -711,10 +711,10 @@ Of the four categories, Type 2 applications are the most interesting, because
 they change pre-configured and running security managers.  We therefore focus
 on these applications in our discussion. A few Type 1
 applications also provide interesting insights into
-benign sandbox interactions. We discuss application that use the sandbox for
-purposes that are not security related in Section \ref{sub:Non-security-uses-of}
+benign sandbox interactions. We discuss applications that use the sandbox for
+purposes that are not security related in Section~\ref{sub:Non-security-uses-of}
 and applications that use the sandbox for its intended security purposes in
-Section \ref{sub:Using-the-Security}.
+Section~\ref{sub:Using-the-Security}.
 
 \subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
