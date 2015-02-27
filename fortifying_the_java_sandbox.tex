@@ -21,7 +21,7 @@
 \newcommand{\js}[1]{\todo[color=blue!30]{JS: #1}}
 \newcommand{\clg}[1]{\todo[color=yellow]{CLG: #1}}
 \newcommand{\someone}[1]{\todo[color=orange]{SOMEONE: #1}}
-%end todonotes section
+%end todonotes section%
 
 \newcommand{\minisec}[1]{\vspace{2ex}\noindent\textbf{#1}}
 
@@ -239,21 +239,8 @@ sandboxed class attempts to execute a method with security implications, that
 method queries the security manager to determine if the operation should be
 permitted. 
 To perform a permission check, the security manager walks the call stack to
-ensure each class in the current stack frame has the permissions necessary to
-\someone{CLG is trying to decide if this fairly detailed explanation is
-  necessary to understand the rest of the paper.  Thoughts?}
-perform the action. For example, consider a class \texttt{Sandboxed} that attempts
-to create a \texttt{java.io.FileOutputStream}. The \texttt{FileOutputStream}
-constructor checks with the security manager to determine whether
-\texttt{Sandboxed} has permission to open the file in question.  The manager
-then checks the permission sets of each class in the call stack:
-\texttt{FileOutputStream}, and then \texttt{Sandboxed}.  If the permission check
-reaches a class in the stack frame that does not have the correct permissions,
-the security manager will throw a \texttt{SecurityException}.  Privileged code,
-such as \texttt{FileOutputStream} in our example, can wrap sensitive actions in
-a \texttt{doPrivileged} call to preempt the stack check.  This allows privileged
-code sections to perform actions with security implications at the request of
-non-privileged code.\footnote{Stack-based access control is discussed in more
+ensure each class in the current stack frame has the specific permission needed to
+perform the action.\footnote{Stack-based access control is discussed in more
   detail
   in~\cite{banerjee_stack-based_2005,besson_stack_2004,d._s._wallach_understanding_1998,erlingsson_irm_2000,fournet_stack_2002,pistoia_beyond_2007,zhao_type_2005}.}
 
@@ -558,11 +545,9 @@ Visor & Closure Library & Github\tabularnewline
 \end{tabular}
 \end{table}
 
-\zfc{we need to address reviewer concerns of our dataset}
 The goal of this study is to understand how benign open source Java programs use
 and interact with the security manager.  This study thus requires a varied set
-of such programs to support our claim of generalizable and indicative results.  
-We constructed such a dataset by
+of such programs to support our claim of generalizable and indicative results. While it would seem to make sense to use benign applets for this purpose given our motivation in the form of malicious applets, we must look elsewhere. Benign applets have no reason to interact with the sandbox as long as they are following the well-defined rules imposed on them and we could not find evidence that maintained, Internet-facing websites use applets. We constructed such a dataset by
 identifying 24 open source Java applications from the Qualitas Corpus
 (QC) version 20130901~\cite{QualitasCorpus:APSEC:2010}, and 12 from
 GitHub, that use the security manager.  The Qualitas Corpus is a curated collection of
@@ -1118,11 +1103,7 @@ for many Java features). We must therefore allow the JRE to load restricted-acce
 at runtime, while preventing such loading from the application classes.
 Because exploit payloads are not implemented in restricted-access JRE packages,
 the Privilege Escalation rule can permit this standard behavior while preventing
-attacks. 
-%However, enforcing the Privilege Escalation
-%rule prevents exploits from elevating the privileges of their payloads
-%because the payloads can not be 
-%default JRE configurations. 
+attacks.
 
 To enforce the rule, our agent registers for
 the \texttt{ClassPrepare} event, which allows the agent to inspect
@@ -1130,9 +1111,7 @@ a class after it is fully loaded but just before any of its code is
 executed. Assuming the loaded class is not in a restricted-access
 package, the agent inspects the stack frame to determine which class
 caused the new class to be loaded. The agent must then get the protection
-domains for both classes to ensure the loaded class is not more privileged.
-\todo{Content question: how is this different from the usual stack-walking thing
-  that we describe in background?}
+domains for both classes to ensure the loaded class is not more privileged by comparing their permission sets.
 
 \subsubsection{Enforcing the SecurityManager Rule}\label{sub:Enforcing-the-SecurityManager}
 
