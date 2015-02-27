@@ -738,31 +738,27 @@ finally {
 from terminating the JVM.}
 \end{figure}
 
-This section describes applications that interact with the sandbox in ways that
-are not related to security. Most of these applications used the
-sandbox to enforce architectural constraints when interacting with
+\someone{We say ``most'', here.  What do the rest of them do?}
+Most of the applications we observed to interact with the sandbox in
+non-security ways did so to enforce architectural constraints when interacting with
 other applications, or forcibly disabled the sandbox to reduce development
-complexity.  \todo{These applications are interesting because --- CLG thinks it
-  might be desireable to put such a discussion into an explicit ``discussion''
-  or conclusions section, but put in this todo just to remember to think about it}.
+complexity.  \todo{These applications are interesting because...CLG thinks we
+  need this sentence}.
 
 \subsubsection{Enforcing Architectural Constraints}
 
 Java applications often call \texttt{System.exit()} when a non-recoverable
-error occurs. This is problematic when the application in question is 
-used as a library: The \texttt{System.exit()} will close the calling
+error occurs. This can be a problem when the application in question is 
+used as a library: The \texttt{System.exit()} closes the calling
 application as well, because both applications
-are running in the same JVM. This is often not the desired
-outcome.
-
+are running in the same JVM. 
 To prevent this outcome without modifying the library application,
 the calling application needs to enforce the architectural constraint
 that libraries cannot terminate the JVM. 
 
-Some applications
+We found three applications in our dataset that 
 enforce this constraint by setting a security manager
-that prevents \texttt{System.exit()} calls.
-We found 3 applications that use a variation of this technique:
+that prevents \texttt{System.exit()} calls:
 Eclipse, GJMan, and AspectJ.\footnote{%
 GJMan contains a code comment referencing a
 blog post that we believe is the origin of this solution. \url{http://www.jroller.com/ethdsy/entry/disabling_system_exit}}
