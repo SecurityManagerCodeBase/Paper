@@ -37,7 +37,7 @@
 \definecolor{dkred}{rgb}{0.5,0,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \lstset{
-basicstyle=\ttfamily\bfseries\footnotesize,
+basicstyle=\ttfamily\bfseries\scriptsize,
   morekeywords={virtualinvoke}, 
   keywordstyle=\color{blue},
   ndkeywordstyle=\color{red},
@@ -45,7 +45,7 @@ basicstyle=\ttfamily\bfseries\footnotesize,
   stringstyle=\color{dkgreen},
   numbers=left,
   breaklines=true,
-  numberstyle=\ttfamily\scriptsize\color{gray},
+  numberstyle=\ttfamily\tiny\color{gray},
   stepnumber=1,
   numbersep=6pt,
   backgroundcolor=\color{white},
@@ -937,8 +937,13 @@ public void setFinalSecurityManager(SecurityManager pFinalSM) {
    mFinalSM = pFinalSM;
  }	
 \end{lstlisting}
-\caption{Initialization of the field in Freemind's custom security manager\label{fig:Freemind-Security-Manager}
-that stores the proxy security manager. This case shows two common problems with the sandbox: (1) the developers did not understand that using Java policies as a blacklist is dangerous and (2) the ability to modify the manager at runtime required the use of an insufficient work-around to try to defend against malicious changes. In this case, these problems were fatal to the security of the application.}
+\caption{Initialization of the field in Freemind's custom security
+  manager\label{fig:Freemind-Security-Manager} that stores the proxy security
+  manager. This demonstrates two problems with the current sandbox, as used by developers: (1) 
+  using Java policies as a blacklist is
+  dangerous and (2) modifying the manager at runtime requires 
+  a work-around (ineffective or incomplete, in this case) to defend against malicious
+  users. These problems were fatal to the security of this application.}
 \end{figure}
 
 Freemind attempted to implement an architecture that would allow the
@@ -997,44 +1002,40 @@ to execute arbitrary code.}
 \section{Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
 Based on our study of how open source Java programs interact with the security
-manager, we propose  two rules to stop Java exploits
+manager, we propose two rules to stop Java exploits
 from disabling the manager in applications that set a \emph{self-protecting}
-security manager: 
+security manager.  These rules reduce the flexibility and thus complexity of the
+Java security model without breaking backwards compatability in practice:
 
-The \textit{Privilege Escalation rule} ensures that, if a self-protecting
+\noindent\textbf{Privilege Escalation rule.} If a self-protecting
 security manager is set for the application, a class may not directly
 load a more privileged class. This rule is violated when the protection
 domain of a loaded class implies a permission that is not implied
 in the protection domain that loaded it. About half of recent exploits
-break this rule to elevate the privileges of their payload class.
+break this rule to elevate the privileges of their payload
+class.\todo{reference?  Did we observe this ourselves, or are we getting it from
+  somewhere?} 
 
-If all classes in the Java Virtual Machine (JVM) instance were loaded
-at the start of an application, this rule would never be broken. However,
-the JVM loads certain classes on demand, and some of the JVM classes
-have the full privileges. Classes in
-packages that are listed in the \texttt{package.access} property of
-\texttt{java.security.Security} are not subject to this rule because they are intended to be
-loaded when accessed by a trusted proxy class. 
-
-The \textit{Security Manager rule} states that the manager cannot
+\noindent \textbf{Security Manager rule.} The manager cannot
 be changed if a \emph{self-protecting} security manager has been set
-by the application. This rule is violated when code causes a change
+by the application. This is violated when code causes a change
 in the sandbox's configuration, the goal of many exploits.
 
-\subsection{Validating the Rules}\label{sec:Mitigations}
+%\subsection{Validating the Rules}\label{sec:Mitigations}
 
-In Section \ref{sec:Security-Manager-Study}, we discussed four hypotheses about security manager usage in benign applications, each
-of which, if validated, leads to a distinct mitigation. In Section
-\ref{sec:Study-results}, we gave empirical evidence in support of
-Hypothesis 3 and rejected all of the others. Along the way, we learned
-practical lessons about how applications use the Java sandbox that
-are useful to exploit mitigation implementers. 
+%In Section \ref{sec:Security-Manager-Study}, we discussed four hypotheses about security manager usage in benign applications, each
+%of which, if validated, leads to a distinct mitigation. In Section
+%\ref{sec:Study-results}, we gave empirical evidence in support of
+%Hypothesis 3 and rejected all of the others. Along the way, we learned
+%practical lessons about how applications use the Java sandbox that
+%are useful to exploit mitigation implementers. 
 
-In this section, we evaluate the protection merits and backwards-compatibility of the rules presented above through an implementation of runtime monitors that enforce them. This evaluation was done in collaboration
-with a large aerospace company.
-
-Section \ref{sub:Implementation-Using-JVMTI} discusses how we implemented
-our runtime monitors using JVMTI. Sections \ref{sub:Effectiveness-at-Fortifying} and \ref{sec:backcompat} explain the methodology behind and results of experiments we conducted
+In this section, we evaluate the protection merits and backwards-compatibility
+of these rules through an implementation of runtime monitors that
+enforce them. This evaluation was done in collaboration with a large aerospace
+company.
+Section~\ref{sub:Implementation-Using-JVMTI} discusses how we implemented
+our runtime monitors using JVMTI. Sections~\ref{sub:Effectiveness-at-Fortifying} and~\ref{sec:backcompat} explain the methodology behind and results of experiments we conducted
 to determine how effective the rules are at stopping existing exploits without breaking benign applications. We conclude this section with a  brief discussion of the rules' limitations.
 
 \subsection{Implementation Using JVMTI}\label{sub:Implementation-Using-JVMTI}
@@ -1077,6 +1078,16 @@ property in the \texttt{java.security.Security} class. There are two
 ways to unsafely and directly access packages listed in this property:
 (1) exploit a vulnerability in a class that can access them or (2)
 allow access via the \texttt{accessClassInPackage} permission.
+
+GRABBED FROM ABOVE, MUST INTEGRATE
+If all classes in the Java Virtual Machine (JVM) instance were loaded
+at the start of an application, this rule would never be broken. However,
+the JVM loads certain classes on demand, and some of the JVM classes
+have the full privileges. Classes in
+packages that are listed in the \texttt{package.access} property of
+\texttt{java.security.Security} are not subject to this rule because they are intended to be
+loaded when accessed by a trusted proxy class. 
+END GRABBED FROM ABOVE, MUST INTEGRATE
 
 Applications use JRE classes which call restricted access package
 classes. Thus, we must allow JRE to load restricted-access packages
