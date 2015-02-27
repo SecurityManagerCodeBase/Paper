@@ -797,7 +797,14 @@ desired constraint, and appears to be the best solution available
 in Java at the moment, it is problematic for applications that also 
 use the sandbox as intended, for security purposes. The technique requires
 the application to dynamically change the security manager, which requires either a defenseless manager or for the application
-to be carefully written to prevent malicious code from weakening the sandbox. \todo{Zack - the end of this sentence contradicts what has been said in the paper}
+to be carefully written to prevent malicious code from weakening the sandbox. 
+\zfc{the end of this sentence contradicts what has been said in the paper; 
+multiple times in the paper we have statements that say "if we can change 
+the security manager then the security manager is defenseless", for example
+"Both of these cases require a defenseless security manager, otherwise the
+application would not be able to change the current security manager"; as 
+written, this technique requires changes the security manager; thus the 
+technique is not possible without defenseless security manager.}
 Defenseless security managers
 are not capable of reliably enforcing a serious security policy.
 
