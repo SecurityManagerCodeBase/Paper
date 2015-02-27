@@ -894,8 +894,8 @@ shows an example permission set from the Ant Permissions website.%
 } The contents of the \texttt{grant} element provide the application
 all permissions, but the contents of the \texttt{revoke} element restrict
 the application from using all property permissions. Due the use of a
-defenseless security manager, malicious code can easily disable the sandbox and perform all actions
-including those requiring \texttt{PropertyPermissions}.\todo{how?} 
+defenseless security manager, malicious code can easily disable the sandbox and perform all actions,
+including those requiring \texttt{PropertyPermissions}, because the constrained code is allowed to set the security manager.
 
 \begin{figure}
 \begin{lstlisting}[language=XML,basicstyle={\scriptsize}]
@@ -905,9 +905,7 @@ including those requiring \texttt{PropertyPermissions}.\todo{how?}
 </permissions>
 \end{lstlisting}
 
-\caption{Example Ant build script element to grant all but one permission.
-This permission set results in a defenseless security manager. \todo{why/how?
-  One more half sentence}}
+\caption{An example from Apache of an Ant build script element to grant all but one permission. This permission set results in a defenseless security manager, thus revoking one permission does nothing to improve the security of the application.}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
@@ -1028,10 +1026,9 @@ Java security model without breaking backwards compatability in practice:
 security manager is set for the application, a class may not directly
 load a more privileged class. This rule is violated when the protection
 domain of a loaded class implies a permission that is not implied
-in the protection domain that loaded it. About half of recent exploits
+in the protection domain that loaded it. About half of the exploits in the Metasploit set we use in our evaluation
 break this rule to elevate the privileges of their payload
-class.\todo{reference?  Did we observe this ourselves, or are we getting it from
-  somewhere?} 
+class.
 
 \noindent \textbf{Security Manager rule.} The manager cannot
 be changed if a \emph{self-protecting} security manager has been set
