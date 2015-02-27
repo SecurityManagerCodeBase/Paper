@@ -811,6 +811,14 @@ infer the developers' motivations.
 \subsection{Using the Security Manager for Security Purposes}
 \label{sub:Using-the-Security}
 
+\todo{CLG thinks that this subsection needs both more structure and more
+  explicit observations of the insight that we're deriving from our
+  observations.  It's describing a bunch of cases that are, on their own,
+  relatively interesting.   However, it could do a substantially better job
+  clarifying the high-level lessons or important observations we think these
+  cases support.  Since I'm not quite sure what those lessons should be, I'm
+  leaving a long todo in here and entrusting the task to one of the experts in the java
+  sandbox...}
 This section describes applications that provide novel insights into benign sandbox interactions related to improving the security
 posture of the application. Several of these applications eliminate all possible mitigations that do not consider if the manager is self-protecting: Batik, Eclipse, and Spring-modules provide
 methods that allow the user to set and change an existing manager,
@@ -866,7 +874,7 @@ shows an example permission set from the Ant Permissions website.%
 all permissions, but the contents of the \texttt{revoke} element restrict
 the application from using all property permissions. Due the use of a
 defenseless security manager, malicious code can easily disable the sandbox and perform all actions
-including those requiring \texttt{PropertyPermissions}.
+including those requiring \texttt{PropertyPermissions}.\todo{how?} 
 
 \begin{figure}
 \begin{lstlisting}[language=XML,basicstyle={\scriptsize}]
@@ -877,7 +885,8 @@ including those requiring \texttt{PropertyPermissions}.
 \end{lstlisting}
 
 \caption{Example Ant build script element to grant all but one permission.
-This permission set results in a defenseless security manager.}
+This permission set results in a defenseless security manager. \todo{why/how?
+  One more half sentence}}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
@@ -942,7 +951,8 @@ Figure \ref{fig:Freemind-Security-Manager} shows how Freemind sets
 the proxy security manager field.
 Once a manager is set, if \texttt{setFinalSecurityManager} is called
 again with a different security manager, a \texttt{SecurityException}
-is thrown, but calling the method with a reference to the set manager disables the sandbox. The comment implies this specific sequence
+is thrown, but calling the method with a reference to the set manager disables
+the sandbox. The comment implies that this sequence
 of operations was implemented to prevent malicious applications from
 changing the settings of the sandbox.
 
