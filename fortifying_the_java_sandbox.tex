@@ -45,7 +45,7 @@ basicstyle=\ttfamily\bfseries\scriptsize,
   stringstyle=\color{dkgreen},
   numbers=left,
   breaklines=true,
-  numberstyle=\ttfamily\footnotesize\color{gray},
+  numberstyle=\ttfamily\tiny\color{gray},
   stepnumber=1,
   numbersep=6pt,
   backgroundcolor=\color{white},
@@ -586,11 +586,9 @@ removing manually-identified false positives and applications that were
 already included in the QC set. We looked at the latest commit as of June 2014.
  Table
 \ref{Table:applications-studied} lists the 36 applications that comprise the
-dataset we studied.
- Version numbers
+dataset.  Version numbers
 and Git commit hashes are available in an online supplement.%
-\footnote{http://goo.gl/dtcqTM%
-}
+\footnote{\url{http://goo.gl/dtcqTM}}
 
 \subsection{Methodology}
 \label{sec:methodology}
@@ -700,6 +698,10 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 \end{tabular}
 \end{table}
 
+\todo{if the defenseless vs self-protecting observation/distinction is
+  important/a contribution, I think it should be emphasized more
+  strongly/directly in this subsection.}
+
 Recall that in Section~\ref{sec:Security-Manager-Study}, we refined the
 high-level research question---how do benign applications interact with the
 security manager?---into four possibilities, and that the possible mitigations
@@ -723,9 +725,11 @@ security manager if a self-protecting security manager has been set.
   observed multiple applications that changed a set security manager.
 \end{flushenum}
 
-The strong mitigation is thus the only proposed mitigation that can be
-implemented without breaking the benign applications in our dataset;
-fortunately, the implementation does not require complex, context-sensitive
+In terms of the four possible mitigation strategies,
+only the third---a runtime monitor that
+determines blocks modifications to a self-protecting security manager---can
+improve security without breaking benign behavior. 
+Fortunately, this technique does not require complex, context-sensitive
 information about whether a change to a policy weakens the sandbox or not. 
 
 We characterize each application in our dataset along one of four types, depending on how they
@@ -747,10 +751,10 @@ Of the four categories, Type 2 applications are the most interesting, because
 they change pre-configured and running security managers.  We therefore focus
 on these applications in our discussion. A few Type 1
 applications also provide interesting insights into
-benign sandbox interactions. We discuss application that use the sandbox for
-purposes that are not security related in Section \ref{sub:Non-security-uses-of}
+benign sandbox interactions. We discuss applications that use the sandbox for
+purposes that are not security related in Section~\ref{sub:Non-security-uses-of}
 and applications that use the sandbox for its intended security purposes in
-Section \ref{sub:Using-the-Security}.
+Section~\ref{sub:Using-the-Security}.
 
 \subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
@@ -774,31 +778,27 @@ finally {
 from terminating the JVM.}
 \end{figure}
 
-This section describes applications that interact with the sandbox in ways that
-are not related to security. Most of these applications used the
-sandbox to enforce architectural constraints when interacting with
+\someone{We say ``most'', here.  What do the rest of them do?}
+Most of the applications we observed to interact with the sandbox in
+non-security ways did so to enforce architectural constraints when interacting with
 other applications, or forcibly disabled the sandbox to reduce development
-complexity.  \todo{These applications are interesting because --- CLG thinks it
-  might be desireable to put such a discussion into an explicit ``discussion''
-  or conclusions section, but put in this todo just to remember to think about it}.
+complexity.  \todo{These applications are interesting because...CLG thinks we
+  need this sentence}.
 
 \subsubsection{Enforcing Architectural Constraints}
 
 Java applications often call \texttt{System.exit()} when a non-recoverable
-error occurs. This is problematic when the application in question is 
-used as a library: The \texttt{System.exit()} will close the calling
+error occurs. This can be a problem when the application in question is 
+used as a library: The \texttt{System.exit()} closes the calling
 application as well, because both applications
-are running in the same JVM. This is often not the desired
-outcome.
-
+are running in the same JVM. 
 To prevent this outcome without modifying the library application,
 the calling application needs to enforce the architectural constraint
 that libraries cannot terminate the JVM. 
 
-Some applications
+We found three applications in our dataset that 
 enforce this constraint by setting a security manager
-that prevents \texttt{System.exit()} calls.
-We found 3 applications that use a variation of this technique:
+that prevents \texttt{System.exit()} calls:
 Eclipse, GJMan, and AspectJ.\footnote{%
 GJMan contains a code comment referencing a
 blog post that we believe is the origin of this solution. \url{http://www.jroller.com/ethdsy/entry/disabling_system_exit}}
@@ -851,6 +851,14 @@ infer the developers' motivations.
 \subsection{Using the Security Manager for Security Purposes}
 \label{sub:Using-the-Security}
 
+\todo{CLG thinks that this subsection needs both more structure and more
+  explicit observations of the insight that we're deriving from our
+  observations.  It's describing a bunch of cases that are, on their own,
+  relatively interesting.   However, it could do a substantially better job
+  clarifying the high-level lessons or important observations we think these
+  cases support.  Since I'm not quite sure what those lessons should be, I'm
+  leaving a long todo in here and entrusting the task to one of the experts in the java
+  sandbox...}
 This section describes applications that provide novel insights into benign sandbox interactions related to improving the security
 posture of the application. Several of these applications eliminate all possible mitigations that do not consider if the manager is self-protecting: Batik, Eclipse, and Spring-modules provide
 methods that allow the user to set and change an existing manager,
@@ -906,7 +914,7 @@ shows an example permission set from the Ant Permissions website.%
 all permissions, but the contents of the \texttt{revoke} element restrict
 the application from using all property permissions. Due the use of a
 defenseless security manager, malicious code can easily disable the sandbox and perform all actions
-including those requiring \texttt{PropertyPermissions}.
+including those requiring \texttt{PropertyPermissions}.\todo{how?} 
 
 \begin{figure}
 \begin{lstlisting}[language=XML,basicstyle={\scriptsize}]
@@ -917,7 +925,8 @@ including those requiring \texttt{PropertyPermissions}.
 \end{lstlisting}
 
 \caption{Example Ant build script element to grant all but one permission.
-This permission set results in a defenseless security manager.}
+This permission set results in a defenseless security manager. \todo{why/how?
+  One more half sentence}}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
@@ -964,8 +973,13 @@ public void setFinalSecurityManager(SecurityManager pFinalSM) {
    mFinalSM = pFinalSM;
  }	
 \end{lstlisting}
-\caption{Initialization of the field in Freemind's custom security manager\label{fig:Freemind-Security-Manager}
-that stores the proxy security manager. This case shows two common problems with the sandbox: (1) the developers did not understand that using Java policies as a blacklist is dangerous and (2) the ability to modify the manager at runtime required the use of an insufficient work-around to try to defend against malicious changes. In this case, these problems were fatal to the security of the application.}
+\caption{Initialization of the field in Freemind's custom security
+  manager\label{fig:Freemind-Security-Manager} that stores the proxy security
+  manager. This demonstrates two problems with the current sandbox, as used by developers: (1) 
+  using Java policies as a blacklist is
+  dangerous and (2) modifying the manager at runtime requires 
+  a work-around (ineffective or incomplete, in this case) to defend against malicious
+  users. These problems were fatal to the security of this application.}
 \end{figure}
 
 Freemind attempted to implement an architecture that would allow the
@@ -982,7 +996,8 @@ Figure \ref{fig:Freemind-Security-Manager} shows how Freemind sets
 the proxy security manager field.
 Once a manager is set, if \texttt{setFinalSecurityManager} is called
 again with a different security manager, a \texttt{SecurityException}
-is thrown, but calling the method with a reference to the set manager disables the sandbox. The comment implies this specific sequence
+is thrown, but calling the method with a reference to the set manager disables
+the sandbox. The comment implies that this sequence
 of operations was implemented to prevent malicious applications from
 changing the settings of the sandbox.
 
@@ -1013,57 +1028,50 @@ final_sm.setAccessible(true)
 final_sm.set(sm, null)
 new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 \end{lstlisting}
-
-
 \caption{Exploit that breaks out of the scripting sandbox in Freemind\label{fig:Example-Exploit-for-Freemind}
-to execute arbitrary code.\todo{What language is this actually in so I can
-  format it properly? MM: It's Groovy script}}
+to execute arbitrary code.}
 \end{figure}
+
+\todo{Possibly a bit of summary/discussion?  Depends on how/whether we address
+  my concern at the top of the subsection regarding structure of this content.}
 
 \section{Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
-Given the results of our investigation in Section \ref{sec:Study-results}
-and the discussion in Section \ref{sec:javaexploits}, we can fortify
-the sandbox for applications that set a \emph{self-protecting} security
-manager. In this section, we define two rules to stop Java exploits
-from disabling the manager. These rules are backwards-compatible with
-benign applications: the Privilege Escalation rule and the Security
-Manager rule. 
+Based on our study of how open source Java programs interact with the security
+manager, we propose two rules to stop Java exploits
+from disabling the manager in applications that set a \emph{self-protecting}
+security manager.  These rules reduce the flexibility and thus complexity of the
+Java security model without breaking backwards compatability in practice:
 
-The \textit{Privilege Escalation rule} ensures that, if a self-protecting
+\noindent\textbf{Privilege Escalation rule.} If a self-protecting
 security manager is set for the application, a class may not directly
 load a more privileged class. This rule is violated when the protection
 domain of a loaded class implies a permission that is not implied
 in the protection domain that loaded it. About half of recent exploits
-break this rule to elevate the privileges of their payload class.
+break this rule to elevate the privileges of their payload
+class.\todo{reference?  Did we observe this ourselves, or are we getting it from
+  somewhere?} 
 
-If all classes in the Java Virtual Machine (JVM) instance were loaded
-at the start of an application, this rule would never be broken. However,
-the JVM loads certain classes on demand, and some of the JVM classes
-have the full privileges. Classes in
-packages that are listed in the \texttt{package.access} property of
-\texttt{java.security.Security} are not subject to this rule because they are intended to be
-loaded when accessed by a trusted proxy class. 
-
-The \textit{Security Manager rule} states that the manager cannot
+\noindent \textbf{Security Manager rule.} The manager cannot
 be changed if a \emph{self-protecting} security manager has been set
-by the application. This rule is violated when code causes a change
+by the application. This is violated when code causes a change
 in the sandbox's configuration, the goal of many exploits.
 
-\subsection{Validating the Rules}\label{sec:Mitigations}
+%\subsection{Validating the Rules}\label{sec:Mitigations}
 
-In Section \ref{sec:Security-Manager-Study}, we discussed four hypotheses about security manager usage in benign applications, each
-of which, if validated, leads to a distinct mitigation. In Section
-\ref{sec:Study-results}, we gave empirical evidence in support of
-Hypothesis 3 and rejected all of the others. Along the way, we learned
-practical lessons about how applications use the Java sandbox that
-are useful to exploit mitigation implementers. 
+%In Section \ref{sec:Security-Manager-Study}, we discussed four hypotheses about security manager usage in benign applications, each
+%of which, if validated, leads to a distinct mitigation. In Section
+%\ref{sec:Study-results}, we gave empirical evidence in support of
+%Hypothesis 3 and rejected all of the others. Along the way, we learned
+%practical lessons about how applications use the Java sandbox that
+%are useful to exploit mitigation implementers. 
 
-In this section, we evaluate the protection merits and backwards-compatibility of the rules presented above through an implementation of runtime monitors that enforce them. This evaluation was done in collaboration
-with a large aerospace company.
-
-Section \ref{sub:Implementation-Using-JVMTI} discusses how we implemented
-our runtime monitors using JVMTI. Sections \ref{sub:Effectiveness-at-Fortifying} and \ref{sec:backcompat} explain the methodology behind and results of experiments we conducted
+In this section, we evaluate the protection merits and backwards-compatibility
+of these rules through an implementation of runtime monitors that
+enforce them. This evaluation was done in collaboration with a large aerospace
+company.
+Section~\ref{sub:Implementation-Using-JVMTI} discusses how we implemented
+our runtime monitors using JVMTI. Sections~\ref{sub:Effectiveness-at-Fortifying} and~\ref{sec:backcompat} explain the methodology behind and results of experiments we conducted
 to determine how effective the rules are at stopping existing exploits without breaking benign applications. We conclude this section with a  brief discussion of the rules' limitations.
 
 \subsection{Implementation Using JVMTI}\label{sub:Implementation-Using-JVMTI}
@@ -1106,6 +1114,16 @@ property in the \texttt{java.security.Security} class. There are two
 ways to unsafely and directly access packages listed in this property:
 (1) exploit a vulnerability in a class that can access them or (2)
 allow access via the \texttt{accessClassInPackage} permission.
+
+GRABBED FROM ABOVE, MUST INTEGRATE
+If all classes in the Java Virtual Machine (JVM) instance were loaded
+at the start of an application, this rule would never be broken. However,
+the JVM loads certain classes on demand, and some of the JVM classes
+have the full privileges. Classes in
+packages that are listed in the \texttt{package.access} property of
+\texttt{java.security.Security} are not subject to this rule because they are intended to be
+loaded when accessed by a trusted proxy class. 
+END GRABBED FROM ABOVE, MUST INTEGRATE
 
 Applications use JRE classes which call restricted access package
 classes. Thus, we must allow JRE to load restricted-access packages
