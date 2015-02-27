@@ -1174,6 +1174,8 @@ We validated that our rules are backwards compatible with benign applications by
 
 In each case we confirmed that the tests, sample workloads, or fuzzed executions worked without a security manager. We then developed a reasonable security policy for each by using a custom security manager to print out unique permissions during their executions. Finally, we ran each case a third time using our policy and the standard Java security manager with our monitors attached and enforcing the rules. The rules did not break any unit tests, sample workloads, or fuzzed executions.
 
+We then confirmed that our tool could run around the Dacapo Benchmarks~\ref{DaCapo:paper}~(avrora, batik, eclipse, fop, h2, jython, luindex, lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan).  For all applications but batik, we set a security manager that allowed for all permissions and ran our tool around the application.  Batik was the only exception, since the application was written to terminate if a security manager was set before starting the application, as batik wanted to set a security manager itself.  Thus, we set our tool around batik and allowed batik to set its own security manager.  All applications successfully completed when using our tool.
+
 \subsection{Limitations}
 
 Neither of these rules will stop all Java exploits. While the rules
