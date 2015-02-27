@@ -8,20 +8,28 @@
 \usepackage[english]{babel}
 \usepackage{listings}
 \usepackage{myref}
-%\usepackage{todos}
 \usepackage{microtype}
 
+%all of the following is for the todonotes package
 \usepackage{marginnote}
 \usepackage[textsize=tiny]{todonotes}
 \renewcommand{\marginpar}{\marginnote}
-\setlength{\marginparwidth}{1.5cm}
+\setlength{\marginparwidth}{1.8cm}
+\setlength{\marginparsep}{0.1cm}
+\newcommand{\zfc}[1]{\todo[color=green]{ZFC: #1}}
+\newcommand{\mm}[1]{\todo[color=red]{MM: #1}}
+\newcommand{\js}[1]{\todo[color=blue!30]{JS: #1}}
+\newcommand{\clg}[1]{\todo[color=yellow]{CLG: #1}}
+%end todonotes section
+
+\newcommand{\minisec}[1]{\vspace{2ex}\noindent\textbf{#1}}
 
 \makeatletter
 \makeatother
 
 \begin{document}
 
-\newcommand{\minisec}[1]{\vspace{2ex}\noindent\textbf{#1}}
+
 
 \lstset{language=Java}
 \definecolor{dkgreen}{rgb}{0,0.5,0}
@@ -48,7 +56,7 @@ basicstyle=\ttfamily\bfseries\scriptsize,
 %original settings on at least some of the figures: 
 %\author{BLINDED FOR SUBMISSION}
 
-\title{Give 'em less rope: Open Source Evidence of Java Sandbox Perversions}
+\title{Give 'em less rope: evaluating the flexibility of the Java sandbox}
 
 \numberofauthors{1} 
 \author{\alignauthor Zack Coker, Michael Maass, Tianyuan Ding, Claire Le Goues, and Joshua Sunshine \\
