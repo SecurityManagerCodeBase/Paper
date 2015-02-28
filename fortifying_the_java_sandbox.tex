@@ -570,7 +570,9 @@ already included in the QC set. We looked at the latest commit as of June 2014.
 \ref{Table:applications-studied} lists the 36 applications that comprise the
 dataset.  Version numbers
 and Git commit hashes are available in an online supplement.%
-\footnote{\url{http://goo.gl/dtcqTM}}
+\footnote{https://github.com/SecurityManagerCodeBase/\\
+ProjectsProfiles/blob/master/\\
+projects list.xlsx}
 
 \subsection{Methodology}
 \label{sec:methodology}
@@ -1039,8 +1041,9 @@ dynamic analysis tools, called agents, such as profilers, debuggers, monitors, a
 analyzers. JVMTI agents can intercept and respond to events such as class
 or thread creation, field access or modification, breakpoints, etc.
 
-Our agent\footnote{Our agent is open source. An anonymized version
-of the tool can be found at http://goo.gl/In6Di0} must intercept three events to enforce the Privilege Escalation
+Our agent\footnote{Our agent is open source. The latest version
+of the tool can be found at https://github.com/SecurityManagerCodeBase/
+JavaSandboxFortifier} must intercept three events to enforce the Privilege Escalation
 and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
 and \texttt{FieldModification}. Enforcement of these rules is discussed in subsections \ref{sub:Enforcing-the-Privilege} and \ref{sub:Enforcing-the-SecurityManager}.
 
@@ -1206,9 +1209,9 @@ contained unit tests that we ran in the presence of our monitors. Costello, and
 JabRef did not contain tests, but did come with example workloads that we used
 instead. CrossFTP contained neither tests nor sample workloads, thus we fuzzed
 the GUI for 30 minutes using a custom fuzzer and uploaded a file to a remote FTP
-server as a sample workload. \todo{Add footnote linking to anonymized version of
-  fuzzer source code:
-  https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java
+server as a sample workload. \footnote{The GUI fuzzing source code can be found at
+  https://github.com/SecurityManagerCodeBase/GUITest/
+  blob/master/RunGUITest.java
 }
 
 In each case we confirmed that the tests, sample workloads, or fuzzed executions
@@ -1219,13 +1222,15 @@ attached and enforcing the rules. The rules did not break any unit tests, sample
 workloads, or fuzzed executions.
 
 We then confirmed that our tool does not break the Dacapo
-Benchmarks~\ref{DaCapo:paper}~(\texttt{avrora, batik, eclipse, fop, h2, jython, luindex,
-lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan}). Dacapo was used to validate that our rules do not break representative desktop applications, including a subset of our study's set and additional applications that help ensure the rules are not overly influenced by the study's set. For all
+Benchmarks v. 9.12-bach~\cite{dacapo_paper}~(\texttt{avrora, batik, eclipse, fop, h2, jython, luindex,
+lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan}). 
+Dacapo was used to validate that our rules do not break representative desktop applications, including a subset of our study's set and additional applications that help ensure the rules are not overly influenced by the study's set. For all
 applications but batik, we set a security manager that granted all
 permissions and attached our monitors to executions of the application.\todo{Does dacapo come with
   indicative workloads?  I genuinely don't remember.} Batik was the only
 exception because it terminates if a security manager is set before starting the application: It needs to set a security manager itself. We used our monitors on Batik as set and used its
-own security manager. Our rules did not break any application in Dacapo.
+own security manager. We executed all applications with the command line arguments "-n 1". 
+Our rules did not break any application in Dacapo.
 
 \section{Limitations and Threats}
 
