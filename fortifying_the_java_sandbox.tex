@@ -81,7 +81,7 @@ applications and compared their use of the sandbox to the usage present
 in recent exploits. We found that benign applications with secured
 sandboxes do not modify the security manager, the security policy
 enforcement mechanism, after it is first set and do not attempt to
-directly use privileged classes. Exploits routinely do both. We derive two rules from these results to prevent (1) security manager modifications and (2) privilege escalation. We evaluated their protection merits in a case study using runtime monitors to enforce the rules during the execution of exploits and benign applications. The rules stop all ten Metasploit Java 7 exploits without breaking backwards-compatibility with benign applications. These practical rules should be enforced in the JRE to fortify the Java sandbox.
+directly use privileged classes. Exploits routinely do both. We derive two rules from these results to prevent (1) security manager modifications and (2) privilege escalation. We evaluated their protection merits in a case study using runtime monitors to enforce the rules during the execution of exploits and benign applications. The rules stop all ten Metasploit Java 7 exploits without breaking backwards compatibility with benign applications. These practical rules should be enforced in the JRE to fortify the Java sandbox.
 \end{abstract}
 
 \section{Introduction}
@@ -137,7 +137,7 @@ To validate these insights, we conducted an empirical study
 to answer the question: How do benign
 applications interact with the Java security manager?  We identified 36
 open-source Java projects that use the security manager, taken from the Qualitas
-Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub and characterized
+Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub, and characterized
 those interactions.
 
 We discovered two types of security managers in
@@ -149,7 +149,7 @@ arose in applications that modified sandbox settings at runtime, typically becau
 they use the security manager to enforce policies or implement functionality unrelated to security.
 The sandbox is not intended to be used this way, and these use cases
 effectively limit the potential exploit mitigations that are
-backwards-compatible with all benign applications. Still, such applications use the
+backwards compatible with all benign applications. Still, such applications use the
 sandbox to implement certain non-security requirements
 because Java does not provide better mechanisms for doing so.  
 On the other hand, applications with \emph{self-protecting} managers do not allow sandboxed code to modify
@@ -178,13 +178,13 @@ The contributions of this papers are as follows:
 \begin{flushitem}	\setlength{\parskip}{0pt}
   \setlength{\parsep}{0pt}
   \setlength{\itemsep}{0pt}
-\item A catalog of open source applications that enforce constraints on
+\item A catalog of open-source applications that enforce constraints on
   sub-components by way of the Java sandbox (Section \ref{sec:Study-results}).
 \item An enumeration of Java permissions that make security policies difficult
   to enforce (Section \ref{sec:secmanagers}), a discussion of real-world cases
   where these permissions are used (Sections \ref{sub:Non-security-uses-of} and
   \ref{sub:Using-the-Security}), and a sandbox-bypassing exploit for a popular
-  open source application made vulnerable due to their use (Section
+  open-source application made vulnerable due to their use (Section
   \ref{sub:Using-the-Security}).
 \item Two novel rules for distinguishing between benign and malicious Java
   programs, which we validated with an empirical evaluation (Section
@@ -194,7 +194,7 @@ The contributions of this papers are as follows:
   \ref{sub:Implementation-Using-JVMTI}).
 \end{flushitem}
 
-\someone{Maybe a real roadmap here?}
+This paper covers background on the Java sandbox and its exploits necessary to fully motivate and understand this work in Section~\ref{sec:Background} before discussing our study's methodology and dataset in Section~\ref{sec:Security-Manager-Study}. The results of the study are discussed in Section~\ref{sec:Study-results}, leading to our rules which are defined and evaluated in Section~\ref{sec:Rules-for-Fortifying}. Finally, we discuss the limitations of this work, cover related work, and conclude in Sections \ref{sec:Limitations}, \ref{sec:related}, and \ref{sec:Conclusion} respectively.
 
 \section{Background}\label{sec:Background}
 
@@ -246,7 +246,7 @@ perform the action.\footnote{Stack-based access control is discussed in more
 
 Missing checks in code that \emph{should} be protected are a common
 source of Java vulnerabilities, because the security-critical code must initiate
-the check.  Note that such vulnerabilities lie in the JVM itself (i.e., the code
+the check.  Note that such vulnerabilities lie in the JRE itself (i.e., the code
 written by the Java developers), not in the code that uses the sandbox to
 execute untrusted code.
 
@@ -352,8 +352,7 @@ Java exploit payload from http://pastebin.com/QWU1rqjf.}
 % This section provides an analysis of privilege escalation in the Java
 % security model and recent Java exploits. 
 While the Java sandbox \textit{should} prevent malicious applets from
-executing their payloads, defects in the
-Java Runtime Environment (JRE) implementation of these security mechanisms can permit
+executing their payloads, defects in the JRE implementation of these security mechanisms can permit
 malicious code to set a security manager to \texttt{null}.  
 This disables the sandbox, allowing
 previously constrained classes to perform operations with the privileges of 
@@ -407,7 +406,10 @@ little purpose.
 
 In practice, however, Java's security mechanisms as implemented
 in the JRE contains defects and vulnerabilities that reduce the benefits of
-this redundancy.  
+this redundancy.\footnote{Many of the recent type confusion and privilege escalation vulnerabilities
+would not have been introduced if the JRE were developed strictly
+following ``The CERT Oracle Secure Coding Standard for Java'' \cite{long_cert_2011,svoboda_anatomy_blog_2013,svoboda_anatomy_2014}}
+  
 Modern exploits that manipulate the Java security manager perform one
 operation: They disable it.  This is possible largely because the Java security model
 grants enormous flexibility to application developers to
@@ -422,12 +424,12 @@ simplifying them, without loss to benign functionality.
 \section{Security Manager Study}\label{sec:Security-Manager-Study}
 
 In this section, we describe an empirical study consisting of static,
-dynamic, and manual inspections of the open source Java application landscape
+dynamic, and manual inspections of the open-source Java application landscape
 that aims to understand the operations benign applications perform on the
 manager. We focus our efforts on the security manager, as it is the
 means by which applications interact with the sandbox.
 
-Our basic research question is: How do benign open source Java applications interact
+Our basic research question is: How do benign open-source Java applications interact
 with the security manager? The answer to this question informs which JVM-level
 modifications can be used to reduce the ability of exploitative code to
 nullify the security manager, while still maintaining backwards compatibility.  The
@@ -543,13 +545,13 @@ Visor & Closure Library & Github\tabularnewline
 \end{tabular}
 \end{table}
 
-The goal of this study is to understand how benign open source Java programs use
+The goal of this study is to understand how benign open-source Java programs use
 and interact with the security manager.  This study thus requires a varied set
-of such programs to support our claim of generalizable and indicative results. While it would seem to make sense to use benign applets for this purpose given our motivation in the form of malicious applets, we must look elsewhere. Benign applets have no reason to interact with the sandbox as long as they are following the well-defined rules imposed on them and we could not find evidence that maintained, Internet-facing websites use applets. We constructed such a dataset by
-identifying 24 open source Java applications from the Qualitas Corpus
+of such programs to support our claim of generalizable and indicative results. While it may seem reasonable to use benign applets for this purpose given our motivation in the form of malicious applets, we must look elsewhere. Benign applets have no reason to interact with the sandbox as long as they are following the well-defined rules imposed on them, and we could not find evidence that maintained, Internet-facing websites use applets. Instead, we constructed a dataset by
+identifying 24 open-source Java applications from the Qualitas Corpus
 (QC) version 20130901~\cite{QualitasCorpus:APSEC:2010}, and 12 from
 GitHub, that use the security manager.  The Qualitas Corpus is a curated collection of
-open source Java applications for use in reproducible software studies.  While
+open-source Java applications for use in reproducible software studies.  While
 it provides a good starting point for our dataset,
 QC's inclusion criteria%
 \footnote{http://qualitascorpus.com/docs/criteria.html%
@@ -601,7 +603,7 @@ application as ``only interacting in unit tests.''
 
 We created static and dynamic analysis tools
 to assist in a manual inspection of each application's security manager
-interactions. The static analysis tool is a 
+interactions. We created a 
 FindBugs~\cite{hovemeyer_finding_2004} plugin that
 uses dataflow analysis to identify security manager initialization and calls to \texttt{System.setSecurityManager}().
 The dynamic analysis tool uses the Java Virtual Machine
@@ -664,10 +666,6 @@ Type of Interaction & QC & GitHub & Total\tabularnewline
 \end{tabular}
 \end{table}
 
-\todo{if the defenseless vs self-protecting observation/distinction is
-  important/a contribution, I think it should be emphasized more
-  strongly/directly in this subsection.}
-
 Recall that in Section~\ref{sec:Security-Manager-Study}, we refined the
 high-level research question---how do benign applications interact with the
 security manager?---into four possibilities, and that the possible mitigations
@@ -677,7 +675,7 @@ possibilities with respect to our dataset, we found that:
   \setlength{\parsep}{0pt}
   \setlength{\itemsep}{0pt}
 \item Benign applications \emph{do} sometimes disable the security manager.
-  However, we found that such applications typically use the sandbox for
+  However, we found that such applications typically use a defenseless sandbox for
   non-security purposes; we discuss further below.
 
 \item Several benign applications \emph{do} provide methods for the user to
@@ -692,8 +690,7 @@ security manager if a self-protecting security manager has been set.
 \end{flushenum}
 
 In terms of the four possible mitigation strategies,
-only the third---a runtime monitor that
-determines blocks modifications to a self-protecting security manager---can
+only the third---a runtime monitor that blocks modifications to a self-protecting security manager---can
 improve security without breaking benign behavior. 
 Fortunately, this technique does not require complex, context-sensitive
 information about whether a change to a policy weakens the sandbox or not. 
@@ -709,7 +706,7 @@ or its policy, and (4) applications
 that only interact with the manager in unit tests. 
 
 Table \ref{tab:Classification-of-Application}
-summarizes our dataset using these types. Eight applications eliminate one or more possible mitigation, while the rest cannot cause backwards-compatibility issues. We will
+summarizes our dataset using these types. Eight applications eliminate one or more possible mitigation, while the rest cannot cause backwards compatibility issues. We will
 not discuss Type 3 or 4 applications further, because their interactions with
 the sandbox can not eliminate a possible mitigation and they do not provide insights useful to mitigation implementers.  
 
@@ -747,7 +744,7 @@ from terminating the JVM.}
 Most of the applications we observed to interact with the sandbox in
 non-security ways did so to enforce architectural constraints when interacting with
 other applications; the rest forcibly disabled the sandbox to reduce development
-complexity. These applications provide insights into cases that are currently hard for Java developers to handle without abusing security features. The abuse of security features increases the difficultly of implementing effective mitigations for attacks against those features by increasing the odds of backwards compatibility issues.
+complexity. These applications provide insights into cases that are currently hard for Java developers to handle without abusing security features. This abuse of security features increases the difficultly of mitigating attacks against them by increasing the odds of backwards compatibility issues.
 
 \subsubsection{Enforcing Architectural Constraints}
 
@@ -786,8 +783,8 @@ are not capable of reliably enforcing a serious security policy.
 
 We also found applications that were complicated by the Java security policies
 for web applications (applets and applications launched via JWS). By default,
-Java executes such applications inside a restrictive 
-sandbox, 
+Java executes such applications inside a self-protecting 
+sandbox with a restrictive policy, 
 excluding operations such as accessing local files, retrieving resources
 from any third party server, or changing the security manager. 
 
@@ -813,50 +810,13 @@ infer the developers' motivations.
 \subsection{Using the Security Manager for Security Purposes}
 \label{sub:Using-the-Security}
 
-\todo{CLG thinks that this subsection needs both more structure and more
-  explicit observations of the insight that we're deriving from our
-  observations.  It's describing a bunch of cases that are, on their own,
-  relatively interesting.   However, it could do a substantially better job
-  clarifying the high-level lessons or important observations we think these
-  cases support.  Since I'm not quite sure what those lessons should be, I'm
-  leaving a long todo in here and entrusting the task to one of the experts in the java
-  sandbox...}
 This section describes applications that provide novel insights into benign sandbox interactions related to improving the security
 posture of the application. Several of these applications eliminate all possible mitigations that do not consider if the manager is self-protecting: Batik, Eclipse, and Spring-modules provide
 methods that allow the user to set and change an existing manager,
 and Ant, Freemind, and Netbeans explicitly set then change the manager.
 
-\begin{figure}
-\begin{lstlisting}[firstnumber=156]
-public void enforceSecurity(boolean enforce){ 
-  SecurityManager sm=System.getSecurityManager();
-  if (sm != null && sm != lastManagerInstalled){ // ...
-\end{lstlisting}
-\vspace{-0.3cm}
-\begin{lstlisting}[firstnumber=163]
-   throw new SecurityException
-     (Messages.getString(EXCEPTION_ALIEN_SECURITY_MANAGER));   
-  }                  
-  if (enforce) { // ...
-\end{lstlisting}
-\vspace{-0.3cm}
-\begin{lstlisting}[firstnumber=173]
-    installSecurityManager();         
-  } else {             
-    if (sm != null) {                 
-      System.setSecurityManager(null);
-      lastSecurityManagerInstalled = null;             
-\end{lstlisting}
-\caption{Security manager interactions \label{fig:Batik-snippet} in
-  Batik.\todo{Why is this interesting?}}
-\end{figure}
-
-
-Figure \ref{fig:Batik-snippet} shows an interesting case from Batik
-copied from \texttt{ApplicationSecurityEnforcer.java}. This method
-allows users to optionally constrain the execution of an an application
-that uses the Batik SVG Toolkit. It takes a parameter that acts as
-a switch to turn the sandbox on or off. The download page on the Batik
+Batik SVG Toolkit allows users to optionally constrain the execution of an an application
+that uses it by providing a method to turn the sandbox on or off. This method not only requires a defenseless sandbox, it provides a trivial mechanism for disabling the sandbox at any time. The download page on the Batik
 website shows several examples of how to use the library. Two set
 a security manager at start up: the squiggle browser demo and the
 rasterizer demo. While the squiggle browser demo sets a manager and
@@ -867,7 +827,7 @@ occurrence, there seems to be no valid reason to disable the sandbox
 in this case other than to show off the capability to do so.
 
 Ant, Freemind, and Netbeans explicitly set then change the manager
-during runtime. Ant allows the users to create build scripts that
+during runtime, which makes it impossible to stop all reconfiguring, disabling, or weakening of the sandbox at runtime while claiming backwards compatibility. Ant allows the users to create build scripts that
 execute Java classes during a build under a user specified
 permissions set. Figure \ref{fig:Ant Permissions Example}
 shows an example permission set from the Ant Permissions website.%
@@ -977,7 +937,7 @@ it, disabling the sandbox to allow ``forbidden'' operations.
 
 We sent a notice to the Freemind developers in August of 2014 to provide
 them with our example exploit and to offer our advice in achieving
-their desired outcome. 
+their desired outcome. Blu-ray player vendors have also introduced fatal security flaws when attempting to execute some Java code with a stricter policy than the rest of the system in unconventional ways, but we do not discuss these cases because they are not open-source.\footnote{\url{https://www.nccgroup.com/en/blog/2015/02/abusing-blu-ray-players-pt-1-sandbox-escapes/}}
 
 \begin{figure}
 \begin{lstlisting}[language=Java,basicstyle={\scriptsize},breaklines=true]
@@ -992,12 +952,11 @@ new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 to execute arbitrary code.}
 \end{figure}
 
-\todo{Possibly a bit of summary/discussion?  Depends on how/whether we address
-  my concern at the top of the subsection regarding structure of this content.}
+All of these applications fell afoul of the Java sandbox's flexibility even though they attempted to use it for its intended purpose. Every application discussed in this section would break any of our suggested mitigations that do not check for self-protecting managers and can have executions protected by an easily bypassed, defenseless security manager. While Java does provide the building blocks for constraining a subset of an application with a policy that is stricter than what is imposed on the rest of the application, it is clear that it is too easy to get this wrong: We've seen no case where this goal was achieved in a way that is known to be free of vulnerabilities.
 
 \section{Fortifying the Sandbox}\label{sec:Rules-for-Fortifying}
 
-Based on our study of how open source Java programs interact with the security
+Based on our study of how open-source Java programs interact with the security
 manager, we propose two rules to stop Java exploits
 from disabling the manager in applications that set a \emph{self-protecting}
 security manager.  These rules reduce the flexibility and thus complexity of the
@@ -1025,7 +984,7 @@ in the sandbox's configuration, the goal of many exploits.
 %practical lessons about how applications use the Java sandbox that
 %are useful to exploit mitigation implementers. 
 
-In this section, we evaluate the protection merits and backwards-compatibility
+In this section, we evaluate the protection merits and backwards compatibility
 of these rules through an implementation of runtime monitors that
 enforce them. This evaluation was done in collaboration with a large aerospace
 company.
@@ -1041,13 +1000,13 @@ dynamic analysis tools, called agents, such as profilers, debuggers, monitors, a
 analyzers. JVMTI agents can intercept and respond to events such as class
 or thread creation, field access or modification, breakpoints, etc.
 
-Our agent\footnote{Our agent is open source. The latest version
+Our agent\footnote{Our agent is open-source. The latest version
 of the tool can be found at https://github.com/SecurityManagerCodeBase/
 JavaSandboxFortifier} must intercept three events to enforce the Privilege Escalation
 and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
 and \texttt{FieldModification}. Enforcement of these rules is discussed in subsections \ref{sub:Enforcing-the-Privilege} and \ref{sub:Enforcing-the-SecurityManager}.
 
-The field events require JVMTI to turn off the JIT, which slows down program
+The field events require JVMTI to turn off the just-in-time compiler (JIT), which slows down program
 execution enough that our monitors are not suitable for adoption on their
 own. JVMTI implementations can avoid this limitation, but avoidance would likely
 increase implementation complexity beyond what is reasonable for a diagnostic
@@ -1057,8 +1016,7 @@ itself to avoid overhead issues. This implementation strategy is motivated by
 two concerns: Existing mechanisms for monitoring the execution of Java
 applications are either (1) insufficient to securely enforce the rules
 (e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade
-performance by disabling the just-in-time compiler (JIT).%
-\footnote{REVIEWERS: This discussion will be referenced in the final version of the paper. At this time, the OpenJDK developers are very receptive to the idea, were already considering implementing something similar to our SecurityManager rule, and have stated the lessons from the empirical study we shared with in an early manuscript of this paper are valuable to their efforts.}
+performance by disabling the JIT.
 
 \subsubsection{Enforcing the Privilege Escalation Rule}\label{sub:Enforcing-the-Privilege}
 
@@ -1209,10 +1167,7 @@ contained unit tests that we ran in the presence of our monitors. Costello, and
 JabRef did not contain tests, but did come with example workloads that we used
 instead. CrossFTP contained neither tests nor sample workloads, thus we fuzzed
 the GUI for 30 minutes using a custom fuzzer and uploaded a file to a remote FTP
-server as a sample workload. \footnote{The GUI fuzzing source code can be found at
-  https://github.com/SecurityManagerCodeBase/GUITest/
-  blob/master/RunGUITest.java
-}
+server as a sample workload.\footnote{The GUI fuzzing source code can be found at \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.}
 
 In each case we confirmed that the tests, sample workloads, or fuzzed executions
 worked without a security manager. To run the applications locally with the sandbox, we developed security
@@ -1221,18 +1176,17 @@ using our policy and the standard Java security manager with our monitors
 attached and enforcing the rules. The rules did not break any unit tests, sample
 workloads, or fuzzed executions.
 
-We then confirmed that our tool does not break the Dacapo
-Benchmarks v. 9.12-bach~\cite{dacapo_paper}~(\texttt{avrora, batik, eclipse, fop, h2, jython, luindex,
+We then confirmed that our tool does not break the DaCapo
+Benchmarks v9.12-bach~\cite{dacapo}~(\texttt{avrora, batik, eclipse, fop, h2, jython, luindex,
 lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan}). 
-Dacapo was used to validate that our rules do not break representative desktop applications, including a subset of our study's set and additional applications that help ensure the rules are not overly influenced by the study's set. For all
+DaCapo was used to validate that our rules do not break representative desktop applications, including a subset of our study's set and additional applications that help ensure the rules are not overly influenced by the study's set. DaCapo systematically exercises each application using a range of inputs to achieve adequate coverage. For all
 applications but batik, we set a security manager that granted all
-permissions and attached our monitors to executions of the application.\todo{Does dacapo come with
-  indicative workloads?  I genuinely don't remember.} Batik was the only
-exception because it terminates if a security manager is set before starting the application: It needs to set a security manager itself. We used our monitors on Batik as set and used its
+permissions and attached our monitors to executions of the application. Batik was the only
+exception because it terminates if a security manager is set before starting the application: It needs to set a security manager itself. We used our monitors on Batik as it set and used its
 own security manager. We executed all applications with the command line arguments "-n 1". 
-Our rules did not break any application in Dacapo.
+Our rules did not break any application in DaCapo.
 
-\section{Limitations and Threats}
+\section{Limitations and Threats}\label{sec:Limitations}
 
 \minisec{Limitations.}
 Neither of the rules we propose in \secref{Rules-for-Fortifying} will stop all Java exploits. While the rules
@@ -1261,9 +1215,9 @@ security manager operations. We tested our tools and processes in a pilot study
 to find and mitigate sources of inconsistencies.
 
 \minisec{External Validity.}
-The study only includes open source applications. It is possible
-that closed source applications interact with the security manager
-in ways that we did not see in the open source community. However,
+The study only includes open-source applications. It is possible
+that closed-source applications interact with the security manager
+in ways that we did not see in the open-source community. However,
 we inspected a few small applications with our aerospace collaborators.
 We did not find any code that suggested this is the case. 
 
@@ -1341,35 +1295,7 @@ Unlike these automated approaches, our rules shows that unique
 mitigation strategies can be created with a better understanding of
 how applications interact with the sandbox. 
 
-
-\section{Conclusion}
-
-\todo{CLG moved the following two paragraphs from what used to be section 3; my
-  thought is we could have a longer ``discussion'' of Java software development
-  and its relationship to security, and I think these two paragraphs might fit
-  in well there. \\ MM: If we don't end up with the space for this discussion (looks very possible...) we could tack this on to the end of section 2 with a heading like "Preventing JRE Vulnerabilities" as this is background on that very topic.}
-Many of the recent type confusion and privilege escalation vulnerabilities
-would not have been introduced if the JRE were developed strictly
-following ``The CERT Oracle Secure Coding Standard for Java'' \cite{long_cert_2011}.
-For example, Svoboda \cite{svoboda_anatomy_blog_2013,svoboda_anatomy_2014}
-pointed out that CVE-2012-0507 and CVE-2012-4681 were caused by violating
-a total of six different secure coding rules and four guidelines. 
-
-In the typical case, following just one or two of the broken rules
-and guidelines would have prevented a serious exploit. For example,
-CVE-2012-4681 resulted from two rule violations in a privileged Abstract
-Window Toolkit (AWT) class in the \texttt{sun} package and two rule
-violations and an ignored guideline in a JavaBean class. The bean
-class was exploited to access the AWT class. The AWT class contained
-a method that reflectively fetched any field in any class, made the
-field public, and returned it. This is a violation of rule SEC05-J
-because reflection is being used to increase the accessibility of
-fields. It is also a violation of SEC00-J because the AWT class is
-privileged and leaks sensitive information (the fields) across trust
-boundaries. The AWT class should have followed all of the secure coding
-guidelines, but its violation of SEC00-J is especially problematic---the
-exploits use the leaked fields to disable the security manager. 
-
+\section{Conclusion}\label{sec:Conclusion}
 
 Our study of Java sandbox usage in open-source applications found
 that the majority of studied applications do not change the security
@@ -1391,8 +1317,7 @@ show developers attempting to make non-trivial use of the sandbox
 often do so incorrectly. One intriguing possibility is to allow programmers
 to strengthen the policy temporarily (e.g. by adding a permission). 
 
-We indirectly observed many developers struggling to understand and
-\todo{Where did we observe this?}
+In Section~\ref{sec:Study-results} we observed many developers struggling to understand and
 use the security manager for any purpose. This is perhaps why there
 were only 36 applications in our sample. Some developers seemed to
 misunderstand the interaction between policy files and the security
