@@ -57,7 +57,7 @@ basicstyle=\ttfamily\bfseries\scriptsize,
 %original settings on at least some of the figures: 
 %\author{BLINDED FOR SUBMISSION}
 
-\title{Give 'Em Less Rope: Evaluating the Flexibility of the Java Sandbox}
+\title{Evaluating the Flexibility of the Java Sandbox}
 
 \numberofauthors{1} 
 \author{\alignauthor Zack Coker, Michael Maass, Tianyuan Ding, Claire Le Goues, and Joshua Sunshine \\
@@ -81,7 +81,14 @@ applications and compared their use of the sandbox to the usage present
 in recent exploits. We found that benign applications with secured
 sandboxes do not modify the security manager, the security policy
 enforcement mechanism, after it is first set and do not attempt to
-directly use privileged classes. Exploits routinely do both. We derive two rules from these results to prevent (1) security manager modifications and (2) privilege escalation. We evaluated their protection merits in a case study using runtime monitors to enforce the rules during the execution of exploits and benign applications. The rules stop all ten Metasploit Java 7 exploits without breaking backwards compatibility with benign applications. These practical rules should be enforced in the JRE to fortify the Java sandbox.
+directly use privileged classes. Exploits routinely do both. We derive 
+two rules from these results to prevent (1) security manager 
+modifications and (2) privilege escalation. We evaluated their protection merits 
+in a case study using runtime monitors to enforce the rules during the 
+execution of exploits and benign applications. The rules stop all ten 
+Metasploit Java 7 exploits without breaking backwards compatibility 
+with benign applications. These practical rules should be enforced 
+in the JRE to fortify the Java sandbox.
 \end{abstract}
 
 \section{Introduction}
@@ -102,7 +109,7 @@ Java is a popular target for malicious attackers,
 for three broad reasons.  First, the Java Runtime Environment (JRE) is widely installed on user endpoints.
 Second, the JRE can (and often does) execute external code, in the form of
 applets and Java Web Start (JWS)~\cite{_java_web_start}
-applications~\cite{gong1997going,gong2003inside}.  Finally, Java contains
+applications~\cite{gong1997going,gong2003inside}.  Finally, Java \js{I don't think contains is the right word. Perhaps "Java has contained" or "Java has been inflicted with" Michael what do you think?}contains
 hundreds of known and zero-day vulnerabilities (e.g. CVE-2013-0422)~\cite{xforceQ12013}. In the
 common scenario, often referred to as a ``drive-by download'', attackers lure
 users to a website that contains a hidden malicious applet. Such malicious
@@ -152,7 +159,8 @@ effectively limit the potential exploit mitigations that are
 backwards compatible with all benign applications. Still, such applications use the
 sandbox to implement certain non-security requirements
 because Java does not provide better mechanisms for doing so.  
-On the other hand, applications with \emph{self-protecting} managers do not allow sandboxed code to modify
+On the other hand, applications with \emph{self-protecting} managers do 
+not allow sandboxed code to modify
 security settings; we identified such applications in our dataset as well.
 It might still be possible to exploit
 such applications due to defects in the JRE code that enforces security
@@ -161,9 +169,11 @@ policies, but not due to poorly-deployed local security settings.
 Overall, we found that software that attempts to use the sandbox for its intended
 purpose---protection from malicious external code---does not use its
 vast flexibility.  For these applications, the flexibility decreases their security without
-obviously benefiting the developers or application functionality.  We therefore propose two runtime rules to fortify the Java
+obviously benefiting the developers or application functionality.  We therefore propose 
+two runtime rules to fortify the Java
 sandbox against the two most common modern attack types. We evaluate our rules
-with respect to their ability to guard against ten applets in a popular exploit development and delivery framework, Metasploit
+with respect to their ability to guard against ten applets in a popular exploit development 
+and delivery framework, Metasploit
 4.10.0%
 \footnote{http://www.metasploit.com/}, that successfully attack unpatched
 versions of Java 7. 
