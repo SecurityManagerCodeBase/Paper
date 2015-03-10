@@ -1303,12 +1303,11 @@ mitigation strategies can be created with a better understanding of
 how applications interact with the sandbox. 
 
 \section{Conclusion}\label{sec:Conclusion}
-Previously, the research community did not know how the Java sandbox was
-used in deployment. Li Gong, the main designer of the Java security architecture,
+Li Gong, the main designer of the Java security architecture,
 admitted in a ten year retrospective on Java Security that he didn't
 know how or how extensively the ``fine grained access control mechanism''
 (i.e. the Java sandbox) is used~\cite{gong2009java}.
-Our study found that 24 of the 112 applications in QC used the sandbox.
+Our study fills in that gap. 
 In our dataset of open-source applications, we found
 that the majority of applications interact with but do not set a security
 manager. Some of the remaining applications use the security manager
