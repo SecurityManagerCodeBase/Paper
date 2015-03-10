@@ -556,7 +556,7 @@ Visor & Closure Library & GitHub\tabularnewline
 \end{table}
 
 The goal of this study is to understand how benign open-source Java programs use
-and interact with the security manager.  Thus, we required variety of applications, 
+and interact with the security manager.  Thus, we required a variety of applications, 
 ranging from heavily-used applications to less well known applications. We looked 
 into using applets in our dataset, but due to Java's restrictions on applets,
 we found benign applets did not interact with the security manager. Instead, 
@@ -1021,14 +1021,9 @@ The field events require JVMTI to turn off the just-in-time compiler (JIT), whic
 execution enough that our monitors are not suitable for adoption on their
 own. JVMTI implementations can avoid this limitation, but avoidance would likely
 increase implementation complexity beyond what is reasonable for a diagnostic
-interface. To avoid this overhead, the JDK would need to include the tool
-in its design.
-Other solutions have 1 of 2 problems, either they are (1) insufficient to 
-securely enforce the rules
-(e.g. bytecode instrumentation) or, like JVMTI, (2) unacceptably degrade
-performance by disabling the JIT.
-We are currently in communication with the OpenJDK developers on
-their security-dev mailing list regarding enforcement of our rules in the JVM. 
+interface. The right way to reduce this overhead is to embed our 
+rules directly into the Java Runtime Environment.  We are currently in communication 
+with the OpenJDK developers on their security-dev mailing list regarding enforcement of our rules in the JVM. 
 
 \subsubsection{Enforcing the Privilege Escalation Rule}\label{sub:Enforcing-the-Privilege}
 
