@@ -127,26 +127,52 @@ settings~\cite{garber_2012} to override security mechanisms. Such exploits take 
 the JRE itself or the application's configuration of the sandbox to 
 disable the security manager, the component of the sandbox responsible for enforcing the
 security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012}.
+Many of these exploits contain similar behaviors\zfc{Probably should cite this;  If we like this version, I should ask Michael what to cite}.  
 
-In this paper, we investigate this disconnect between theory and practice.  We
-hypothesize that it results primarily from unnecessary complexity and flexibility
+If we understood how benign applications interact with the sandbox, we could 
+identify and prevent exploits.  Unfortunately, the Java sandbox is very 
+powerful and flexible, possibly more flexible than intended, which means
+many diverse interactions are possible.
+Up to now, benign sandbox interactions were not 
+understood in the research community.  Li Gong, the main designer of the 
+Java security architecture, admitted in a ten year retrospective on Java 
+Security that he didn't know how or how extensively the ``fine grained 
+access control mechanism'' (i.e. the Java sandbox) is used~\cite{gong2009java}.  
+Without this knowledge, any attempt to stop exploit behavior could stop 
+safe applications.  And yet, there are also other advantages to be gained by 
+understanding how developers use the sandbox.  Common developer problems 
+could provide insight for designing similar solutions.  Unintended sandbox
+uses could suggest the need for a new feature in the Java language.  
+
+To explore these problems, we conducted an empirical study
+to answer the question: How do benign
+applications interact with the Java security manager?  We identified 36
+open-source Java projects that use the security manager, taken from the Qualitas
+Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub, and characterized
+those interactions. 
+
+We came to find that some applications did not use the sandbox as intended.  Some
+applications use the sandbox for non-security uses.  Others used questionable 
+security methods to change the current security policies.  We hypothesis that 
+these methods are the result of unnecessary complexity and flexibility
 in the design and engineering of Java's security mechanisms.  For example,
 applications are allowed to change the security manager at runtime, whereas 
 static-only configuration of the manager would be more secure. The JRE also
-provides a number of security permissions that are so powerful that a sandbox
-that enforces any of them is effectively useless for security purposes.  We 
-hypothesize that benign applications do not need all of this power, and that
-they interact with the security manager in ways
-that are measurably different from the ways that exploitative applications do.  
-If true, these differences can be leveraged to improve the overall security of
-Java applications, and prevent future attacks.
-
-To validate these insights, we conducted an empirical study
-to answer the question: How do benign
-applications interact with the Java security manager?  We studied and
-characterized those interactions in 36
-open-source Java projects that use the security manager, taken from the Qualitas
-Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub.  
+provides a number of security permissions that are so powerful that an application
+that uses one is essentially running without the protections of the sandbox, 
+making the manager defenseless.
+%In this paper, we investigate this disconnect between theory and practice.  We
+%hypothesize that it results primarily from unnecessary complexity and flexibility
+%in the design and engineering of Java's security mechanisms.  For example,
+%applications are allowed to change the security manager at runtime, whereas 
+%static-only configuration of the manager would be more secure. The JRE also
+%provides a number of security permissions that are so powerful that an application
+%that uses one is essentially running without the protections of the sandbox. We 
+%hypothesize that benign applications do not need all of this power, and that
+%they interact with the security manager in ways
+%that are measurably different from the ways that exploitative applications do.  
+%If true, this difference can be leveraged to improve the overall security of
+%Java applications, and prevent future attacks.
 
 We discovered two types of security managers in
 practice. \emph{Defenseless} managers enforce a policy that allows sandboxed code
@@ -166,6 +192,7 @@ not allow sandboxed code to modify security settings.
 It might still be possible to exploit
 such applications due to defects in the JRE code that enforces security
 policies, but not due to poorly-deployed local security settings.
+
 
 Overall, we found that the software that \emph{did} use the sandbox in
 non-trivial, defenseless, or otherwise
@@ -314,7 +341,9 @@ is enabled, configured, and reconfigured. The default case for web applets and a
 that use Java Web Start is to set what we call a \textit{self-protecting} security
 manager before loading the network application. The security
 manager, and thus the sandbox, is self-protecting in the sense that
-it does not allow the application to change sandbox settings. We contrast
+it does not allow the application to change sandbox settings. Self-protecting managers might
+still be exploited due to defects in the JRE code that enforces security
+policies, but not due to poorly-deployed local security settings.We contrast
 self-protecting managers with those we call 
 \textit{defenseless}, meaning that sandboxed applications are 
 permitted to modify or disable the security manager.  
@@ -1439,11 +1468,6 @@ mitigation strategies can be created with a better understanding of
 how applications interact with the sandbox. 
 
 \section{Conclusion}\label{sec:Conclusion}
-Li Gong, the main designer of the Java security architecture,
-admitted in a ten year retrospective on Java Security that he didn't
-know how or how extensively the ``fine grained access control mechanism''
-(i.e. the Java sandbox) is used~\cite{gong2009java}.
-Our study fills in that gap. 
 In our dataset of open-source applications, we found
 that the majority of applications interact with but do not set a security
 manager. Some of the remaining applications use the security manager
