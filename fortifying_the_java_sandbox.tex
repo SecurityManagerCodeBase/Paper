@@ -1283,26 +1283,46 @@ mucommander & File Manager & 106 & 27 test cases & 1/23/14 \tabularnewline
 \vspace{-0.5cm}
 \end{table*}
 
-We validated that our rules are backwards compatible with benign applications by
-attaching our monitors to executions of each application in
-table~\ref{tab:validation-programs}. We chose to validate the rules using a dataset different from the one used in our earlier study. The new set is entirely composed of benign JWS applications that are automatically sandboxed in ways similar to applets, while the study's set contained many desktop applications. More importantly, the new dataset helps us ensure that our conclusions are not over-fitted to the study's set. In the new set, ArgoUML, JavaOpenStreetMap, and mucommand
-contained unit tests that we ran in the presence of our monitors. Costello, and
-JabRef did not contain tests, but did come with example workloads that we used
-instead. CrossFTP contained neither tests nor sample workloads, thus we fuzzed
-the GUI for 30 minutes using a custom fuzzer and uploaded a file to a remote FTP
-server as a sample workload.\footnote{The GUI fuzzing source code can be found at \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.}
+By construction, the proposed modifications do not restrict
+benign behavior in the applications we studied in
+Section~\ref{sec:Security-Manager-Study} and Section~\ref{sec:Study-results}.
+To mitigate the threat of overfitting and increase the generalizability of our results, we 
+evaluated our monitors on the applications
+in Table~\ref{tab:validation-programs}. This set is composed of benign JWS
+applications that are automatically sandboxed in ways similar to applets.  This
+expands the scope of our results beyond the numerous desktop applications
+studied above and evaluates our proposed modifications in a particularly
+appropriate context (since JWS programs are typically run with restrictive
+security policies).  The set also includes closed-source applications,
+expanding our anecdotal evidence that our results generalize beyond the open
+source domain.
 
-In each case we confirmed that the tests, sample workloads, or fuzzed executions
-worked without a security manager. To run the applications locally with the sandbox, we developed security
-policies for each using a custom security manager that does not throw exceptions and that prints out checked permissions as each program executes. Finally, we ran each case a third time
+For each program, we confirmed that the agent does not negatively affect
+behavior on benign workloads. ArgoUML, JavaOpenStreetMap, and mucommand 
+contained unit tests that we ran in the presence of our monitors. Costello, and
+JabRef did not provide tests, but do provide example workloads that we used
+in their place. CrossFTP contained neither tests nor sample workloads, and thus
+we fuzzed the GUI for 30 minutes using a custom fuzzer and uploaded a file to a
+remote FTP server as a sample workload.\footnote{The GUI fuzzing source code can
+  be found at
+  \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
+
+In each case, we confirmed that the tests, sample workloads, or fuzzed executions
+worked without a security manager. To sandbox the applications locally,\clg{I
+  don't understand this.  Can we rephrase?}
+we developed security policies for each using a custom security manager that does not throw exceptions 
+and that prints out checked permissions as each program executes. Finally, we
+ran each case a third time 
 using our policy and the standard Java security manager with our monitors
 attached and enforcing the rules. The rules did not break any unit tests, sample
 workloads, or fuzzed executions.
 
-We then confirmed that our tool does not break the DaCapo
-Benchmarks v9.12-bach~\cite{dacapo}~(\texttt{avrora, batik, eclipse, fop, h2, jython, luindex,
-lusearch, pmd, sunflow, tomcat, tradebeans, tradesoap, xalan}). 
-DaCapo was used to validate that our rules do not break representative desktop applications, including a subset of our study's set and additional applications that help ensure the rules are not overly influenced by the study's set. DaCapo systematically exercises each application using a range of inputs to achieve adequate coverage. For all
+Finally, to validate our rules on representative desktop applications while
+mitigating the threat of overfitting to our study sample, we confirmed that the
+agent does not break programs in the DaCapo Benchmarks v9.12-bach set~\cite{dacapo}. 
+DaCapo systematically exercises each application using a range of inputs to achieve
+adequate coverage. For all\clg{I thought our rules didn't apply in the presence
+  of defenseless managers?}
 applications but batik, we set a security manager that granted all
 permissions and attached our monitors to executions of the application. Batik was the only
 exception because it terminates if a security manager is set before starting the application: It needs to set a security manager itself. We used our monitors on Batik as it set and used its
@@ -1322,7 +1342,7 @@ future work will be able to build upon these results to create mitigation
 techniques for additional types of exploits.
 
 \minisec{Internal validity.} 
-Our results are dependent on accurately studying the source code of
+Our study results are dependent on accurately studying the source code of
 applications and their comments. In most cases, security manager interactions
 are easily understood, but there are a few particularly complex interactions
 that may be misdiagnosed. Furthermore, we did not review all application
@@ -1341,14 +1361,16 @@ to find and mitigate sources of inconsistencies.
 The study only includes open-source applications. It is possible
 that closed-source applications interact with the security manager
 in ways that we did not see in the open-source community. However,
-we inspected a few small applications with our aerospace collaborators.
-We did not find any code that suggested this is the case. 
+we inspected a few small closed-source applications with our aerospace collaborators.
+We did not find any code that suggested this is the case.  This result is
+further supported by the closed-source programs included in the dataset
+in~\secref{backcompat}. 
 
 \minisec{Reliability.}
 While the majority of the study is easily replicable, GitHub search results are constantly
-changing. Using GitHub to generate a new dataset using our method
-would likely generate a different dataset. Furthermore, over the course of our security
-manager study, one application either became a private repository
+changing. Using GitHub to generate a new dataset
+would likely result in a different dataset. Furthermore, over the course of the
+study, one application either became a private repository
 or was removed from GitHub (Visor).
 
 \section{Related work}
@@ -1416,6 +1438,7 @@ mitigation strategies can be created with a better understanding of
 how applications interact with the sandbox. 
 
 \section{Conclusion}\label{sec:Conclusion}
+
 In our dataset of open-source applications, we found
 that the majority of applications interact with but do not set a security
 manager. Some of the remaining applications use the security manager
