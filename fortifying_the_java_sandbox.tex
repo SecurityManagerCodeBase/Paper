@@ -724,28 +724,37 @@ improve security without breaking benign behavior.
 Fortunately, this technique does not require complex, context-sensitive
 information about whether a change to a policy weakens the sandbox or not. 
 
-We characterize each application in our dataset along one of four types, depending on how they
-interact with the security manager:
-(1) applications that set an immutable
-security manager, (2) applications that change a set manager during
-the program's execution, (3) applications that do not set or modify a
-security manager in production code but will interact with a manager if 
-one is set by the user or another application, and (4) applications
-that only interact with the manager in unit tests. 
-
+% We characterize each application in our dataset along one of four types, depending on how they
+% interact with the security manager:
+% (1) applications that set an immutable
+% security manager, (2) applications that change a set manager during
+% the program's execution, (3) applications that do not set or modify a
+% security manager in production code but will interact with a manager if 
+% one is set by the user or another application, and (4) applications
+% that only interact with the manager in unit tests. 
+% 
 Table \ref{tab:Classification-of-Application}
-summarizes our dataset using these types. Eight applications eliminate one or more possible mitigation, while the rest cannot cause backwards compatibility issues. We will
+summarizes our dataset based on the categories we described
+in~\secref{methodology}. Eight applications eliminate one or more possible
+mitigation, while the rest cannot cause backwards compatibility issues with any
+of the potential JVM modifications. We will
 not discuss Type 3 or 4 applications further, because their interactions with
-the sandbox can not eliminate a possible mitigation and they do not provide insights useful to mitigation implementers.  
+the sandbox do not provide useful insights in terms of common benign security
+behaviors. 
 
-Of the four categories, Type 2 applications are the most interesting, because
-they change pre-configured and running security managers.  We therefore focus
-on these applications in our discussion. A few Type 1
-applications also provide interesting insights into
+Of the four categories, Type 2 applications (\emph{Changes set manager}) are the
+most interesting, because they make the most use of Java's flexible security
+mechanisms.  We therefore focus  
+on these applications in our discussion. A few Type 1\clg{Besides the few/3-4 we
+  discuss below, what do the rest of the 7 do?  Just set a manager, call external code in a
+  sandbox, and then move on?  Do they do it properly?}
+applications (\emph{Sets an immutable manager}) also provide interesting insights into
 benign sandbox interactions. We discuss applications that use the sandbox for
 purposes that are not security related in Section~\ref{sub:Non-security-uses-of}
 and applications that use the sandbox for its intended security purposes in
 Section~\ref{sub:Using-the-Security}.
+
+\clg{How many have defenseless vs. self-protecting managers?}
 
 \subsection{Non-security uses of the Sandbox}\label{sub:Non-security-uses-of}
 
@@ -769,10 +778,14 @@ finally {
 from terminating the JVM.}
 \end{figure}
 
-Most of the applications we observed to interact with the sandbox in
+Most of the applications to interact with the sandbox in
 non-security ways did so to enforce architectural constraints when interacting with
 other applications; the rest forcibly disabled the sandbox to reduce development
-complexity. These applications provide insights into cases that are currently hard for Java developers to handle without abusing security features. This abuse of security features increases the difficultly of mitigating attacks against them by increasing the odds of backwards compatibility issues.
+complexity. These applications provide insights into cases that are currently
+hard for Java developers to handle without abusing security features. This abuse
+of security features increases the difficultly of mitigating attacks against
+them by increasing the odds of backwards compatibility issues.\clg{Are these
+  type 1 or 2 applications?  Do they all require defenseless managers?}
 
 \subsubsection{Enforcing Architectural Constraints}
 
@@ -783,7 +796,7 @@ application as well, because both applications
 are running in the same JVM. 
 To prevent this outcome without modifying the library application,
 the calling application needs to enforce the architectural constraint
-that libraries cannot terminate the JVM. 
+that called library code cannot terminate the JVM. 
 
 We found three applications in our dataset that 
 enforce this constraint by setting a security manager
@@ -800,40 +813,51 @@ how Eclipse sets a security manager to enforce this constraint
 before executing Ant. After Ant closes and any error conditions
 are handled, Eclipse restores the original manager.
 
-While this technique does enforce the
+This technique does enforce the
 desired constraint, and appears to be the best solution available
-in Java at the moment, it is problematic for applications that also 
-use the sandbox as intended, for security purposes. The technique requires
-the application to dynamically change the security manager, which requires a defenseless manager. Defenseless security managers
-are not capable of reliably enforcing a serious security policy.
+in Java at the moment.  However, it is problematic for applications that also 
+use the sandbox as intended, for security purposes.\clg{On reread, this isn't obvious to
+  me.  The applications calling library code don't care about whether they're
+  sandboxed, right?  Isn't it more a problem for people (or other programs) who want to run these
+  applications in a sandbox? }  The technique requires
+the application to dynamically change the security manager, which in turn requires a
+defenseless manager.  As a result, the calling applications \emph{themselves} cannot be
+effectively sandboxed, as might be desirable when run from Java Web Start, for
+example. The host machine may thus be protected from code from the particular
+sandboxed libraries, but not from vulnerabilities in the application itself, or
+in library code that the application calls without a custom security manager.
+\clg{Someone please check that the sentences I added/modified here are true.}
 
-\subsubsection{Reducing Web Application Development Complexity}\label{sub:Reducing-Web-Application-Complexity}
+\subsubsection{Reducing Web App Development Complexity}
+\label{sub:Reducing-Web-Application-Complexity}
 
 We also found applications that were complicated by the Java security policies
-for web applications (applets and applications launched via JWS). By default,
+for web applications (applets\clg{I thought we didn't study applets?} and applications launched via JWS). By default,
 Java executes such applications inside a self-protecting 
-sandbox with a restrictive policy, 
-excluding operations such as accessing local files, retrieving resources
+sandbox with a restrictive policy that excludes
+operations like accessing local files, retrieving resources
 from any third party server, or changing the security manager. 
 
-Applications in our set that cannot run in a restrictive sandbox universally
-opted to run outside of the sandbox, because the alternative is to painstakingly
-construct the application to run reasonably without required privileges (e.g. by
-detecting the sandbox and disabling privileged operations). To avoid executing
-the applet in a restrictive 
-sandbox, a developer must get the application digitally signed
-by a recognized certificate authority then specify that the application should
-run outside of the sandbox. We found that applications using this method attempted
-to set the security manager to \texttt{null} at the beginning of the
-application, causing a restrictive sandbox to catch the security violation and
-terminate the application.
-
+Applications in our set that cannot run without these permissions
+opted to run outside of the sandbox.  
 We found two applications that do this: Eclipse and
 Timelag. The rationale for disabling the manager in Eclipse is explained in a
 code comment that reads, ``The launcher to start eclipse using webstart. To use
 this launcher, the client must accept to give all security permissions.'' Timelag
 performs the same operation but does not contain any comments, thus we can only
-infer the developers' motivations. 
+infer the developers' motivations. Both these applications attempted
+to set the security manager to \texttt{null} at the beginning of execution.
+This causes a restrictive sandbox to catch the security violation and
+terminate the application.
+
+The alternative to this method is to painstakingly
+construct the application to run reasonably without required privileges (e.g. by
+detecting the sandbox and avoiding or disabling privileged operations). To avoid executing
+the applet in a restrictive \clg{Actually, wouldn't Eclipse need to be run
+  outside the sandbox anyway, because of the story with Ant from the previous subsection?}
+sandbox, a developer must get the application digitally signed
+by a recognized certificate authority, and then specify that the application should
+run outside of the sandbox. 
 
 \subsection{Using the Security Manager for Security Purposes}
 \label{sub:Using-the-Security}
