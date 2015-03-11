@@ -844,45 +844,63 @@ from any third party server, or changing the security manager.
 Applications in our set that cannot run without these permissions
 opted to run outside of the sandbox.  
 We found two applications that do this: Eclipse and
-Timelag. The rationale for disabling the manager in Eclipse is explained in a
+Timelag.  Both applications attempted
+to set the security manager to \texttt{null} at the beginning of execution.
+A restrictive sandbox catches this as a security violation and terminates the
+application; to run it, the user must ensure that such a sandbox is not set.
+The rationale for disabling the manager in Eclipse is explained in a 
 code comment that reads, ``The launcher to start eclipse using webstart. To use
 this launcher, the client must accept to give all security permissions.'' Timelag
-performs the same operation but does not contain any comments, thus we can only
-infer the developers' motivations. Both these applications attempted
-to set the security manager to \texttt{null} at the beginning of execution.
-This causes a restrictive sandbox to catch the security violation and
-terminate the application.
+performs the same operation, but without associated explanatory comments that we
+could find, thus we can only 
+infer developers motivation. 
 
 The alternative to this method is to painstakingly
 construct the application to run reasonably without required privileges (e.g. by
 detecting the sandbox and avoiding or disabling privileged operations). To avoid executing
-the applet in a restrictive \clg{Actually, wouldn't Eclipse need to be run
+the applet\clg{again, I thought we weren't studying applets?} in a restrictive \clg{Actually, wouldn't Eclipse need to be run
   outside the sandbox anyway, because of the story with Ant from the previous subsection?}
 sandbox, a developer must get the application digitally signed
 by a recognized certificate authority, and then specify that the application should
 run outside of the sandbox. 
 
-\subsection{Using the security manager for security purposes}
+\subsection{Using the security manager for security}
 \label{sub:Using-the-Security}
 
-This section describes applications that provide novel insights into benign sandbox interactions related to improving the security
-posture of the application. Several of these applications eliminate all possible mitigations that do not consider if the manager is self-protecting: Batik, Eclipse, and Spring-modules provide
-methods that allow the user to set and change an existing manager,
-and Ant, Freemind, and Netbeans explicitly set then change the manager.
+This section describes applications that interact with the manager in
+security-oriented ways.  Several of these applications eliminate all of the possible
+JVM modifications that we consider do not consider if the manager is self-protecting.  Batik,
+Eclipse, and Spring-modules provide 
+methods that allow the user to set and change an existing manager. 
+Ant, Freemind, and Netbeans explicitly set then change the manager.
 
-Batik SVG Toolkit allows users to optionally constrain the execution of an an application
-that uses it by providing a method to turn the sandbox on or off. This method not only requires a defenseless sandbox, it provides a trivial mechanism for disabling the sandbox at any time. The download page on the Batik
-website shows several examples of how to use the library. Two examples set
-a security manager at start up: the squiggle browser demo and the
-rasterizer demo. While the squiggle browser demo sets a manager and
-never changes it, the rasterizer demo calls \texttt{enforceSecurity}
-with a true argument the first time and a false argument the second
-time, which enables then disables the sandbox. While this was an interesting
-occurrence, there seems to be no valid reason to disable the sandbox
-in this case other than to show off the capability to do so.
+Batik SVG Toolkit allows users to optionally constrain the execution of an application
+that uses it by providing a method to turn the sandbox on or off. 
+\clg{Confused.  How can a toolkit/library control the security of an application that
+  uses it?  Can't it only constrain code that calls it?  I think I'm missing
+  something here.}
+This method
+not only requires a defenseless sandbox, it provides a trivial mechanism for
+disabling the sandbox at any time. The Batik download page
+provides several examples of library use, one of which (the
+``rasterizer'' demo) enables and disables the sandbox.  However, there seems to
+be no reason to do so in this case other than to demonstrate the functionality;
+we were unable to discern the rationale behind including it from the examples
+and related documentation.
+
+%  Two examples set
+% a security manager at start up: the squiggle browser demo and the
+% rasterizer demo. While the squiggle browser demo sets a manager and
+% never changes it, the rasterizer demo calls \texttt{enforceSecurity}
+% with a true argument the first time and a false argument the second
+% time, which enables then disables the sandbox. While this was an interesting
+% occurrence, there seems to be no valid reason to disable the sandbox
+% in this case other than to show off the capability to do so.
 
 Ant, Freemind, and Netbeans explicitly set then change the manager
-during runtime, which makes it impossible to stop all reconfiguring, disabling, or weakening of the sandbox at runtime while claiming backwards compatibility. Ant allows the users to create build scripts that
+during runtime, which makes it impossible to stop all reconfiguring, disabling,
+or weakening of the sandbox at runtime while claiming backwards
+compatibility. Ant allows users to create build scripts that 
 execute Java classes during a build under a user specified
 permissions set. Figure \ref{fig:Ant Permissions Example}
 shows an example permission set from the Ant Permissions website.%
