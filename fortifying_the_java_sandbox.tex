@@ -1126,7 +1126,7 @@ is stricter than what is imposed on the rest of the application, it is clear
 that it is too easy to get this wrong:  We've seen no case where this goal was
 achieved in a way that is known to be free of vulnerabilities.  \clg{I think
   this claim is strong.  What's wrong with Ant besides the bad example online?
-  We didn't find a vulnerability in it, what kind of evidence do we require that
+  We didn't find a vulnerability in it, what kind of evidence would we require that
   their approach is secure?} These case
 studies support our general claims that the Java security mechanisms are overly
 complex, and that this complexity contributes to security vulnerabilities in
@@ -1136,9 +1136,10 @@ practice.
 \label{sec:Rules-for-Fortifying}
 
 Based on our study of how open-source Java programs interact with the security
-manager, we propose two rules to stop Java exploits
-from disabling the manager in applications that set a \emph{self-protecting}
-security manager.  These rules reduce the flexibility and thus complexity of the
+manager, we propose two changes to the current Java security model to stop exploits
+from disabling \emph{self-protecting} managers.\clg{How many self protecting
+  managers did we see in our study?  That is, how applicable are these in practice?}
+These rules reduce the flexibility and thus complexity of the
 Java security model without breaking backwards compatability in practice:
 
 \noindent\textbf{Privilege escalation rule.} If a self-protecting
@@ -1183,47 +1184,57 @@ Our agent\footnote{Our agent is open-source. The latest version
 of the tool can be found at https://github.com/SecurityManagerCodeBase/
 JavaSandboxFortifier} must intercept three events to enforce the Privilege Escalation
 and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
-and \texttt{FieldModification}. Enforcement of these rules is discussed in subsections \ref{sub:Enforcing-the-Privilege} and \ref{sub:Enforcing-the-SecurityManager}.
-
+and \texttt{FieldModification}.
+%
 The field events require JVMTI to turn off the just-in-time compiler (JIT), which slows down program
 execution enough that our monitors are not suitable for adoption on their
 own. JVMTI implementations can avoid this limitation, but avoidance would likely
 increase implementation complexity beyond what is reasonable for a diagnostic
-interface. The right way to reduce this overhead is to embed our 
-rules directly into the Java Runtime Environment.  We are currently in communication 
-with the OpenJDK developers on their security-dev mailing list regarding enforcement of our rules in the JVM. 
+\clg{I don't understand this sentence.  Do we mean that we could implement these
+  without making things hella slow we just didn't?  I'd cut it, frankly.}
+interface. A more correct and general approach is to embed our
+rules directly in the JRE.  We are currently in communication 
+with the OpenJDK developers on their \texttt{security-dev} mailing list about
+doing so.
 
 \subsubsection{Enforcing the privilege escalation rule}\label{sub:Enforcing-the-Privilege}
 
-The Privilege Escalation rule is enforced by ensuring that classes
-can only load or cause the loading of more privileged classes in restricted-access
-packages after a self-protecting security manager has been set. \textit{Restricted-access
-packages} are packages that are public but not intended to be directly
-used by typical Java applications; they are meant for internal JRE
-use only. These packages are listed in the \texttt{package.access}
-property in the \texttt{java.security.Security} class. There are two
-ways to unsafely and directly access packages listed in this property:
-(1) exploit a vulnerability in a class that can access them or (2)
-allow access via the \texttt{accessClassInPackage} permission, which would lead to a defenseless manager if the named package is the \texttt{sun} package.
+\clg{I found this subsection confusing the first time I read it, so I reworded
+  some stuff and moved paragraphs around.  Someone please reread to make sure it's still true.}
+To enforce the Privilege Escalation rule, our agent registers for
+the \texttt{ClassPrepare} event, which is triggered after a class is loaded but
+before any of its code is executed.  The agent can therefore 
+inspect the stack frame to determine which class
+caused the new class to be loaded, acquire the protection
+domains for both classes, and ensure the loaded class is not more privileged
+than the calling class by comparing their permission sets. 
 
-Benign applications can and often do use JRE classes to access these implementations by
-calling restricted access package
-classes (e.g., many of the classes in the \texttt{java.lang.reflect}
-package are backed by classes in the restricted-access \texttt{sun} package, which
+The existence of restricted-access packages complicates this implementation slightly. 
+\textit{Restricted-access packages} are public, but not intended for direct
+use by typical Java applications; they are meant for internal JRE
+use only. 
+%
+% These packages are listed in the \texttt{package.access}
+%property in the \texttt{java.security.Security} class. 
+Benign applications can (and often do) use JRE classes to access these
+restricted implementations (e.g., much of the functionality in \texttt{java.lang.reflect}
+is backed by the restricted-access \texttt{sun} package, which
 contains the internal implementations
-for many Java features). We must therefore allow the JRE to load restricted-access packages
-at runtime, while preventing such loading from the application classes.
+for many Java features).  We therefore allow the JRE itself to load restricted-access packages
+at runtime, but prevent such loading from the application classes.
 Because exploit payloads are not implemented in restricted-access JRE packages,
 the Privilege Escalation rule can permit this standard behavior while preventing
-attacks.
+attacks.  
 
-To enforce the rule, our agent registers for
-the \texttt{ClassPrepare} event, which allows the agent to inspect
-a class after it is fully loaded but just before any of its code is
-executed. Assuming the loaded class is not in a restricted-access
-package, the agent inspects the stack frame to determine which class
-caused the new class to be loaded. The agent must then get the protection
-domains for both classes to ensure the loaded class is not more privileged by comparing their permission sets.
+Note that there are two ways that application code might directly access such
+packages in the current security model: 
+(1) exploit a vulnerability in a class that \emph{can} access them or (2)
+receive permission from the security manager via an
+\texttt{accessClassInPackage(``sun'')} permission in the policy.  The first behavior
+is undesirable, and is thus rightfully prevented by the enforcement of this
+rule.  The second behavior would involve in a defenseless manager, at which
+point rule enforcement is moot.
+
 
 \subsubsection{Enforcing the security manager rule}\label{sub:Enforcing-the-SecurityManager}
 
