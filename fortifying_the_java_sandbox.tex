@@ -106,10 +106,10 @@ a Dec. 2013 survey of Trusteer customers \cite{xforceQ12013}. Java
 \fi
 
 Java is a popular target for attackers,
-for three broad reasons.  First, the Java Runtime Environment (JRE) is widely installed on user endpoints.
+for three broad reasons. First, the Java Runtime Environment (JRE) is widely installed on user endpoints.
 Second, the JRE can (and often does) execute external code, in the form of
 applets and Java Web Start (JWS) %~\cite{_java_web_start}
-applications~\cite{gong1997going,gong2003inside}.  Finally, there are hundreds
+applications~\cite{gong1997going,gong2003inside}. Finally, there are hundreds
 of known and zero-day vulnerabilities (e.g. CVE-2013-0422)~\cite{xforceQ12013}
 in Java. In the
 common scenario, often referred to as a ``drive-by download'', attackers lure
@@ -117,78 +117,56 @@ users to a website that contains a hidden malicious applet. Such malicious
 applets exploit security vulnerabilities in the JRE to deliver malware,
 often leaving the user unaware.
 
-In theory, such attacks should not be so common: 
+
+In theory, such attacks should not be so common:
 Java provides a sandboxing mechanism that enables the safe execution of untrusted code and isolates
 components from one another. Both the host application and machine should
 therefore be protected from malicious behavior.
 In practice, these security mechanisms are problematically
 buggy, such that Java malware typically alters the sandbox's
 settings~\cite{garber_2012} to override security mechanisms. Such exploits take advantage of defects in either
-the JRE itself or the application's configuration of the sandbox to 
+the JRE itself or the application's configuration of the sandbox to
 disable the security manager, the component of the sandbox responsible for enforcing the
 security policy~\cite{fireeye_2013,svoboda_anatomy_blog_2013,security_explorations_2012,blackhat_2012}.
-Many of these exploits contain similar behaviors\zfc{Probably should cite this;  If we like this version, I should ask Michael what to cite}.  
 
-If we understood how benign applications interact with the sandbox, we could 
-identify and prevent exploits.  Unfortunately, the Java sandbox is very 
-powerful and flexible, possibly more flexible than intended, which means
-many diverse interactions are possible.
-Up to now, benign sandbox interactions were not 
-understood in the research community.  Li Gong, the main designer of the 
-Java security architecture, admitted in a ten year retrospective on Java 
-Security that he didn't know how or how extensively the ``fine grained 
-access control mechanism'' (i.e. the Java sandbox) is used~\cite{gong2009java}.  
-Without this knowledge, any attempt to stop exploit behavior could stop 
-safe applications.  And yet, there are also other advantages to be gained by 
-understanding how developers use the sandbox.  Common developer problems 
-could provide insight for designing similar solutions.  Unintended sandbox
-uses could suggest the need for a new feature in the Java language.  
 
-To explore these problems, we conducted an empirical study
-to answer the question: How do benign
-applications interact with the Java security manager?  We identified 36
-open-source Java projects that use the security manager, taken from the Qualitas
-Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub, and characterized
-those interactions. 
-
-We came to find that some applications did not use the sandbox as intended.  Some
-applications use the sandbox for non-security uses.  Others used questionable 
-security methods to change the current security policies.  We hypothesis that 
-these methods are the result of unnecessary complexity and flexibility
-in the design and engineering of Java's security mechanisms.  For example,
-applications are allowed to change the security manager at runtime, whereas 
+In this paper, we investigate this disconnect between theory and practice. We
+hypothesize that it results primarily from unnecessary complexity and flexibility
+in the design and engineering of Java's security mechanisms. For example,
+applications are allowed to change the security manager at runtime, whereas
 static-only configuration of the manager would be more secure. The JRE also
-provides a number of security permissions that are so powerful that an application
-that uses one is essentially running without the protections of the sandbox, 
-making the manager defenseless.
-%In this paper, we investigate this disconnect between theory and practice.  We
-%hypothesize that it results primarily from unnecessary complexity and flexibility
-%in the design and engineering of Java's security mechanisms.  For example,
-%applications are allowed to change the security manager at runtime, whereas 
-%static-only configuration of the manager would be more secure. The JRE also
-%provides a number of security permissions that are so powerful that an application
-%that uses one is essentially running without the protections of the sandbox. We 
-%hypothesize that benign applications do not need all of this power, and that
-%they interact with the security manager in ways
-%that are measurably different from the ways that exploitative applications do.  
-%If true, this difference can be leveraged to improve the overall security of
-%Java applications, and prevent future attacks.
+provides a number of security permissions that are so powerful that a sandbox
+that enforces any of them is effectively useless for security purposes. We
+hypothesize that benign applications do not need all of this power, and that
+they interact with the security manager in ways
+that are measurably different from the ways that exploitative applications do.
+If true, these differences can be leveraged to improve the overall security of
+Java applications, and prevent future attacks.
+
+
+To validate these insights, we conducted an empirical study
+to answer the question: How do benign
+applications interact with the Java security manager? We studied and
+characterized those interactions in 36
+open-source Java projects that use the security manager, taken from the Qualitas
+Corpus \cite{QualitasCorpus:APSEC:2010} and GitHub.
+
 
 We discovered two types of security managers in
 practice. \emph{Defenseless} managers enforce a policy that allows sandboxed code
 to modify sandbox settings. Such applications
 are inherently insecure, because externally-loaded malicious code can
-modify or disable the security manager.  In our study, defenseless managers were
+modify or disable the security manager. In our study, defenseless managers were
 used by applications that modified sandbox settings at runtime, typically because
 they use the security manager to enforce policies or implement functionality
-unrelated to security.  We believe that such applications use the
+unrelated to security. We believe that such applications use the
 sandbox to implement certain non-security requirements
-because Java does not provide better mechanisms for doing so.  
+because Java does not provide better mechanisms for doing so.
 The sandbox is not intended to be used this way, and these use cases
 effectively limit the potential exploit mitigations that are
-backwards compatible with all benign applications. 
-On the other hand, applications with \emph{self-protecting} managers do 
-not allow sandboxed code to modify security settings. 
+backwards compatible with all benign applications.
+On the other hand, applications with \emph{self-protecting} managers do
+not allow sandboxed code to modify security settings.
 It might still be possible to exploit
 such applications due to defects in the JRE code that enforces security
 policies, but not due to poorly-deployed local security settings.
@@ -200,43 +178,44 @@ unusual ways typically did so incorrectly or insecurely. In fact, we found and r
 security vulnerability related to the sandbox in one of the applications under study. We also found that
 software that uses the sandbox for its intended
 purpose---protection from malicious external code---does not use its
-vast flexibility.  For these applications, the flexibility decreases their security without
-obviously benefiting the developers or application functionality.  We therefore propose 
+vast flexibility. For these applications, the flexibility decreases their security without
+obviously benefiting the developers or application functionality. We therefore propose
 two runtime rules that restrict the flexibility of the sandbox and fortify Java
 against the two most common modern attack types without breaking backwards
 compatibility in practice. We evaluate our rules
-with respect to their ability to guard against ten applets in a popular exploit development 
+with respect to their ability to guard against ten applets in a popular exploit development
 and delivery framework, Metasploit
 4.10.0%
 \footnote{http://www.metasploit.com/}, that successfully attack unpatched
-versions of Java 7. 
+versions of Java 7.
 Taken together, the rules stopped all ten exploits, and did not break
-backwards-compatability 
+backwards-compatability
 when tested against a corpus of benign applications.
 We are engaged in an
 ongoing discussion on the security-dev mailing list for OpenJDK about
 implementing runtime enforcement of these rules in the JVM itself.
 
+
 The contributions of this papers are as follows:
-\begin{flushitem}	\setlength{\parskip}{0pt}
-  \setlength{\parsep}{0pt}
-  \setlength{\itemsep}{0pt}
+\begin{flushitem} \setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\itemsep}{0pt}
 \item A catalog of open-source applications that enforce constraints on
-  sub-components by way of the Java sandbox (Section \ref{sec:Study-results}).
+sub-components by way of the Java sandbox (Section \ref{sec:Study-results}).
 \item \todo{A study of how open-source applications interact with the security
-    manager, with implications.}
+manager, with implications.}
 \item An enumeration of Java permissions that make security policies difficult
-  to enforce (Section \ref{sec:secmanagers}), a discussion of real-world cases
-  where these permissions are used (Sections \ref{sub:Non-security-uses-of} and
-  \ref{sub:Using-the-Security}), and a sandbox-bypassing exploit for a popular
-  open-source application made vulnerable due to their use (Section
-  \ref{sub:Using-the-Security}).
+to enforce (Section \ref{sec:secmanagers}), a discussion of real-world cases
+where these permissions are used (Sections \ref{sub:Non-security-uses-of} and
+\ref{sub:Using-the-Security}), and a sandbox-bypassing exploit for a popular
+open-source application made vulnerable due to their use (Section
+\ref{sub:Using-the-Security}).
 \item Two novel rules for distinguishing between benign and malicious Java
-  programs, which we validated with an empirical evaluation (Section
-  \ref{sec:Rules-for-Fortifying}).
+programs, which we validated with an empirical evaluation (Section
+\ref{sec:Rules-for-Fortifying}).
 \item A discussion of the various tactics for practically implementing the
-  rules, with a case for adoption directly in the JVM (Section
-  \ref{sub:Implementation-Using-JVMTI}).
+rules, with a case for adoption directly in the JVM (Section
+\ref{sub:Implementation-Using-JVMTI}).
 \end{flushitem}
 
 % This paper covers background on the Java sandbox and its exploits necessary to fully motivate and 
@@ -864,7 +843,7 @@ in library code that the application calls without a custom security manager.
 \subsubsection{Web applications outside the sandbox}\label{sub:Reducing-Web-Application-Complexity}
 
 We also found applications that were complicated by the Java security policies
-for web applications (applets~\clg{I thought we didn't study applets?} and applications launched via JWS). By default,
+for web applications (applets\clg{I thought we didn't study applets?} and applications launched via JWS). By default,
 Java executes such applications inside a self-protecting 
 sandbox with a restrictive policy that excludes
 operations like accessing local files, retrieving resources
@@ -914,7 +893,7 @@ disabling the sandbox at any time. The Batik download page
 provides several examples of library use, one of which (the
 ``rasterizer'' demo) enables and disables the sandbox.  However, there seems to
 be no reason to do so in this case other than to demonstrate the functionality;
-we were otherwise unable to discern the rationale behind including it from the examples
+we were unable to discern the rationale behind including it from the examples
 and related documentation.
 
 %  Two examples set
@@ -926,6 +905,19 @@ and related documentation.
 % occurrence, there seems to be no valid reason to disable the sandbox
 % in this case other than to show off the capability to do so.
 
+Ant, Freemind, and Netbeans explicitly set then change the manager
+during runtime, which makes it impossible to stop all reconfiguring, disabling,
+or weakening of the sandbox at runtime while claiming backwards
+compatibility. Ant allows users to create build scripts that 
+execute Java classes during a build under a user specified
+permissions set. Figure \ref{fig:Ant Permissions Example}
+shows an example permission set from the Ant Permissions website.%
+\footnote{https://ant.apache.org/manual/Types/permissions.html%
+} The contents of the \texttt{grant} element provide the application
+all permissions, but the contents of the \texttt{revoke} element restrict
+the application from using all property permissions. Due the use of a
+defenseless security manager, malicious code can easily disable the sandbox and perform all actions,
+including those requiring \texttt{PropertyPermissions}, because the constrained code is allowed to set the security manager.
 
 \begin{figure}
 \begin{lstlisting}[language=XML,basicstyle={\scriptsize}]
@@ -934,75 +926,31 @@ and related documentation.
   <revoke class="java.util.PropertyPermission"/> 
 </permissions>
 \end{lstlisting}
-\caption{An example from Apache of an Ant build script element that grants all but
-  one permission to external code. The resulting permission set results in a defenseless security
-  manager (because it allows most of the permissions we list in
-  Table~\ref{tab:defenseless-permissions}).  Revoking the
-  \texttt{PropertyPermission} therefore does not improve the security of the
-  application over running without the sandbox.} 
+
+\caption{An example from Apache of an Ant build script element to grant all but one permission. This permission set results in a defenseless security manager, thus revoking one permission does nothing to improve the security of the application.}
 \label{fig:Ant Permissions Example}
 \end{figure}
 
-Ant, Freemind, and Netbeans all set then change the manager
-at various runtime points.  As a result, we cannot entirely restrict the sandbox's
-flexibility (by eliminating the ability to reconfigure, disable, or weaken it
-at runtime) while maintaining backwards compatability with these applications.
-Ant allows users to create scripts that 
-execute \clg{external? User-provided?} Java classes under a user-specified
-permissions set. Figure~\ref{fig:Ant Permissions Example}
-shows an example permission set from the Ant Permissions website.%
-\footnote{https://ant.apache.org/manual/Types/permissions.html%
-} The contents of the \texttt{grant} element provide the application
-all permissions; the \texttt{revoke} element then restricts
-the application from using property permissions. However,
-\texttt{PropertyPermissions} are not the only permissions that allow
-malicious code to bypass or disable the sandbox (see
-Table~\ref{tab:defenseless-permissions}).  The resulting security manager in this
-example is thus defenseless.  This property set will still allow 
-malicious code to perform all security-sensitve actions,
-including those requiring \texttt{PropertyPermissions}, because the constrained
-code is able to set or disable the security manager at will.\clg{Does the
-  documentation surrounding this example on the website suggest that it's a good
-  permissions set?}
+When Ant is about to execute an external, constrained class, it saves the current security manager and replaces it with a custom manager. The custom manager is not initially defenseless given a self-protecting permission set, but it contains a private switch to make the manager defenseless for the purposes of restoring the original manager. With this implementation, Ant catches applications that perform actions
+restricted by the user while typically protecting sandbox settings. However, it is not clear this implementation
+is free of vulnerabilities. Netbeans similarly sets a security manager around a separate application.
 
-When Ant prepares to execute an external, constrained class, it saves the
-\clg{To be clear, this is separate from the behavior described above, right?  Oh
-wait no, maybe not...but the example above is bad because it suggests to the
-user that the permissions set is good, right?}
-current security manager and replaces it with a custom manager. The custom
-manager is not initially defenseless given a self-protecting permission set, but
-it contains a private switch to make the manager defenseless for the purposes of
-\clg{Why does it need to be made defenseless to restore the original manager?
-  Doesn't Ant have the ability/permission to reset its own security manager
-  after the constrained code is executed?}
-restoring the original manager. With this implementation, Ant catches
-applications that perform actions 
-restricted by the user while typically protecting sandbox settings. 
-%However, it
-%is not clear this implementation 
-%is free of vulnerabilities. 
-% CLG believes this sentence is problematically speculative and could be said
-% about basically anything.
-Netbeans similarly sets a security manager around a separate application. 
-
-Both of these cases require that the host application be run with a defenseless security manager, otherwise
+Both of these cases require a defenseless security manager, otherwise
 the application would not be able to change the current security manager.
 A better implementation would use a custom class
 loader to load the untrusted classes into a constrained protection
 domain. This approach would align with the intended usage of the sandbox.
 Additionally, it would be more clearly correct and trustworthy while
 allowing Ant and Netbeans to run inside of a self-protecting sandbox.
-\clg{We speculate that they don't because it's hard or poorly understood?}
 
-In trying to solve a similar problem, Freemind 0.9.0 illustrates
-the dangers of a defenseless manager. Freemind is a mind mapping tool.  It
-includes a feature that allows users to execute Groovy scripts on mind maps. 
-The scripts are written by the creator of the mind map in question.
-Groovy is a scripting language built on top of the JRE; typically, and in this
-case, Java applications executing such scripts do so in the same 
-JVM as the application itself. If the Groovy scripts are executed insecurely, it
-may therefore be possible to exploit unsuspecting users by compelling them to download
-a map and run its (malicious) scripts.
+Freemind 0.9.0 tried to solve a similar problem but ended up illustrating
+the dangers of a defenseless manager. Freemind is a mind mapping tool
+that allows users to execute Groovy scripts on an opened map. The
+scripts are written by the creator of the mind map. Groovy is a scripting
+language that is built on top of the JRE: A Java application that
+executes a script typically allows the script to execute in the same
+JVM as the application itself. As a result, a mind map could potentially
+be crafted to exploit a user that opens the map and runs its scripts.
 
 \begin{figure}
 \begin{lstlisting}[language=Java,firstnumber=31]
@@ -1035,65 +983,42 @@ public void setFinalSecurityManager(SecurityManager pFinalSM) {
   users. These problems were fatal to the security of this application.}
 \end{figure}
 
-This feature is implemented in Freemind within an architecture that
-\emph{should} allow the
+Freemind attempted to implement an architecture that would allow the
 sandbox to enforce a stricter policy on the Groovy scripts than on
-the rest of Freemind. 
-Figure~\ref{fig:Freemind-Security-Manager} shows how Freemind sets
-the proxy security manager field, a key component of this architecture.
-%
-The design centers around a custom
-security manager that is set as the system security manager in the usual way.
-This custom manager contains a field that holds a proxy manager, used only during the execution of
-scripts. All checks to the security manager are 
-deferred to this proxy manager.  As a result, if
-the proxy field is set to \texttt{null}, the sandbox is disabled,
+the rest of Freemind. Their design centers around the use of a custom
+security manager that is set as the system manager in the usual manner.
+This custom manager contains a field that holds a proxy manager to be used during the execution of
+scripts. In this design, all checks to the security manager are ultimately
+deferred to the proxy manager set in this field. When
+this field is set to \texttt{null}, the sandbox is effectively disabled
 even though the system's manager is still set to the custom manager.
-\clg{I'm a little puzzled by the code/explanation, so let me check my
-  understanding.  If I'm reading this right,
-  we're saying that if an exploit sets the proxy manager to null while
-  the custom manager is in use and thinks that we're running a groovy script, it
-  will defer checks to this proxy manager, which will do nothing.  Which is
-  bad.  Am I wrong?}
 
-As shown in Figure~\ref{fig:Freemind-Security-Manager},
-once a manager is set, if \texttt{setFinalSecurityManager} is called
-again with a different security manager, it throws a \texttt{SecurityException}.
-Calling the method with a reference to the set manager disables
-the sandbox.\clg{It's possible that this is the part that's confusing me.  Why
-  do they do this/what does it accomplish?}
-The comment implies that this approach is intended 
-to prevent malicious applications from
-changing the sandbox settings.
+Figure \ref{fig:Freemind-Security-Manager} shows how Freemind sets
+the proxy security manager field.
+Once a manager is set, if \texttt{setFinalSecurityManager} is called
+again with a different security manager, a \texttt{SecurityException}
+is thrown, but calling the method with a reference to the set manager disables
+the sandbox. The comment implies that this sequence
+of operations was implemented to prevent malicious applications from
+changing the settings of the sandbox.
 
-The code responsible for actually initiating the execution of the Groovy scripts
-sets a proxy security manager that does not allow unsigned scripts to create
-network sockets, access the file-system, or execute other programs. However,
-despite all this security-oriented effort, the manager explicitly allows all
-other permissions (including some that result in a defenseless sandbox) by
-overriding the remainder of the permission check methods with implementations
-that do nothing. As a result, a malicious script can turn off the sandbox at any
-point.
+The Freemind code responsible for initiating the execution of the
+Groovy scripts sets a proxy security manager that does not allow unsigned
+scripts to create network sockets, access the file-system, or execute
+programs on the machine. The manager explicitly allows all other permissions by overriding permission check methods with implementations that do nothing. As a result, a malicious script can turn off the sandbox at any point.
 
-However, the problem goes beyond the problematic permission checks overrides, and fixing
-them would not result in the secure execution of untrusted Groovy scripts.  We
-demonstrate this by using reflection to remove the custom security manager. 
-Figure~\ref{fig:Example-Exploit-for-Freemind} 
-shows a Groovy exploit that gets a reference to the system's manager
+We demonstrated that the custom security manager is easily removed
+using reflection to show that the problem is more complex than simply
+fixing permission checks related to setting the security manager. Figure \ref{fig:Example-Exploit-for-Freemind}
+shows a Groovy exploit to turn off the manager. The script gets a reference to the system's manager
 and its class. The class has the same type as the custom security
-manager, thus the exploit also has access to a reference to the proxy manager field.
-The exploit makes the field public and then reflectively sets it to
-\texttt{null}, which disables the sandbox (since during script execution, all
-checks are deferred to the proxy) and allows all
-``forbidden'' operations.
+manager, thus the exploit gets a reference to the proxy manager field.
+The field is made public to allow the exploit to reflectively \texttt{null}
+it, disabling the sandbox to allow ``forbidden'' operations.
 
-We sent a notice to the Freemind developers in August, 2014
-with our example exploit and advice on achieving
-their desired outcome. Blu-ray player vendors have also introduced fatal
-security flaws when attempting to execute some Java code with a stricter policy
-than the rest of the system in unconventional ways, but we do not discuss these
-cases because they are not
-open-source.\footnote{\url{https://www.nccgroup.com/en/blog/2015/02/abusing-blu-ray-players-pt-1-sandbox-escapes/}} 
+We sent a notice to the Freemind developers in August of 2014 to provide
+them with our example exploit and to offer our advice in achieving
+their desired outcome. Blu-ray player vendors have also introduced fatal security flaws when attempting to execute some Java code with a stricter policy than the rest of the system in unconventional ways, but we do not discuss these cases because they are not open-source.\footnote{\url{https://www.nccgroup.com/en/blog/2015/02/abusing-blu-ray-players-pt-1-sandbox-escapes/}}
 
 \begin{figure}
 \begin{lstlisting}[language=Java,basicstyle={\scriptsize},breaklines=true]
@@ -1108,32 +1033,9 @@ new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
 to execute arbitrary code.}
 \end{figure}
 
-All of these applications ran afoul of the Java sandbox's flexibility even
-though they attempted to use it for its intended purpose.\clg{What's wrong with
-  Netbeans? I get that Ant provides bad examples to its users, but we barely
-  discussed NetBeans.}  
-They must all be run with defenseless managers, and those that 
-manipulate the set security policy dynamically do so problematically.  
-% Every application
-% discussed in this section would break any of our suggested mitigations that do
-% not check for self-protecting managers and can have executions protected by an
-% easily bypassed, defenseless security manager. 
-% CLG doesn't understand this sentence hopefully the gist is still maintained in
-% the text here.
-While Java does provide the
-building blocks for constraining a subset of an application with a policy that
-is stricter than what is imposed on the rest of the application, it is clear
-that it is too easy to get this wrong:  We've seen no case where this goal was
-achieved in a way that is known to be free of vulnerabilities.  \clg{I think
-  this claim is strong.  What's wrong with Ant besides the bad example online?
-  We didn't find a vulnerability in it, what kind of evidence do we require that
-  their approach is secure?} These case
-studies support our general claims that the Java security mechanisms are overly
-complex, and that this complexity contributes to security vulnerabilities in
-practice.  
+All of these applications fell afoul of the Java sandbox's flexibility even though they attempted to use it for its intended purpose. Every application discussed in this section would break any of our suggested mitigations that do not check for self-protecting managers and can have executions protected by an easily bypassed, defenseless security manager. While Java does provide the building blocks for constraining a subset of an application with a policy that is stricter than what is imposed on the rest of the application, it is clear that it is too easy to get this wrong: We've seen no case where this goal was achieved in a way that is known to be free of vulnerabilities.
 
-\section{Fortifying the sandbox}
-\label{sec:Rules-for-Fortifying}
+\section{Fortifying the sandbox}\label{sec:Rules-for-Fortifying}
 
 Based on our study of how open-source Java programs interact with the security
 manager, we propose two rules to stop Java exploits
