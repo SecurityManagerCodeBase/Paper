@@ -188,7 +188,7 @@ and delivery framework, Metasploit
 4.10.0%
 \footnote{http://www.metasploit.com/}, that successfully attack unpatched
 versions of Java 7.
-Taken together, the rules stopped all ten exploits, and did not break
+Taken together, the rules stopped all ten exploits and did not break
 backwards-compatability
 when tested against a corpus of benign applications.
 We are engaged in an
@@ -477,7 +477,7 @@ There are four possibilities:
 \item \textit{Benign applications never disable the security manager.}  If true,
   only exploitative code attempts to disable the security manager once it is set.
   The JVM could therefore eliminate an application's ability to
-  do so.  This would be easy to implement, but would not guard against exploits
+  do so.  This would be easy to implement but would not guard against exploits
   that weaken the sandbox without disabling it.
 % For example, attackers could potentially bypass the mitigation
 % by modifying the enforced policy to allow the permissions they need
@@ -486,7 +486,7 @@ There are four possibilities:
 \item \textit{Benign applications do not weaken a set security manager}.  If
   true, the JVM could be modified to prevent any weakening or disabling of the 
   sandbox once it's set.  This is more powerful than simply removing the
-  ability to disable the security manager, but is significantly more difficult to
+  ability to disable the security manager but is significantly more difficult to
   implement.
   % However, this would require the ability to
   % differentiate between changes that weaken the sandbox and those that do not,
