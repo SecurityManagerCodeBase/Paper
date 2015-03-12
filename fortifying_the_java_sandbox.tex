@@ -335,8 +335,7 @@ benign software.
 Table~\ref{tab:defenseless-permissions} summarizes the set of permissions
 that distinguish between self-protecting and defenseless security
 managers. We generated this list by evaluating whether each of the available Java permissions to
-can \clg{what does ``reliably'' mean here? Can we drop it, or is it adding some
-  important meaning?} reliably lead to sandbox bypasses. We
+can lead to sandbox bypasses. We
 call any security manager that enforces a policy 
 containing any of these permissions \emph{defenseless.}
 
@@ -843,7 +842,7 @@ in library code that the application calls without a custom security manager.
 \subsubsection{Web applications outside the sandbox}\label{sub:Reducing-Web-Application-Complexity}
 
 We also found applications that were complicated by the Java security policies
-for web applications (applets\clg{I thought we didn't study applets?} and applications launched via JWS). By default,
+for web applications (applications launched via JWS). By default,
 Java executes such applications inside a self-protecting 
 sandbox with a restrictive policy that excludes
 operations like accessing local files, retrieving resources
@@ -866,8 +865,7 @@ infer developers motivation.
 The alternative to this method is to painstakingly
 construct the application to run reasonably without required privileges (e.g. by
 detecting the sandbox and avoiding or disabling privileged operations). To avoid executing
-the applet\clg{again, I thought we weren't studying applets?} in a restrictive \clg{Actually, wouldn't Eclipse need to be run
-  outside the sandbox anyway, because of the story with Ant from the previous subsection?}
+the JWS application in a restrictive 
 sandbox, a developer must get the application digitally signed
 by a recognized certificate authority, and then specify that the application should
 run outside of the sandbox. 
@@ -884,9 +882,6 @@ Ant, Freemind, and Netbeans explicitly set then change the manager.
 
 Batik SVG Toolkit allows users to optionally constrain the execution of an application
 that uses it by providing a method to turn the sandbox on or off. 
-\clg{Confused.  How can a toolkit/library control the security of an application that
-  uses it?  Can't it only constrain code that calls it?  I think I'm missing
-  something here.}
 This method
 not only requires a defenseless sandbox, it provides a trivial mechanism for
 disabling the sandbox at any time. The Batik download page
@@ -1123,8 +1118,7 @@ doing so.
 
 \subsubsection{Enforcing the privilege escalation rule}\label{sub:Enforcing-the-Privilege}
 
-\clg{I found this subsection confusing the first time I read it, so I reworded
-  some stuff and moved paragraphs around.  Someone please reread to make sure it's still true.}
+
 To enforce the Privilege Escalation rule, our agent registers for
 the \texttt{ClassPrepare} event, which is triggered after a class is loaded but
 before any of its code is executed.  The agent can therefore 
@@ -1321,8 +1315,7 @@ Finally, to validate our rules on representative desktop applications while
 mitigating the threat of overfitting to our study sample, we confirmed that the
 agent does not break programs in the DaCapo Benchmarks v9.12-bach set~\cite{dacapo}. 
 DaCapo systematically exercises each application using a range of inputs to achieve
-adequate coverage. For all\clg{I thought our rules didn't apply in the presence
-  of defenseless managers?}
+adequate coverage. For all
 applications but batik, we set a security manager that granted all
 permissions and attached our monitors to executions of the application. Batik was the only
 exception because it terminates if a security manager is set before starting the application: It needs to set a security manager itself. We used our monitors on Batik as it set and used its
