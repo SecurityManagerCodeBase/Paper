@@ -1298,8 +1298,7 @@ remote FTP server as a sample workload.\footnote{The GUI fuzzing source code can
   \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
 
 In each case, we confirmed that the tests, sample workloads, or fuzzed executions
-worked without a security manager. To sandbox the applications locally,\clg{I
-  don't understand this.  Can we rephrase?}
+worked without a security manager. To sandbox the applications ourselves,
 we developed security policies for each using a custom security manager that does not throw exceptions 
 and that prints out checked permissions as each program executes. Finally, we
 ran each case a third time 
