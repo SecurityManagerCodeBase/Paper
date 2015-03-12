@@ -1144,7 +1144,7 @@ Note that there are two ways that application code might directly access such
 packages in the current security model: 
 (1) exploit a vulnerability in a class that \emph{can} access them or (2)
 receive permission from the security manager via an
-\texttt{accessClassInPackage(``sun'')} permission in the policy.  The first behavior
+\texttt{accessClassInPackage("sun")} permission in the policy.  The first behavior
 is undesirable, and is thus rightfully prevented by the enforcement of this
 rule.  The second behavior would involve in a defenseless manager, at which
 point rule enforcement is moot.
