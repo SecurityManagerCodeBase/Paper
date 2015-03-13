@@ -67,25 +67,45 @@ basicstyle=\ttfamily\bfseries\scriptsize,
 
 \maketitle
 \begin{abstract}
-The ubiquitously-installed Java Runtime Environment (JRE) executes
-untrusted code inside a sandbox to protect the host machine from potential
-malicious behavior. However, dozens of recent exploits have successfully
-escaped the sandbox, allowing attackers to infect numerous
-Java hosts. It is essential to distinguish patterns of malicious use
-from patterns of benign use to proactively prevent future exploits.
-We therefore performed an empirical study of benign open-source Java
-applications and compared their use of the sandbox to the usage present
-in recent exploits. We found that benign applications with secured
-sandboxes do not modify the security manager, the security policy
-enforcement mechanism, after it is first set and do not attempt to
-directly use privileged classes. Exploits routinely do both. We derive 
-two rules from these results to prevent (1) security manager 
-modifications and (2) privilege escalation. We evaluated their protection merits 
-in a case study using runtime monitors to enforce the rules during the 
-execution of exploits and benign applications. The rules stop all ten 
-Metasploit Java 7 exploits without breaking backwards compatibility 
-with benign applications. These practical rules should be enforced 
-in the JRE to fortify the Java sandbox.
+
+  The ubiquitously-installed Java Runtime Environment (JRE) provides a complex,
+  flexible set of mechanisms that support the execution of untrusted code inside
+  a secure sandbox.  However, many recent exploits have successfully escaped the
+  sandbox, allowing attackers to infect numerous Java hosts.  We hypothesize
+  that the Java security model affords developers more flexibility than they
+  need or use in practice, and thus its complexity compromises security without
+  improving practical functionality.  We describe an empirical study of the ways
+  benign open-source Java applications use and interact with the Java security
+  manager. We found that developers regularly misunderstand or misuse Java
+  security mechanisms, that benign programs do not use all of the vast
+  flexibility afforded by the Java security model, and that there are clear
+  differences between the ways benign and exploit programs interact with the
+  security manager. We validate these results by deriving two restrictions on
+  application behavior that restrict (1) security manager modifications and (2)
+  privilege escalation.  We demonstrate that enforcing these rules at runtime
+  stop a representative proportion of modern Java 7 exploits without breaking
+  backwards compatibility with benign applications. These practical rules should
+  be enforced in the JRE to fortify the Java sandbox.
+
+% The ubiquitously-installed Java Runtime Environment (JRE) executes
+% untrusted code inside a sandbox to protect the host machine from potential
+% malicious behavior. However, dozens of recent exploits have successfully
+% escaped the sandbox, allowing attackers to infect numerous
+% Java hosts.  It is essential to distinguish patterns of malicious use
+% from patterns of benign use to proactively prevent future exploits.
+% We therefore performed an empirical study of benign open-source Java
+% applications and compared their use of the sandbox to the usage present
+% in recent exploits. We found that benign applications with secured
+% sandboxes do not modify the security manager, the security policy
+% enforcement mechanism, after it is first set and do not attempt to
+% directly use privileged classes. Exploits routinely do both. We derive 
+% two rules from these results to prevent (1) security manager 
+% modifications and (2) privilege escalation. We evaluated their protection merits 
+% in a case study using runtime monitors to enforce the rules during the 
+% execution of exploits and benign applications. The rules stop all ten 
+% Metasploit Java 7 exploits without breaking backwards compatibility 
+% with benign applications. These practical rules should be enforced 
+% in the JRE to fortify the Java sandbox.
 \end{abstract}
 
 \section{Introduction}
