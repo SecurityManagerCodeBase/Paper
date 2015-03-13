@@ -1315,8 +1315,8 @@ expands the scope of our results beyond the numerous desktop applications
 studied above and evaluates our proposed modifications in a particularly
 appropriate context (since JWS programs are typically run with restrictive
 security policies).  The set also includes closed-source applications,
-expanding our anecdotal evidence that our results generalize beyond the open
-source domain.
+providing additional evidence that our results generalize beyond open
+source.
 
 For each program, we confirmed that the agent does not negatively affect
 behavior on benign workloads. ArgoUML, JavaOpenStreetMap, and mucommand 
@@ -1345,7 +1345,8 @@ adequate coverage. For all
 applications but batik, we set a security manager that granted all
 permissions and attached our monitors to executions of the application. Batik was the only
 exception because it terminates if a security manager is set before starting the application: It needs to set a security manager itself. We used our monitors on Batik as it set and used its
-own security manager. We executed all applications with the command line arguments ``-n 1''. 
+own security manager.
+% We executed all applications with the command line arguments ``-n 1''. 
 Our rules did not break any application in DaCapo.
 
 \section{Limitations and validity}\label{sec:Limitations}
@@ -1450,7 +1451,7 @@ how applications interact with the sandbox.
 
 \section{Conclusion}\label{sec:Conclusion}
 
-Li Gong, the main designer of the Java security architecture,
+Li Gong, the primary designer of the Java security architecture,
 admitted in a ten year retrospective on Java Security that he didn't
 know how or how extensively the ``fine grained access control mechanism''
 (i.e. the Java sandbox) is used~\cite{gong2009java}.
@@ -1459,38 +1460,47 @@ Our study fills in that gap.
 In our dataset of open-source applications, we found
 that the majority of applications interact with but do not set a security
 manager. Some of the remaining applications use the security manager
-only for non-security purposes. The final set of applications use
-the sandbox for security and either initialize a self-protecting security
-manager and never modify it or set a defenseless manager and modify
-it at run time. 
+only for non-security purposes. The remainder use
+the sandbox for security, and either initialize a self-protecting security
+manager and never modify it, or set a defenseless manager and modify
+it at run time.  These findings supported our hypothesis that the Java security
+model provides more flexibility than developers use in practice.  They also
+strongly suggest that the model's complexity leads to unnecessary 
+vulnerabilities and bad security practices. 
+We further validated our findings by defining two rules, which together successfully
+defeated Metasploit's applet exploits without breaking backwards compatibility.
 
-These findings, in combination with our analysis of recent Java exploits,
-enabled us to define two rules which together successfully
-defeated Metasploit's applet exploits without breaking backward compatibility with benign applications when enforced by an experimental JVMTI agent. Some of the studied applications
-used the security manager to prevent third party components from calling
-\texttt{System.exit()}. More generally, frameworks often need to enforce
-constraints on plugins (e.g. to ensure non-interference). This suggests
-that Java should provide a simpler, alternative mechanism for constraining
-access to global resources. This is supported by our findings that
-show developers attempting to make non-trivial use of the sandbox
-often do so incorrectly. One intriguing possibility is to allow programmers
-to strengthen the policy temporarily (e.g. by adding a permission). 
+We take several general lessons from these findings.  First, Java should provide 
+simpler alternative mechanisms for various common goals, such as constraining 
+access to global resources or adapting to multiple security contexts. 
+We found that developers sometimes use the sandbox to prevent third party components from calling
+\texttt{System.exit()}, a specific instance of a more general development
+problem, which is that frameworks often need to enforce constraints on plugins
+(e.g., to ensure non-interference).  We also observed that developers who attempted
+to make non-trivial use of the sandbox often do so incorrectly, even though
+the functionality in question could theoretically be implemented correctly
+within the current model (albeit with increased complexity). 
+One promising approach is to allow programmers
+to strengthen a security policy temporarily (e.g. by adding a permission). 
 
 In Section~\ref{sec:Study-results} we observed many developers struggling to understand and
 use the security manager for any purpose. This is perhaps why there
 were only 36 applications in our sample. Some developers seemed to
 misunderstand the interaction between policy files and the security
-manager that enforces the policy. Other developers appear confused
-about how permissions work. In particular, they do not realize that
-restricting just one permission but allowing all others enables a
-\emph{defenseless} sandbox. Our concerns are shared by the IntelliJ developers, who included static analysis checks to warn developers that a security expert should check their interactions with the security manager.\footnote{http://www.jetbrains.com/idea/documentation/inspections.jsp%
-} In general, sandbox-defeating permissions
+manager that enforces them. Others appear confused
+about how permissions work, not realizing that
+restricting just one permission but allowing all others results in a
+\emph{defenseless} sandbox.  Our concerns here are shared by the IntelliJ developers,
+who include static analysis checks to warn developers that a security expert
+should check all interactions with the security
+manager~\cite{intelliJ}.  In general, sandbox-defeating permissions
 should be packaged and segregated to prevent accidental creation of
-defenseless sandboxes. More generally, some developers appear to believe
+defenseless sandboxes. Finally, some developers appear to believe
 the sandbox functions as a blacklist when, in reality, it is a whitelist.
-These observations suggest that more resources---tool support, improved
+In total, our results and observations suggest that the model itself should be simplified, and
+that more resources---tool support, improved
 documentation, or better error messages---should be dedicated to helping
-developers correctly use the sandbox. 
+developers correctly use the sandbox.
 
 \bibliographystyle{ieeetr}
 \bibliography{references}
