@@ -199,8 +199,8 @@ The contributions of this papers are as follows:
 \setlength{\itemsep}{0pt}
 \item A catalog of open-source applications that enforce constraints on
 sub-components by way of the Java sandbox (Section \ref{sec:Study-results}).
-\item \todo{A study of how open-source applications interact with the security
-manager, with implications.}
+\item A study of open-source applications interactions with the security
+manager, which shows developers are using the sandbox for unintended purposes.
 \item An enumeration of Java permissions that make security policies difficult
 to enforce (Section \ref{sec:secmanagers}), a discussion of real-world cases
 where these permissions are used (Sections \ref{sub:Non-security-uses-of} and
@@ -617,9 +617,7 @@ We performed a tool-supported manual inspection of the applications in our
 dataset to group them
 into qualitative, non-overlapping categories based on their interactions with the security 
 manager. The first category includes applications that can or do
-\emph{change a set security manager} over the course of execution.\clg{At what
-  point in this process did we determine whether a set security manager was
-  defenseless or self-protecting?}
+\emph{change a set security manager} over the course of execution.
 If an application did not change the security manager, 
 we looked to see if it set a single security manager 
 during execution.  If so, it
@@ -669,7 +667,8 @@ how the application interacts with the sandbox.
   informed by the previous steps, 
 to verify conclusions.
 \item Summarize operations performed
-on the security manager and categorize accordingly.
+on the security manager, categorize accordingly, and determine if the 
+security manager is self-protecting or defenseless.
 \end{flushenum}
 
 We undertook a pilot study where each author
@@ -752,11 +751,10 @@ behaviors.
 
 Of the four categories, Type 2 applications (\emph{Changes set manager}) are the
 most interesting, because they make the most use of Java's flexible security
-mechanisms.  We therefore focus  
-on these applications in our discussion. A few Type 1\clg{Besides the few/3-4 we
-  discuss below, what do the rest of the 7 do?  Just set a manager, call external code in a
-  sandbox, and then move on?  Do they do it properly?}
-applications (\emph{Sets an immutable manager}) also provide interesting insights into
+mechanisms.  We therefore focus   
+on these applications in our discussion. While most Type 1 applications
+(\emph{Set an immutable manager}) use the sandbox correctly, a few Type 1
+applications also provide interesting insights into
 benign sandbox interactions. We discuss applications that use the sandbox for
 purposes that are not security related in Section~\ref{sub:Non-security-uses-of}
 and applications that use the sandbox for its intended security purposes in
@@ -791,8 +789,8 @@ other applications; the rest forcibly disabled the sandbox to reduce development
 complexity. These applications provide insights into cases that are currently
 hard for Java developers to handle without abusing security features. This abuse
 of security features increases the difficultly of mitigating attacks against
-them by increasing the odds of backwards compatibility issues.\clg{Are these
-  type 1 or 2 applications?  Do they all require defenseless managers?}
+them by increasing the odds of backwards compatibility issues.  These applications
+include Type 1 and Type 2 applications, and all require defenseless security managers.
 
 \subsubsection{Enforcing architectural constraints}
 
@@ -822,11 +820,8 @@ are handled, Eclipse restores the original manager.
 
 This technique does enforce the
 desired constraint, and appears to be the best solution available
-in Java at the moment.  However, it is problematic for applications that also 
-use the sandbox as intended, for security purposes.\clg{On reread, this isn't obvious to
-  me.  The applications calling library code don't care about whether they're
-  sandboxed, right?  Isn't it more a problem for people (or other programs) who want to run these
-  applications in a sandbox? }  The technique requires
+in Java at the moment.  However, it is problematic for other applications that desire 
+use the sandbox as intended, for security purposes.  The technique requires
 the application to dynamically change the security manager, which in turn requires a
 defenseless manager.  As a result, the calling applications \emph{themselves} cannot be
 effectively sandboxed, as might be desirable when run from Java Web Start, for
@@ -1025,9 +1020,7 @@ to execute arbitrary code.}
 \end{figure}
 
 All of these applications ran afoul of the Java sandbox's flexibility even
-though they attempted to use it for its intended purpose.\clg{What's wrong with
-  Netbeans? I get that Ant provides bad examples to its users, but we barely
-  discussed NetBeans.}  
+though they attempted to use it for its intended purpose. 
 They must all be run with defenseless managers, and those that 
 manipulate the set security policy dynamically do so problematically.  
 % Every application
@@ -1052,8 +1045,8 @@ practice.
 
 Based on our study of how open-source Java programs interact with the security
 manager, we propose two changes to the current Java security model to stop exploits
-from disabling \emph{self-protecting} managers.\clg{How many self protecting
-  managers did we see in our study?  That is, how applicable are these in practice?}
+from disabling \emph{self-protecting} managers.  These rules can be applied
+to all applications which run inside the Java web sandbox.
 These rules reduce the flexibility and thus complexity of the
 Java security model without breaking backwards compatability in practice:
 
@@ -1102,12 +1095,14 @@ and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
 and \texttt{FieldModification}.
 %
 The field events require JVMTI to turn off the just-in-time compiler (JIT), which slows down program
-execution enough that our monitors are not suitable for adoption on their
-own. JVMTI implementations can avoid this limitation, but avoidance would likely
-increase implementation complexity beyond what is reasonable for a diagnostic
-\clg{I don't understand this sentence.  Do we mean that we could implement these
-  without making things hella slow we just didn't?  I'd cut it, frankly.}
-interface. A more correct and general approach is to embed our
+execution enough that our monitors are not suitable for adoption with the current 
+JVMTI implementation. %on their 
+%own. JVMTI implementations can avoid this limitation, but avoidance would likely
+%increase implementation complexity beyond what is reasonable for a diagnostic
+%\clg{I don't understand this sentence.  Do we mean that we could implement these
+%  without making things hella slow we just didn't?  I'd cut it, frankly.}
+%interface. 
+A more correct and general approach is to embed our
 rules directly in the JRE.  We are currently in communication 
 with the OpenJDK developers on their \texttt{security-dev} mailing list about
 doing so.
@@ -1183,8 +1178,10 @@ on the malicious version. Every time a permission is checked, we leverage this m
 by checking if the read manager has the same internal
 JVM reference as the shadow copy. When the references do not match,
 the manager has been changed at by a malicious class masquerading as
-\texttt{System}. Type confusion attacks that masquerade
-as a privileged class loader will not be detected by our agent.\clg{is this a problem?}
+\texttt{System}. While this rule catches many exploits, a few 
+would still be possible.
+For example, type confusion attacks that masquerade
+as a privileged class loader will not be detected by our agent.
 
 \subsection{Effectiveness at fortifying the sandbox}
 \label{sub:Effectiveness-at-Fortifying}
@@ -1194,18 +1191,13 @@ as a privileged class loader will not be detected by our agent.\clg{is this a pr
 To evaluate our rules' ability to block sandbox-disabling exploits, we ran ten
 Java 7 exploits for the browser from Metasploit 4.10.0, an exploit development
 and delivery framework, on 64-bit Windows 7 against the initial release of
-version 7 of the JRE.\clg{Claire wants a sentence here giving a couple of
-  examples of what kind of exploits these CVEs include based on Zack's
-  categorization.  Doesn't have to be definitive or complete, doesn't have to
-  describe every exploit in the set, but should give an example or two.}
+version 7 of the JRE. These ten exploits contain type confusion and confused
+deputy attacks.
 Metasploit contains many Java exploits outside of the 
 subset we used, but the excluded exploits either only work against long obsolete
 versions of the JRE or are not well positioned to be used in drive-by
-downloads.\clg{Can basically take these results to mean that our rules would
-  stop all modern drive-by-download exploits in practice?  We imply/say
-  elsewhere that other types of attacks are possible (type confusion to masquerade as a
-  previleged class loader, for example); can we conclude that in practice they
-  don't happen much?}
+downloads.  These results show our rules would stop the vast majority of 
+current exploits.
 
 We ran the ten exploits under the following conditions:
 (1) without the agent, (2) with the agent but only enforcing the Privilege
@@ -1213,9 +1205,9 @@ Escalation rule, and (3) while enforcing both rules.   Table~\ref{tab:Exploit-ex
 summarizes our results.  We tested the Privilege
 Escalation rule separately from the Security Manager rule because the latter
 stops all of the exploits on its own. We evaluate Privilege Escalation rule on
-its own merits because it stops exploits earlier than the Security Manager rule
-and because it can detect attacks that are not targeting the manager.\clg{isn't
-  it also faster in this scenario because it doesn't turn off the JIT?} All  
+its own merits because it stops exploits earlier than the Security Manager rule,
+has significantly less overhead, and because it can detect attacks that are
+not targeting the manager. All  
 ten of the exploits succeeded without the agent. The Privilege Escalation rule
 stops four of them.  All ten were stopped
 when both rules were enforced. The exploits that were not stopped
