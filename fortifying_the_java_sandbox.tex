@@ -974,7 +974,7 @@ domain.  This approach would align with the intended usage of the sandbox.
 Additionally, it would be more clearly correct and trustworthy while
 allowing Ant and Netbeans to run inside of a self-protecting sandbox.
 
-The develoeprs of Freemind 0.9.0 tried to solve a similar problem but ended up illustrating
+The developers of Freemind 0.9.0 tried to solve a similar problem but ended up illustrating
 the dangers of a defenseless manager. Freemind is a mind mapping tool
 that allows users to execute Groovy scripts on an opened map. The
 scripts are written by the creator of the mind map. Groovy is a scripting
@@ -1194,7 +1194,7 @@ manager (the \texttt{security} field).
 %
 The agent stores a shadow copy of the most recently-set security
 manager, which it checks and updates via the JVMTI \texttt{FieldModification} event.
-Whenenver the \texttt{security} field is written, the agent checks its
+Whenever the \texttt{security} field is written, the agent checks its
 shadow copy of the manager.  If it is \texttt{null},
 the manager is being set for the first time, and the agent checks
 if the new manager is self-protecting. If so, 
