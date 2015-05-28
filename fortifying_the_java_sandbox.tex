@@ -131,13 +131,11 @@ applications~\cite{gong1997going,gong2003inside}. Finally, there are hundreds
 of known and zero-day vulnerabilities (e.g. CVE-2013-0422)~\cite{xforceQ12013}
 in Java. In the
 common scenario, often referred to as a ``drive-by download,'' attackers lure
-users to a website that contains a hidden malicious applet. Such malicious
-applets exploit security vulnerabilities in the JRE to deliver malware,
-often leaving the user unaware.
+users to a website that contains a hidden applet to exploit JRE vulnerabilities.
 
 
 In theory, such attacks should not be so common:
-Java provides a sandboxing mechanism that enables the safe execution of untrusted code and isolates
+Java provides a sandbox that enables the safe execution of untrusted code and isolates
 components from one another. Both the host application and machine should
 therefore be protected from malicious behavior.
 In practice, these security mechanisms are problematically
@@ -154,10 +152,10 @@ in the design and engineering of Java's security mechanisms. For example,
 applications are allowed to change the security manager at runtime, whereas
 static-only configuration of the manager would be more secure. The JRE also
 provides a number of security permissions that are so powerful that a sandbox
-that enforces any of them is effectively useless for security purposes. We
+that enforces any of them cannot be secure. We
 hypothesize that benign applications do not need all of this power, and that
 they interact with the security manager in ways
-that are measurably different from the ways that exploitative applications do.
+that are measurably different from exploits.
 If true, these differences can be leveraged to improve the overall security of
 Java applications, and prevent future attacks.
 
@@ -191,14 +189,11 @@ such applications due to defects in the JRE code that enforces security
 policies, but not due to poorly-deployed local security settings.
 
 
-Overall, we found that the software that \emph{did} use the sandbox in
-non-trivial, defenseless, or otherwise
-unusual ways typically did so incorrectly or insecurely. In fact, we found and reported a
-security vulnerability related to the sandbox in one of the applications under study. We also found that
-software that uses the sandbox for its intended
-purpose---protection from malicious external code---does not use its
+We found that
+software that uses the sandbox as intended---for protection from malicious external code---does not use its
 vast flexibility. For these applications, the flexibility decreases their security without
-obviously benefiting the developers or application functionality. 
+obviously benefiting the developers or application functionality. In fact, we found and reported a
+security vulnerability related to the sandbox in one of the applications under study.
 
 We therefore propose
 two runtime rules that restrict the flexibility of the sandbox and fortify Java
@@ -226,10 +221,10 @@ The contributions of this papers are as follows:
 %(Section~\ref{sec:Security-Manager-Study}).
 %CLG doesn't understand that contribution so tried to push it into the next one
 \item A study of open-source applications' interactions with the security
-manager (\secref{Study-results}).  We identify open-source applications that 
-enforce constraints on sub-components by way of the Java sandbox,
-as well as unconventional behaviors that indicate problems that the Java
-security model could be improved in terms of its usability and security. 
+manager (\secref{Study-results}).  We identify open-source applications that
+enforce constraints on sub-components via the Java sandbox,
+as well as unconventional behaviors that indicate usability and security problems that the Java
+security model can be improved to mitigate. 
 \item An enumeration of Java permissions that make security policies difficult
 to enforce (Section \ref{sec:secmanagers}), a discussion of real-world cases
 where these permissions are used (Sections~\ref{sub:Non-security-uses-of} and
@@ -238,7 +233,7 @@ open-source application made vulnerable due to their use (Section
 \ref{sub:Using-the-Security}).
 \item Two novel rules for distinguishing between benign and malicious Java
 programs, validated empirically (Section~\ref{sec:Rules-for-Fortifying}).
-\item A discussion of the various tactics for practically implementing the
+\item A discussion of tactics for practically implementing the
 rules, with a case for adoption directly in the JVM (Section~\ref{sub:Implementation-Using-JVMTI}).
 \end{flushitem}
 
@@ -270,8 +265,7 @@ sandbox.}
 \end{figure}
 
 The Java sandbox is designed to safely execute code from untrusted
-sources. 
-The relevant components are summarized in Figure
+sources using components summarized in Figure
 \ref{fig:Sandbox-high-level-summary}. 
 When a \textit{class loader} loads a class (e.g., from
 the network, filesystem, etc.), it assigns the class a \textit{code source} that
@@ -279,13 +273,12 @@ indicates the code origin, and associates it with a \textit{protection
   domain}. Protection domains segment the classes into groups by
 \textit{permission set}. These sets
 contain permissions that explicitly allow actions with security
-implications, such as writing to the filesystem, accessing the network, using
-certain reflection features, etc~\cite{_permissions_2014}.  Unlisted actions are disallowed.
+implications, such as writing to the filesystem, accessing the network, etc~\cite{_permissions_2014}.  Unlisted actions are disallowed.
 \emph{Policies} written in the Java policy
-language~\cite{_java_policy_language} define the permission sets and the code
-sources associated with them. 
+language~\cite{_java_policy_language} define permission sets and their associated code
+sources. 
 By default, all classes \emph{not} loaded from the local file system are run
-within a restrictive sandbox, with policies that restrict their ability to
+within a restrictive sandbox that restricts their ability to
 interact with the host application or machine. 
 
 The sandbox is activated by setting a \emph{security manager}, which acts as the
@@ -340,7 +333,7 @@ SecurityPermission(``setProperty.package.access'') & Make privileged internal cl
 %   flexibility.  I'm not sure how to expand this text to help with that
 %   point-hammering, but I think it would be useful to the development of the
 %   argument.  Anyone see what I'm getting at and want to try to expand accordingly?}
-Java is flexible about when in an application's execution the sandbox
+Java is flexible about when the sandbox
 is enabled, configured, and reconfigured. The default case for web applets and applications
 that use Java Web Start is to set what we call a \textit{self-protecting} security
 manager before loading the network application. The security
@@ -357,13 +350,10 @@ in Section~\ref{sec:Study-results} that developers
 have found interesting non-security uses for defenseless managers in otherwise
 benign software.
 
-Table~\ref{tab:defenseless-permissions} summarizes the set of permissions
+We evaluated whether each of the available Java permissions
+can lead to sandbox bypasses. Table~\ref{tab:defenseless-permissions} summarizes the set of permissions
 that distinguish between self-protecting and defenseless security
-managers. We generated this list by evaluating whether each of the available Java permissions to
-can lead to sandbox bypasses. 
-% We
-% call any security manager that enforces a policy 
-% containing any of these permissions \emph{defenseless.}
+managers.
 
 \subsection{Exploiting Java code}
 \label{sec:javaexploits}
@@ -416,12 +406,11 @@ Java exploit payload from http://pastebin.com/QWU1rqjf.}
 % security model and recent Java exploits. 
 While the Java sandbox \textit{should} prevent malicious applets from
 executing their payloads, certain defects in the JRE implementation of these security mechanisms can permit
-malicious code to set a security manager to \texttt{null}.  
-This disables the sandbox, allowing
-previously constrained classes to perform operations with the privileges of 
-the JRE itself. 
-This approach was taken in a large proportion of drive-by downloads exploiting
-Java applets between 2011 and 2013~\cite{fireeye_2013}. 
+malicious code to set a security manager to \texttt{null}.\footnote{Many of the recent vulnerabilities
+would not have been introduced if the JRE were developed strictly
+following ``The CERT Oracle Secure Coding Standard for Java'' \cite{long_cert_2011,svoboda_anatomy_blog_2013,svoboda_anatomy_2014}}  
+This disables the sandbox and enables all operations. 
+This approach was common in drive-by downloads between 2011 and 2013~\cite{fireeye_2013}. 
 %Figure \ref{fig:A-typical-exploit-payload}
 %shows a typical payload class whose privileges have been elevated
 %by an exploit to allow it to disable the sandbox. This example payload
@@ -429,19 +418,14 @@ Java applets between 2011 and 2013~\cite{fireeye_2013}.
 %to execute the operations in the payload without causing a \texttt{SecurityException}.
 %
 
-There are a couple of methods by which an exploit may nullify a security manager.
-In \textbf{type confusion} attacks, an exploit breaks type
-safety to craft an object that can perform operations as if it had
-a different type.  Commonly, attackers craft objects that either
-(1) point to the \texttt{System} class or (2) act as if they had
-the same type as a privileged class loader (see CVE-2012-0507 \cite{_vulnerability_2012_0507}).
-With the first approach, an attacker can directly alter (and disable) the
-security manager; with the second, an attacker can load an exploitative
-payload with elevated privileges.  In \textbf{confused deputy} attacks,
+There are a couple ways to maliciously disable a security manager.
+\textbf{Type confusion} attacks break type
+safety to craft objects that can perform operations as if they have
+a different type.  Commonly, attackers craft objects that (1) point to the \texttt{System} class to directly disable the sandbox or (2) act as if they had
+the same type as a privileged class loader to elevate a payload class's privileges (see CVE-2012-0507 \cite{_vulnerability_2012_0507}). In \textbf{confused deputy} attacks,
 exploitative code ``convinces'' another 
 class to return a reference to a privileged class~\cite{hardy_confused_1988}
-known to contain a vulnerability (such as a missing security check).  The
-attacker then takes advantage of that vulnerability to disable the sandbox 
+known to contain a vulnerability that can be attacked to disable the sandbox 
 (see CVE-2012-4681 \cite{_vulnerability_2012_4681}).
 The ``convincing'' is necessary
 because it is rare that a vulnerable privileged class is directly accessible
@@ -450,49 +434,39 @@ control} principle that is part of the Java development culture.%
 \footnote{\url{https://blogs.oracle.com/jrose/entry/the_isthmus_in_the_vm}%
 } 
 
-The confused deputy is an example of \emph{privilege escalation}.  Benign
-applications rarely need to directly access privileged classes, and do not
-typically have direct access to them anyway. 
-Instead, the JRE provides less-privileged code path
-to access these features. The danger of vulnerabilities in privileged
-classes is therefore mitigated, because they cannot be directly exploited
-unless malicious code first modifies its own privileges. 
-This redundancy is implicit in the Java security model. % : If any class
+%Typically, the JRE provides less-privileged code path
+%to access operations in privileged classes. The danger of %vulnerabilities in privileged
+%classes is therefore mitigated, because they cannot be directly exploited
+%unless malicious code first modifies its own privileges. 
+%This redundancy is implicit in the Java security model. % : If any class
 % could load more privileged classes and directly execute
 % of privileged operations, the sandbox in its current form would serve
 % little purpose. 
 %
-In practice, however, Java's security mechanisms as implemented
-in the JRE contains defects and vulnerabilities that reduce the benefits of
-this redundancy.\footnote{Many of the recent type confusion and privilege escalation vulnerabilities
-would not have been introduced if the JRE were developed strictly
-following ``The CERT Oracle Secure Coding Standard for Java'' \cite{long_cert_2011,svoboda_anatomy_blog_2013,svoboda_anatomy_2014}}
+%In practice, however, Java's security mechanisms as implemented
+%in the JRE contains defects and vulnerabilities that reduce the %benefits of
+%this redundancy.
   
-Modern exploits that manipulate the Java security manager perform one
-operation: They disable it.  This is possible largely because the Java security model
-grants enormous flexibility to application developers to
-set, reconfigure, manipulate, weaken, strengthen, or otherwise change a security
-manager after it has been created.
-Do applications need this power?  Do they regularly take advantage of the
-ability to disable or weaken the sandbox? % If not, we can stop exploits for even currently unknown vulnerabilities by eliminating these operations without breaking backwards-compatibility with benign applications.
-Our core thesis is that these security mechanisms are unnecessarily
-complex, and that the overall security of Java applications could be improved by
-simplifying them, without loss to benign functionality.
+Modern exploits that manipulate the security manager simply disable it.  This is possible largely because the Java security model
+grants enormous flexibility to
+set, weaken, strengthen, or otherwise change a security
+manager after its creation.
+Do applications need this power?  %Do they regularly take advantage of the
+%ability to disable or weaken the sandbox? % If not, we can stop exploits for even currently unknown vulnerabilities by eliminating these operations without breaking backwards-compatibility with benign applications.
+Our core thesis is that the overall security of Java applications could be improved by
+simplifying these security mechanisms, without loss to benign functionality.
 
 \section{Security manager study}\label{sec:Security-Manager-Study}
 
 In this section, we describe the dataset and methodology for our empirical study
-of the open-source Java application landscape.  Our goal is to
-understand the operations benign applications perform on the
-security manager, the 
-means by which applications interact with the sandbox.
+of the open-source Java application landscape. 
 %
 Our basic research question is: How do benign open-source Java applications interact
 with the security manager? The answer to this question informs which JVM-level
 modifications can be used to improve security
-while maintaining backwards compatibility.  The
-possible mitigations vary in the strength with which they would be able to stop
-potential exploits. 
+while maintaining backwards compatibility.  %The
+%possible mitigations vary in the strength with which they would be able to stop
+%potential exploits. 
 % For example, a ``weak'' mitigation stops a small number of in-scope
 % exploits and is easily bypassed.  An ``ideal'' mitigation stops all in-scope
 % exploits and can never be bypassed.  
@@ -501,9 +475,8 @@ There are four possibilities:
   \setlength{\parsep}{0pt}
   \setlength{\itemsep}{0pt}
 \item \textit{Benign applications never disable the security manager.}  If true,
-  only exploitative code attempts to disable the security manager once it is set.
-  The JVM could therefore eliminate an application's ability to
-  do so.  This would be easy to implement but would not guard against exploits
+  only exploitative code attempts to disable the security manager, and the ability to
+  do so could be removed from the JVM.  This would be easy to implement but would not guard against exploits
   that weaken the sandbox without disabling it.
 % For example, attackers could potentially bypass the mitigation
 % by modifying the enforced policy to allow the permissions they need
@@ -511,7 +484,7 @@ There are four possibilities:
 % a \texttt{SecurityException}.
 \item \textit{Benign applications do not weaken a set security manager}.  If
   true, the JVM could be modified to prevent any weakening or disabling of the 
-  sandbox once it's set.  This is more powerful than simply removing the
+  sandbox.  This is more powerful than simply removing the
   ability to disable the security manager but is significantly more difficult to
   implement.
   % However, this would require the ability to
@@ -522,13 +495,11 @@ There are four possibilities:
   % strategy may not have. 
   For example, if a permission to write to a file is
   replaced by a permission to write to a different file, is the sandbox
-  weakened, strengthened, or exactly as secure as it was before?
+  weakened, strengthened, or equally secure?
 \item \textit{Benign applications never modify the sandbox if a self-protecting
-    security manager has been set}. If true, the JVM could be modified to
-  disallow any change to a self-protecting security manager, defined by the
-  policy it enforces.  This could be implemented with a simple runtime monitor that
-  determines if a security manager is self-protecting (based on the permissions
-  it sets) when an application
+    security manager has been set}. If true, the JVM could
+  disallow any change to a self-protecting security manager. A runtime monitor in the JVM can
+  determine if a security manager is self-protecting (based on the permission set) when an application
   attempts to change the sandbox. This is much easier to implement soundly than
   the previously-described approach, and guards against the same number and types of
   exploits.
@@ -546,6 +517,40 @@ There are four possibilities:
 methodology (\secref{methodology}); we describe results in \secref{Study-results}. 
 
 \subsection{Dataset}\label{sec:Applications-Studied}
+
+In the absence of an existing corpus of
+benign applications that interact with the manager, we sought to construct a varied dataset.
+We combined relevant subjects from 
+the QualitasCorpus (QC) version 20130901~\cite{QualitasCorpus:APSEC:2010}, a 
+collection of popular open source Java applications created for empirical
+studies, and GitHub.
+While QC contains 112 applications, we found only 24 applications interacted with 
+the security manager.  To increase the size and diversity of the dataset (beyond
+those that meet the QC inclusion requirements), we
+added 12 applications from Github that also interact with the security manager.\footnote{Applets, commonly
+run in a sandboxed environment, would be natural study subjects.  However, we were unable
+to find any benign applets that interacted with the security manager, likely
+because of Java's strict restrictions on their behavior.}
+ Table
+\ref{Table:applications-studied} lists the 36 applications that comprise the
+dataset.  Version numbers
+and Git commit hashes are available in an online supplement.
+\footnote{http://goo.gl/dtcqTM}
+%\footnote{https://github.com/SecurityManagerCodeBase/\\
+%ProjectsProfiles/blob/master/\\
+%projects list.xlsx}
+
+We identified the applications in the full QC set that use the security
+manager by searching for the keyword \texttt{SecurityManager} in the applications'
+source code.  We performed a similar process on
+GitHub, searching only Java files. We added the keywords
+\texttt{System.setSecurityManager(} and \texttt{System.setSecurityManager(null)}
+to the search to remove false positives and to find applications that disable the
+manager, respectively. We picked the top seven applications from the results for each keyword,
+removing manually-identified false positives and applications that were
+already included in the QC set. We studied each GitHub program at its most
+recent commit as of June 2014.
+
 
 \begin{table}
 \small
@@ -605,40 +610,6 @@ Visor & Closure Library & 1 & GH\tabularnewline
 \end{tabular}
 \end{table}
 
-The goal of this study is to understand how benign open-source Java programs use
-and interact with the security manager.  In the absence of an existing corpus of
-applications that interact with the manager, we sought to construct a varied dataset.
-We combined relevant subjects from 
-the QualitasCorpus (QC) version 20130901~\cite{QualitasCorpus:APSEC:2010}, a 
-collection of popular open source Java applications created for empirical
-studies, and GitHub.
-While QC contains 112 applications, we found only 24 applications interacted with 
-the security manager.  To increase the size and diversity of the dataset (beyond
-those that meet the QC inclusion requirements), we
-added 12 applications from Github that also interact with the security manager.\footnote{Applets, commonly
-run in a sandboxed environment, would be natural study subjects.  However, we were unable
-to find any benign applets that interacted with the security manager, likely
-because of Java's strict restrictions on their behavior.}
- Table
-\ref{Table:applications-studied} lists the 36 applications that comprise the
-dataset.  Version numbers
-and Git commit hashes are available in an online supplement.
-\footnote{http://goo.gl/dtcqTM}
-%\footnote{https://github.com/SecurityManagerCodeBase/\\
-%ProjectsProfiles/blob/master/\\
-%projects list.xlsx}
-
-We identified the applications in the full QC set that use the security
-manager by searching for the keyword \texttt{SecurityManager} in the applications'
-source code.  We performed a similar process on
-GitHub, searching only Java files. We added the keywords
-\texttt{System.setSecurityManager(} and \texttt{System.setSecurityManager(null)}
-to the search to remove false positives and to find applications that disable the
-manager, respectively. We picked the top seven applications from the results for each keyword,
-removing manually-identified false positives and applications that were
-already included in the QC set. We studied each GitHub program at its most
-recent commit as of June 2014.
-
 \subsection{Methodology}
 \label{sec:methodology}
 
@@ -671,9 +642,7 @@ interactions. We created a
 FindBugs~\cite{hovemeyer_finding_2004} plugin that
 uses dataflow analysis to identify security manager initialization and calls to \texttt{System.setSecurityManager}().
 The dynamic analysis tool uses the Java Virtual Machine
-Tool Interface (JVMTI) \cite{_jvmti}
-to inspect the current state of Java applications and control
-their execution. The dynamic analysis tool sets a modification watch
+Tool Interface (JVMTI) \cite{_jvmti} to set a modification watch
 on the \texttt{security} field of Java's \texttt{System} class, which
 stores the security manager object for the application.
 % The watch prints out the class name, source file name, and line of
@@ -1280,47 +1249,44 @@ mucommander & File Manager & 106 & 27 test cases & 1/23/14 \tabularnewline
 \vspace{-0.5cm}
 \end{table*}
 
-By construction, the proposed modifications do not restrict
+By construction, the proposals do not restrict
 benign behavior in the applications we studied in
-Section~\ref{sec:Security-Manager-Study} and Section~\ref{sec:Study-results}.
+Sections~\ref{sec:Security-Manager-Study} and~\ref{sec:Study-results}.
 To mitigate the threat of overfitting and increase the generalizability of our results, we 
 evaluated our monitors on the applications
 in Table~\ref{tab:validation-programs}. This set is composed of benign JWS
-applications that are automatically sandboxed in ways similar to applets.  This
+applications that, like applets, are automatically sandboxed.  This
 expands the scope of our results beyond the numerous desktop applications
-studied above and evaluates our proposed modifications in a particularly
-appropriate context (since JWS programs are typically run with restrictive
+studied above and evaluates our proposed modifications in an
+appropriate context (JWS programs are typically run with restrictive
 security policies).  The set also includes closed-source applications,
 providing additional evidence that our results generalize beyond open
 source.
 
-For each program, we confirmed that the agent does not negatively affect
-behavior on benign workloads. ArgoUML, JavaOpenStreetMap, and mucommand 
+For each program, we confirmed that the agent does not negatively affect benign workloads. ArgoUML, JavaOpenStreetMap, and mucommand 
 contained unit tests that we ran in the presence of our monitors. Costello, and
 JabRef did not provide tests, but do provide example workloads that we used
-in their place. CrossFTP contained neither tests nor sample workloads, and thus
+in their place. CrossFTP contained neither tests nor sample workloads, thus
 we fuzzed the GUI for 30 minutes using a custom fuzzer and uploaded a file to a
 remote FTP server as a sample workload.\footnote{The GUI fuzzing source code can
   be found at
   \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
 
 In each case, we confirmed that the tests, sample workloads, or fuzzed executions
-worked without a security manager. To sandbox the applications ourselves,
-we developed security policies for each using a custom security manager that does not throw exceptions 
+worked without a security manager. To sandbox the applications,
+we developed security policies using a custom security manager that does not throw exceptions 
 and that prints out checked permissions as each program executes. Finally, we
 ran each case a third time 
 using our policy and the standard Java security manager with our monitors
 attached and enforcing the rules. The rules did not break any unit tests, sample
 workloads, or fuzzed executions.
 
-Finally, to validate our rules on representative desktop applications while
-mitigating the threat of overfitting to our study sample, we confirmed that the
+Finally, to validate our rules on representative desktop applications, we confirmed that the
 agent does not break programs in the DaCapo Benchmarks v9.12-bach set~\cite{dacapo}. 
 DaCapo systematically exercises each application using a range of inputs to achieve
 adequate coverage. For all
 applications but batik, we set a security manager that granted all
-permissions and attached our monitors to executions of the application. Batik was the only
-exception because it terminates if a security manager is set before starting the application: It needs to set a security manager itself. We used our monitors on Batik as it set and used its
+permissions and attached our monitors to executions of the application. Batik closes if it cannot set a security manager itself, thus we let it set and use its
 own security manager.
  We executed all applications with the arguments ``-n 1''. 
 Our rules did not break any DaCapo applications.
