@@ -900,22 +900,22 @@ of avoiding such labor-intensive options.
 \subsection{Using the security manager for security}
 \label{sub:Using-the-Security}
 
-This section describes applications that interact with the manager in
-security-oriented ways.  Several of these applications eliminate all of the possible
-JVM modifications that do not consider whether the manager is self-protecting.  Batik,
+Other applications interact with the manager in
+security-oriented ways.  Several applications eliminate
+JVM modifications without setting a self-protecting security manager.  Batik,
 Eclipse, and Spring-modules provide 
 methods that allow the user to set and change an existing manager. 
 Ant, Freemind, and Netbeans explicitly set then change the manager.
 
-Batik SVG Toolkit allows users to optionally constrain the execution of an application
-that uses it by providing a method to turn the sandbox on or off. 
+Batik SVG Toolkit allows users to constrain applications
+by providing a method to turn the sandbox on or off. 
 This method
-not only requires a defenseless sandbox, it provides a trivial mechanism for
+requires a defenseless sandbox, since it provides a trivial mechanism for
 disabling the sandbox at any time. The Batik download page
 provides several examples of library use, one of which (the
 ``rasterizer'' demo) enables and disables the sandbox.  However, there seems to
 be no reason to do so in this case other than to demonstrate the functionality;
-we were unable to discern the rationale behind including it from the examples
+we were unable to discern the rationale from the examples
 and related documentation.
 
 %  Two examples set
@@ -928,7 +928,7 @@ and related documentation.
 % in this case other than to show off the capability to do so.
 
 Ant, Freemind, and Netbeans explicitly set then change the manager
-during runtime, which makes it impossible to stop all reconfiguring, disabling,
+during runtime, which make it impossible to stop all reconfiguring, disabling,
 or weakening of the sandbox at runtime while claiming backwards
 compatibility. Ant allows users to create build scripts that 
 execute Java classes during a build under a user specified
@@ -1046,10 +1046,9 @@ and its class. The class has the same type as the custom security
 manager, thus the exploit gets a reference to the proxy manager field.
 The field is made public to allow the exploit to reflectively \texttt{null}
 it, disabling the sandbox to allow ``forbidden'' operations.
-
-We sent a notice to the Freemind developers in August of 2014 to provide
-them with our example exploit and to offer our advice in achieving
-their desired outcome. Blu-ray player vendors have also introduced fatal security flaws when attempting to execute some Java code with a stricter policy than the rest of the system in unconventional ways, but we do not discuss these cases because they are not open-source~\cite{blu-ray}.
+We notified Freemind developers of this vulnerability in August of 2014 
+and offered our advice in achieving
+their desired outcome. 
 
 \begin{figure}
 \begin{lstlisting}[language=Java,basicstyle={\scriptsize},breaklines=true]
@@ -1096,9 +1095,7 @@ Java security model without breaking backwards compatibility in practice:
 security manager is set for the application, a class may not directly
 load a more privileged class. This rule is violated when the protection
 domain of a loaded class implies a permission that is not implied
-in the protection domain that loaded it. About half of the exploits in the Metasploit set we use in our evaluation
-break this rule to elevate the privileges of their payload
-class.
+in the protection domain that loaded it. 
 
 \noindent \textbf{Security manager rule.} The manager cannot
 be changed if a \emph{self-protecting} security manager has been set
@@ -1130,13 +1127,8 @@ dynamic analysis tools, called agents, such as profilers, debuggers, monitors, a
 analyzers. JVMTI agents can intercept and respond to events such as class
 or thread creation, field access or modification, breakpoints, etc.
 
-Our agent\footnote{Our agent is open-source. The latest version
-of the tool can be found at https://github.com/SecurityManagerCodeBase/
-JavaSandboxFortifier} must intercept three events to enforce the Privilege Escalation
-and Security Manager rules: \texttt{ClassPrepare}, \texttt{FieldAccess},
-and \texttt{FieldModification}.
-%
-The field events require JVMTI to turn off the just-in-time compiler (JIT), which slows down program
+JVMTI requires turning off the just-in-time compiler (JIT) to enforced
+he security manager rule, which slows down program
 execution enough that our monitors are not suitable for adoption with current 
 JVMTI implementations. %on their 
 %own. JVMTI implementations can avoid this limitation, but avoidance would likely
@@ -1152,14 +1144,8 @@ doing so.
 \subsubsection{Enforcing the privilege escalation rule}\label{sub:Enforcing-the-Privilege}
 
 
-To enforce the Privilege Escalation rule, our agent registers for
-the \texttt{ClassPrepare} event, which is triggered after a class is loaded but
-before any of its code is executed.  The agent can therefore 
-inspect the stack frame to determine which class
-caused the new class to be loaded, acquire the protection
-domains for both classes, and ensure the loaded class is not more privileged
-than the calling class by comparing their permission sets. 
-
+To enforce the Privilege Escalation rule, our agent stops a program when a 
+class is loaded to check for privilege escalation.
 The existence of restricted-access packages complicates this implementation slightly. 
 \textit{Restricted-access packages} are public, but not intended for direct
 use by typical Java applications; they are meant for internal JRE
@@ -1193,33 +1179,25 @@ and write to the field in the \texttt{System} class that stores the security
 manager (the \texttt{security} field).
 %
 The agent stores a shadow copy of the most recently-set security
-manager, which it checks and updates via the JVMTI \texttt{FieldModification} event.
+manager.
 Whenever the \texttt{security} field is written, the agent checks its
-shadow copy of the manager.  If it is \texttt{null},
+shadow copy of the manager.  If the shadow copy is \texttt{null},
 the manager is being set for the first time, and the agent checks
 if the new manager is self-protecting. If so, 
 the agent updates the shadow copy. If not, the agent stops performing stringent
 checks because the rule does not apply in the presence of a defenseless 
-manager. In either case, any further changes to the manager are logged.
+manager.
 
-The agent also registers and checks modifications to the field via
-\texttt{FieldAccess} events, 
-because the \texttt{FieldModification} event will not be triggered
-when the manager is changed due to a type confusion attack (this is also why we
-monitor the field directly instead of through its getter and setter methods).  Type confusion 
-masquerades a malicious class as the
-\texttt{System} class.  The masqueraded copy will have different internal
-JVM identifiers for the class itself and its methods as compared to the legitimate
-\texttt{System} class. However, because \texttt{System} is static, updating a
-field in the masqueraded copy still modifies the value in the legitimate copy. 
-Because 
-modification and access events are registered for specific field and
-class identifiers, the associated events are not triggered for operations
-on the malicious version. Every time a permission is checked, we leverage this mismatch
-by checking if the read manager has the same internal
-JVM reference as the shadow copy. When the references do not match,
-the manager has been changed at by a malicious class masquerading as
-\texttt{System}. Type confusion attacks that masquerade as a privileged class loader will not be detected by our agent, and may still be dangerous when exploited in collaboration with other JRE vulnerabilities.
+The agent checks modifications to the security manager and validates the security manager
+when the manager is referenced.  The second check is necessary to
+catch most type confusion attacks.  Type confusion attacks
+change the security manager without JVMTI detecting a modification. 
+Thus, the tool needs to ensure the currently used manager is a valid manager.  
+The tool detects unauthorized changes every time the manager is 
+used by comparing the current manager with the shadow copy for changes.
+Type confusion attacks that masquerade as a privileged class loader 
+will not be detected by our agent, and may still be dangerous when 
+exploited in collaboration with other JRE vulnerabilities.
 
 \subsection{Effectiveness at fortifying the sandbox}
 \label{sub:Effectiveness-at-Fortifying}
@@ -1250,11 +1228,7 @@ not explicitly targeting the manager.
 summarizes our results.  All  
 ten of the exploits succeeded without the agent. The Privilege Escalation rule
 stops four of them.  All ten were stopped
-when both rules were enforced. The exploits that were not stopped
-by the Privilege Escalation rule were either type confusion exploits
-or exploits that did not need to elevate the privileges of the payload
-class, as happens when the payload can directly access a privileged class to
-exploit.
+when both rules were enforced. 
 
 Together, the rules are capable of stopping current exploit tactics while
 narrowing available future tactics by blocking privilege escalation exploit
@@ -1457,17 +1431,12 @@ know how or how extensively the ``fine grained access control mechanism''
 (i.e. the Java sandbox) is used~\cite{gong2009java}.
 Our study fills in that gap.
 
-In our dataset of open-source applications, we found
-that the majority of applications interact with but do not set a security
-manager. Some of the remaining applications use the security manager
-only for non-security purposes. The remainder use
-the sandbox for security, and either initialize a self-protecting security
-manager and never modify it, or set a defenseless manager and modify
-it at run time.  These findings supported our hypothesis that the Java security
-model provides more flexibility than developers use in practice.  They also
+Our empirical study of open-source applications
+supports our hypothesis that the Java security
+model provides more flexibility than developers use in practice.  The study also
 strongly suggest that the model's complexity leads to unnecessary 
 vulnerabilities and bad security practices. 
-We further validated our findings by defining two rules, which together successfully
+We further validated the findings of our study by defining two rules, which together successfully
 defeated Metasploit's applet exploits without breaking backwards compatibility.
 
 We take several general lessons from these findings.  First, Java should provide 
