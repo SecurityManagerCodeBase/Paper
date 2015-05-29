@@ -621,26 +621,25 @@ manager. The first category includes applications that can or do
 If an application did not change the security manager, 
 we looked to see if it set a single security manager 
 during execution.  If so, it
-was categorized as \emph{sets an immutable manager.}  If an
-application interacted with a security manager that it did not set, 
-then the application contains logic to adjust to different security settings.
+was categorized as \emph{sets an immutable manager.} Applications that 
+interact with a security manager that they did not set do so 
+to adjust to different security settings.
 We categorized any such application
-as \emph{supports being sandboxed.}  Finally, we identified
-applications that tested for particular security settings and modified execution
-to conform or adapt accordingly.
+as \emph{supports being sandboxed.} % Finally, we identified
+%applications that tested for particular security settings and modified execution
+%to conform or adapt accordingly.
 For the final category, if a
 program did not contain any interaction with the security manager in 
 the main application, but did interact with it
 in test cases, we categorized the
-application as \emph{only interacts in unit tests.}  This final category
-includes applications that modify the security manager in unit tests, because doing
-so allows for testing the program against multiple security settings.
+application as \emph{only interacts in unit tests}; such applications use unit
+test interactions to test against multiple security settings.
 
 We created static and dynamic analysis tools
 to assist in a manual inspection of each application's security manager
-interactions. We created a 
+interactions. We created a dynamic 
 FindBugs~\cite{hovemeyer_finding_2004} plugin that
-uses dataflow analysis to identify security manager initialization and calls to \texttt{System.setSecurityManager}().
+identifies security manager initialization and calls to \texttt{System.setSecurityManager}().
 The dynamic analysis tool uses the Java Virtual Machine
 Tool Interface (JVMTI) \cite{_jvmti} to set a modification watch
 on the \texttt{security} field of Java's \texttt{System} class, which
@@ -803,8 +802,8 @@ error occurs.  When such an application is
 used as a library, the \texttt{System.exit()} closes the calling
 application as well, because both 
 are running in the same JVM. 
-To prevent this outcome without modifying the library application,
-the calling application needs to enforce the architectural constraint
+To prevent this without modifying the library application,
+a calling application needs to enforce the architectural constraint
 that called library code cannot terminate the JVM. 
 
 We found three applications in our dataset that 
@@ -813,14 +812,13 @@ that prevents \texttt{System.exit()} calls:
 Eclipse, GJMan, and AspectJ.\footnote{%
 GJMan contains a code comment referencing a
 blog post that we believe is the origin of this solution. \url{http://www.jroller.com/ethdsy/entry/disabling_system_exit}}
-For example, Eclipse uses Ant as a library.  Ant calls \texttt{System.exit()} to
-terminate a currently-running build script in the event of an unrecoverable
+For example, Eclipse uses Ant as a library, and Ant calls \texttt{System.exit()} to
+terminate a build script in the event of an unrecoverable
 error.  However, when Eclipse uses Ant as a library, it
-should instead continue to execute, and report an error to the user.
+reports an error to the user and continues to execute. 
 Figure~\ref{fig:Eclipse-snippet} shows
-how Eclipse sets a security manager to enforce this constraint
-before executing Ant. After Ant closes and any error conditions
-are handled, Eclipse restores the original manager.
+how Eclipse uses a security manager to enforce this constraint; Eclipse restores
+the original manager after Ant closes.
 
 This technique does enforce the
 desired constraint, and appears to be the best solution available
@@ -835,13 +833,13 @@ library code that the application calls.
 \subsubsection{Web applications outside the sandbox}\label{sub:Reducing-Web-Application-Complexity}
 
 We also found applications that were complicated by the Java security policies
-for web applications (applications launched via JWS). By default,
+for web applications (launched via JWS). By default,
 Java executes such applications inside a self-protecting 
 sandbox with a restrictive policy that excludes
 operations like accessing local files, retrieving resources
 from any third party server, or changing the security manager. 
 
-Applications in our set that cannot run without these permissions
+Applications in our set that require these permissions
 opted to run outside of the sandbox.  
 We found two applications that do this: Eclipse and
 Timelag.  Both applications attempted
@@ -948,13 +946,13 @@ domain.  %This approach would align with the intended usage of the sandbox.
 This approach is more clearly correct and enables a self-protecting sandbox.
 
 An attempt in Freemind 0.9.0 to solve a similar problem illustrates
-the dangers of a defenseless manager. Freemind is a mind mapping tool
-that allows users to execute Groovy scripts on an opened map. The
-scripts are written by the creator of the mind map. Groovy is a scripting
-language that is built on top of the JRE: A Java application that
-executes a script typically allows the script to execute in the same
-JVM as the application itself. As a result, a mind map could potentially
-be crafted to exploit a user that opens the map and runs its scripts.
+the dangers of a defenseless manager. Freemind is a mind mapping tool that
+allows users to execute
+Groovy scripts on such maps (Groovy is a scripting
+language that is built on top of the JRE).  A Java application that
+executes such a script typically allows it to execute in the same
+JVM as the application itself. As a result, a specially-crafted mind map can
+exploit users that run its scripts.
 
 \begin{figure}
 \begin{lstlisting}[language=Java,firstnumber=31]
@@ -987,13 +985,14 @@ public void setFinalSecurityManager(SecurityManager pFinalSM) {
   users.}
 \end{figure}
 
-Freemind attempted to implement an architecture that would allow the
+Freemind implements an architecture that is intended to allow the
 sandbox to enforce a stricter policy on the Groovy scripts than on
-the rest of Freemind. Their design centers around the use of a custom
+the rest of Freemind. The design centers around a custom
 security manager that is set as the system manager in the usual manner.
-This custom manager contains a field that holds a proxy manager to be used during the execution of
-scripts. In this design, all checks to the security manager are ultimately
-deferred to the proxy manager set in this field. When
+This custom manager contains a field holding a proxy manager for
+script execution. In this design, all checks to the security manager are
+ultimately 
+deferred to the proxy manager in this field. When
 this field is set to \texttt{null}, the sandbox is effectively disabled
 even though the system's manager is still set to the custom manager.
 
