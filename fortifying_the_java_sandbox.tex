@@ -799,9 +799,9 @@ included applications in both categories 1 and 2, and all require defenseless se
 \subsubsection{Enforcing architectural constraints}
 
 Java applications often call \texttt{System.exit()} when a non-recoverable
-error occurs. This can be a problem when the application in question is 
-used as a library: The \texttt{System.exit()} closes the calling
-application as well, because both applications
+error occurs.  When such an application is 
+used as a library, the \texttt{System.exit()} closes the calling
+application as well, because both 
 are running in the same JVM. 
 To prevent this outcome without modifying the library application,
 the calling application needs to enforce the architectural constraint
@@ -898,17 +898,17 @@ documentation.
 % occurrence, there seems to be no valid reason to disable the sandbox
 % in this case other than to show off the capability to do so.
 
-Ant, Freemind, and Netbeans explicitly set then change the manager
-during runtime, requiring the ability to reconfigure, disable,
+Ant, Freemind, and Netbeans explicitly set then change the manager,
+requiring the ability to reconfigure, disable,
 or weaken the sandbox at runtime to claim backwards
-compatibility. Ant allows users to create build scripts that 
-execute Java classes during a build under a user specified
+compatibility. Ant allows users to create scripts that 
+execute Java classes during a build under a user-specified
 permissions set. Figure~\ref{fig:Ant Permissions Example}
 shows an example permission set from the Ant Permissions website.%
 \footnote{https://ant.apache.org/manual/Types/permissions.html%
-} The contents of the \texttt{grant} element provide the application
-all permissions, and the contents of the \texttt{revoke} element restrict
-the application from using all property permissions. Due the use of a
+} The \texttt{grant} element provides the application
+all permissions, while the \texttt{revoke} element restricts
+the application from using property permissions. Due the use of a
 defenseless security manager, malicious code can easily disable the sandbox and perform all actions,
 including those requiring \texttt{PropertyPermissions}.  Although this policy is
 only an example, its existence suggests possible confusion on the part of either its author
@@ -922,30 +922,32 @@ or its consumers about appropriate security policies for untrusted code.
 </permissions>
 \end{lstlisting}
 
-\caption{An example from Apache of an Ant build script element to grant all but one permission. This permission set results in a defenseless security manager, thus revoking one permission does nothing to improve the security of the application.}
-\label{fig:Ant Permissions Example}
+\caption{An Apache example of an Ant build script element to grant all but
+  one permission. This results in a defenseless security manager;
+\label{fig:Ant Permissions Example} 
+  thus revoking one permission does not lead to application security.}
 \end{figure}
 
-When Ant is about to execute an external, constrained class, it saves the
-current security manager and replaces it with a custom manager. The custom
-manager is not initially defenseless, given a self-protecting permission set, but
-it contains a private switch to make the manager defenseless for the purposes of
-restoring the original manager. With this implementation, Ant catches
+Ant saves the current manager and replaces it with a custom manager before
+executing constrained external code.  The custom
+manager is not initially defenseless, but
+contains a private switch to make it so for the purposes of
+restoring the original manager.  Ant therefore catches 
 applications that perform actions restricted by the user while typically
 protecting sandbox settings. However, it is not clear this implementation is
-free of vulnerabilities. Netbeans similarly sets a security manager around a
-separate application.
+free of vulnerabilities. Netbeans similarly sets a security manager around 
+separate applications.
 
 Both of these cases require a defenseless security manager, otherwise
 the application would not be able to change the current security manager. 
 Similar to the case in Section~\ref{sub:Reducing-Web-Application-Complexity},
-there exists an ``orthodox'' mechanism in Java to achieve the same goal: a custom class
+Java provides an ``orthodox'' mechanism to achieve this goal while aligning with
+intended sandbox usage: a custom class
 loader that loads untrusted classes into a constrained protection
-domain.  This approach would align with the intended usage of the sandbox.
-Additionally, it would be more clearly correct and trustworthy while
-allowing Ant and Netbeans to run inside of a self-protecting sandbox.
+domain.  %This approach would align with the intended usage of the sandbox.
+This approach is more clearly correct and enables a self-protecting sandbox.
 
-The developers of Freemind 0.9.0 tried to solve a similar problem but ended up illustrating
+An attempt in Freemind 0.9.0 to solve a similar problem illustrates
 the dangers of a defenseless manager. Freemind is a mind mapping tool
 that allows users to execute Groovy scripts on an opened map. The
 scripts are written by the creator of the mind map. Groovy is a scripting
@@ -1087,17 +1089,18 @@ of these rules through an implementation of runtime monitors that
 enforce them. This evaluation was done in collaboration with a large aerospace
 company.
 Section~\ref{sub:Implementation-Using-JVMTI} discusses how we implemented
-our runtime monitors using JVMTI. Sections~\ref{sub:Effectiveness-at-Fortifying} and~\ref{sec:backcompat} explain the methodology behind and results of experiments we conducted
-to determine how effective the rules are at stopping existing exploits without
-breaking benign applications. 
+our runtime monitors, Sections~\ref{sub:Effectiveness-at-Fortifying}
+and~\ref{sec:backcompat} explain the methodology behind and results of
+experiments that evaluate the rules' ability to stop 
+exploits while maintaining backwards compatibility.
 
 \subsection{Implementation using JVMTI}\label{sub:Implementation-Using-JVMTI}
 
 JVMTI is a native interface that enables the creation of
-dynamic analysis tools, called agents, such as profilers, debuggers, monitors, and thread
+dynamic analysis tools, called agents, such as profilers, debuggers, or thread
 analyzers. JVMTI agents can intercept and respond to events such as class
 or thread creation, field access or modification, breakpoints, etc.
-
+%
 JVMTI requires turning off the just-in-time compiler (JIT) to enforced
 he security manager rule, which slows down program
 execution enough that our monitors are not suitable for adoption with current 
@@ -1118,17 +1121,20 @@ doing so.
 To enforce the Privilege Escalation rule, our agent stops a program when a 
 class is loaded to check for privilege escalation.
 The existence of restricted-access packages complicates this implementation slightly. 
-\textit{Restricted-access packages} are public, but not intended for direct
-use by typical Java applications; they are meant for internal JRE
-use only. 
+\textit{Restricted-access packages} are technically public but are intended only
+for internal JRE use. 
+%, but not intended for direct
+%use by typical Java applications; they are meant for internal JRE
+%use only. 
 %
 % These packages are listed in the \texttt{package.access}
 %property in the \texttt{java.security.Security} class. 
-Benign applications can (and often do) use JRE classes to access these
+Benign applications can (and often do) use other JRE classes to access these
 restricted implementations (e.g., much of the functionality in \texttt{java.lang.reflect}
-is backed by the restricted-access \texttt{sun} package, which
-contains the internal implementations
-for many Java features).  We therefore allow the JRE itself to load restricted-access packages
+is backed by the restricted-access \texttt{sun} package). %, which
+%contains the internal implementations
+%for many Java features).  
+We therefore allow the JRE itself to load restricted-access packages
 at runtime, but prevent such loading from the application classes.
 Because exploit payloads are not implemented in restricted-access JRE packages,
 the Privilege Escalation rule can permit this standard behavior while preventing
@@ -1140,7 +1146,7 @@ packages in the current security model:
 receive permission from the security manager via an
 \texttt{accessClassInPackage("sun")} permission in the policy.  The first behavior
 is undesirable, and is thus rightfully prevented by the enforcement of this
-rule.  The second behavior would involve in a defenseless manager. 
+rule.  The second behavior would require a defenseless manager. 
 
 
 \subsubsection{Enforcing the security manager rule}\label{sub:Enforcing-the-SecurityManager}
@@ -1151,19 +1157,19 @@ manager (the \texttt{security} field).
 %
 The agent stores a shadow copy of the most recently-set security
 manager.
-Whenever the \texttt{security} field is written, the agent checks its
+Whenever the field is written, the agent checks its
 shadow copy of the manager.  If the shadow copy is \texttt{null},
-the manager is being set for the first time, and the agent checks
-if the new manager is self-protecting. If so, 
+the manager is being set for the first time.  If the 
+new manager is self-protecting,
 the agent updates the shadow copy. If not, the agent stops performing stringent
 checks because the rule does not apply in the presence of a defenseless 
 manager.
 
-The agent checks modifications to the security manager and validates the security manager
-when the manager is referenced.  The second check is necessary to
-catch most type confusion attacks.  Type confusion attacks
-change the security manager without JVMTI detecting a modification. 
-Thus, the tool needs to ensure the currently used manager is a valid manager.  
+The agent checks modifications to the security manager and validates it
+when it is referenced.  The latter is necessary to
+catch type confusion attacks, which 
+change the manager without triggering a JVMTI modification event. 
+%Thus, the tool needs to ensure the currently used manager is valid.  
 The tool detects unauthorized changes every time the manager is 
 used by comparing the current manager with the shadow copy for changes.
 Type confusion attacks that masquerade as a privileged class loader 
@@ -1252,16 +1258,16 @@ mucommander & File Manager & 106 & 27 test cases & 1/23/14 \tabularnewline
 \vspace{-0.5cm}
 \end{table*}
 
-By construction, the proposals do not restrict
+By construction, the proposal rules do not restrict
 benign behavior in the applications we studied in
 Sections~\ref{sec:Security-Manager-Study} and~\ref{sec:Study-results}.
 To mitigate the threat of overfitting and increase the generalizability of our results, we 
-evaluated our monitors on the applications
+also executed the monitors on the applications
 in Table~\ref{tab:validation-programs}. This set is composed of benign JWS
 applications that, like applets, are automatically sandboxed.  This
-expands the scope of our results beyond the numerous desktop applications
-studied above and evaluates our proposed modifications in an
-appropriate context (JWS programs are typically run with restrictive
+expands the scope of our results beyond the desktop applications
+studied above and evaluates our proposed modifications in 
+context (JWS programs are typically run with restrictive
 security policies).  The set also includes closed-source applications,
 providing evidence that our results generalize beyond open
 source.
@@ -1271,9 +1277,11 @@ contained unit tests that we ran in the presence of our monitors. Costello, and
 JabRef did not provide tests, but do provide example workloads that we used
 in their place. CrossFTP contained neither tests nor sample workloads, thus
 we fuzzed the GUI for 30 minutes using a custom fuzzer and uploaded a file to a
-remote FTP server as a sample workload.\footnote{The GUI fuzzing source code can
-  be found at
-  \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
+remote FTP server as a sample workload.\footnote{We will release the GUI fuzzing
+  source code upon unblinding of the submission.}
+%can
+%  be found at
+%  \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
 
 In each case, we confirmed that the tests, sample workloads, or fuzzed executions
 worked without a security manager. To sandbox the applications,
@@ -1287,11 +1295,11 @@ workloads, or fuzzed executions.
 Finally, to validate our rules on representative desktop applications, we confirmed that the
 agent does not break programs in the DaCapo Benchmarks v9.12-bach set~\cite{dacapo}. 
 DaCapo systematically exercises each application using a range of inputs to achieve
-adequate coverage. For all
-applications but batik, we set a security manager that granted all
-permissions and attached our monitors to executions of the application. Batik closes if it cannot set a security manager itself, thus we let it set and use its
-own security manager.
- We executed all applications with the arguments ``-n 1''. 
+adequate coverage. For all but one
+application, we set a security manager that granted all
+permissions and attached our monitors to application execution; we let Batik set
+its own security manager because it exits if it cannot do so. 
+% We executed all applications with the arguments ``-n 1''. 
 Our rules did not break any DaCapo applications.
 
 \section{Limitations and validity}\label{sec:Limitations}
@@ -1362,12 +1370,13 @@ attackers to steal user credentials~\cite{li2014emperor}.
 
 Our rules increase the security of the sandbox
 by effectively removing unnecessary features. Prior work has taken a different
-approach, instead focusing on re-implementing the Java sandbox or
-adding to the sandbox to increase security. Cappos~\emph{et al.} created
-a new sandbox structure. They implemented a security isolated kernel
-to separate sandboxed applications from the main system~\cite{cappos_retaining_2010}.
+approach, proposing to re-implement the Java sandbox or
+add to it to increase security. Cappos~\emph{et al.} created
+a new sandbox structure involving a security-isolated kernel
+separating sandboxed applications from the main system~\cite{cappos_retaining_2010}.
 They validated this structure by translating past Java CVEs into exploits
-for the new kernel. Provos~\emph{et al.} describe a method of separating
+for the new kernel. 
+Provos~\emph{et al.} describe a method of separating
 privileges to reduce privilege escalation~\cite{Provos-PrivilegeEscalation}.
 Their approach is partially implemented in the Java security model.
 Li and Srisa-an extended the Java sandbox by providing extra protection
@@ -1388,13 +1397,14 @@ machine learning to identify malicious applets~\cite{helmer_anomalous_2001}.
 Their approach monitored system call traces to identify malicious
 behavior after execution. However, this approach is entirely reactive.
 Our approach terminates exploits when they attempt to break out of
-the sandbox, before the exploit performs its payload. Schlumberger~\emph{et al.} used machine learning and static analysis to identify common
+the sandbox, before they perform their payloads. Schlumberger~\emph{et al.}
+used machine learning and static analysis to identify common 
 exploit features in malicious applets~\cite{schlumberger_jarhead_2012}.
-Blasing~\emph{et al.} used static analysis and dynamic analysis of sandboxed
-executions to detect malicious Android applications~\cite{Blasing-AndriodSandbox}.
-Unlike these automated approaches, our rules shows that unique
-mitigation strategies can be created with a better understanding of
-how applications interact with the sandbox. 
+Blasing~\emph{et al.} detect malicious Android applications using static and dynamic analyses of sandboxed
+executions~\cite{Blasing-AndriodSandbox}.
+Unlike these automated approaches, our rules show a better understanding of
+benign sandbox interactions can inform unique
+mitigation strategies.
 
 \section{Conclusion}\label{sec:Conclusion}
 
@@ -1423,9 +1433,9 @@ to make non-trivial use of the sandbox often do so incorrectly, even though
 the functionality in question could theoretically be implemented correctly
 within the current model (albeit with increased complexity). 
 One promising approach is to allow programmers
-to strengthen a security policy temporarily (e.g. by adding a permission). 
+to temporarily strengthen security policies (e.g. by adding a permission). 
 
-In Section~\ref{sec:Study-results} we observed many developers struggling to understand and
+We observed evidence that many developers struggle to understand and
 use the security manager for any purpose. This is perhaps why there
 were only 36 applications in our sample. Some developers seemed to
 misunderstand the interaction between policy files and the security
@@ -1434,9 +1444,8 @@ about how permissions work, not realizing that
 restricting just one permission but allowing all others results in a
 \emph{defenseless} sandbox.  Our concerns here are shared by the IntelliJ developers,
 who include static analysis checks to warn developers that a security expert
-should check all interactions with the security
-manager~\cite{intelliJ}.  In general, sandbox-defeating permissions
-should be packaged and segregated to prevent accidental creation of
+should check all security manager interactions~\cite{intelliJ}.  In general, sandbox-defeating permissions
+should be packaged and segregated to prevent accidentally 
 defenseless sandboxes. Finally, some developers appear to believe
 the sandbox functions as a blacklist when, in reality, it is a whitelist.
 In total, our results and observations suggest that the model itself should be simplified, and
