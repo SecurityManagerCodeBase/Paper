@@ -418,7 +418,7 @@ This approach was common in drive-by downloads between 2011 and 2013~\cite{firee
 %to execute the operations in the payload without causing a \texttt{SecurityException}.
 %
 
-There are a couple ways of to maliciously disable a security manager.
+There are a couple of ways to maliciously disable a security manager.
 \textbf{Type confusion} attacks break type
 safety to craft objects that can perform operations as if they have
 a different type.  Commonly, attackers craft objects that (1) point to the \texttt{System} class to directly disable the sandbox or (2) act as if they had
@@ -546,7 +546,7 @@ source code.  We performed a similar process on
 Java code in GitHub, adding the keywords
 \texttt{System.setSecurityManager(} and \texttt{System.setSecurityManager(null)}
 to remove false positives and find applications that disable the
-manager, respectively. We picked the top seven applications from the results for each keyword,
+manager, respectively. We picked the top 6 applications from the results for each keyword,
 removing manually-identified false positives and duplicates. 
 We studied each GitHub program at its most
 recent commit as of June 2014.
@@ -945,7 +945,7 @@ loader that loads untrusted classes into a constrained protection
 domain.  %This approach would align with the intended usage of the sandbox.
 This approach is more clearly correct and enables a self-protecting sandbox.
 
-An attempt in Freemind 0.9.0 to solve a similar problem illustrates
+An attempt to solve a similar problem in Freemind 0.9.0 illustrates
 the dangers of a defenseless manager. Freemind is a mind mapping tool that
 allows users to execute
 Groovy scripts on such maps (Groovy is a scripting
@@ -1049,7 +1049,7 @@ While Java does provide the
 building blocks for constraining a subset of an application with a policy that
 is stricter than what is imposed on the rest of the application, it is clear
 that it is too easy to get this wrong:  We've seen no case where this goal was
-achieved in a way that is known to be free of vulnerabilities. Ant should use the sandbox as intended to avoid the accidental introduction of a vulnerability if the Java security model changes in a way that breaks unsupported uses of the sandbox. These case
+achieved in a way that is known to be free of vulnerabilities. These case
 studies support our general claims that the Java security mechanisms are overly
 complex, and that this complexity contributes to security vulnerabilities in
 practice.  
@@ -1414,9 +1414,9 @@ know how or how extensively the ``fine grained access control mechanism''
 Our study fills in that gap.
 
 Our empirical study of open-source applications
-supports our hypothesis that the Java security
+supports the hypothesis that the Java security
 model provides more flexibility than developers use in practice.  The study also
-strongly suggest that the model's complexity leads to unnecessary 
+strongly suggests that the model's complexity leads to unnecessary 
 vulnerabilities and bad security practices. 
 We further validated the findings of our study by defining two rules, which together successfully
 defeated Metasploit's applet exploits without breaking backwards compatibility.
@@ -1426,7 +1426,7 @@ simpler alternative mechanisms for various common goals, such as constraining
 access to global resources or adapting to multiple security contexts. 
 We found that developers sometimes use the sandbox to prevent third party components from calling
 \texttt{System.exit()}, a specific instance of a more general development
-problem, which is that frameworks often need to enforce constraints on plugins
+problem: frameworks often need to enforce constraints on plugins
 (e.g., to ensure non-interference).  We also observed that developers who attempted
 to make non-trivial use of the sandbox often do so incorrectly, even though
 the functionality in question could theoretically be implemented correctly
