@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{myref}
 \usepackage{microtype}
+\usepackage{flushend}
 
 %all of the following is for the todonotes package
 \usepackage{marginnote}
@@ -540,10 +541,10 @@ and Git commit hashes are available in an online supplement.%
 %ProjectsProfiles/blob/master/\\
 %projects list.xlsx}
 
-We identified relevant applications in the full QC set 
+We identified relevant applications in the QC set 
 by searching for the keyword \texttt{SecurityManager} in the applications'
 source code.  We performed a similar process on
-Java code in GitHub, adding the keywords
+the GitHub set, adding the keywords
 \texttt{System.setSecurityManager(} and \texttt{System.setSecurityManager(null)}
 to remove false positives and find applications that disable the
 manager, respectively. We picked the top 6 applications from the results for each keyword,
@@ -681,24 +682,6 @@ Java programs and how they interact with the security manager.
 
 \subsection{Summary of benign behaviors}\label{sub:Evaluation-of-the-hypotheses}
 
-
-\begin{table}
-\caption{Classification of application
-  interactions \label{tab:Classification-of-Application}
-with the security manager.}
-\begin{tabular}{lrrr}
-\toprule 
-Type of Interaction & QC & GitHub & Total\tabularnewline
-\midrule
-1. Sets an immutable manager & 6 & 1 & 7\tabularnewline
-2. Changes set manager & 5 & 3 & 8\tabularnewline
-3. Supports being sandboxed & 10 & 3 & 13\tabularnewline
-4. Interacts only in unit tests & 3 & 5 & 8\tabularnewline
-%5. No interactions (false positive) & 5 & 5 & 10\tabularnewline
-\bottomrule
-\end{tabular}
-\end{table}
-
 Recall that in Section~\ref{sec:Security-Manager-Study}, we refined the
 high-level research question---how do benign applications interact with the
 security manager?---into four possibilities, and that the possible mitigations
@@ -737,7 +720,26 @@ information about whether a change to a policy weakens the sandbox or not.
 % one is set by the user or another application, and (4) applications
 % that only interact with the manager in unit tests. 
 % 
-Table \ref{tab:Classification-of-Application} summarizes our dataset according to category, described
+
+\subsection{Applications by category}
+
+\begin{table}
+\caption{Classification of application
+  interactions \label{tab:Classification-of-Application}
+with the security manager.}
+\begin{tabular}{lrrr}
+\toprule 
+Type of Interaction & QC & GitHub & Total\tabularnewline
+\midrule
+1. Sets an immutable manager & 6 & 1 & 7\tabularnewline
+2. Changes set manager & 5 & 3 & 8\tabularnewline
+3. Supports being sandboxed & 10 & 3 & 13\tabularnewline
+4. Interacts only in unit tests & 3 & 5 & 8\tabularnewline
+%5. No interactions (false positive) & 5 & 5 & 10\tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+Table \ref{tab:Classification-of-Application} summarizes our dataset into the categories described
 in~\secref{Security-Manager-Study}. The applications in categories 1, 3, and 4 
 are consistent with any of the potential JVM
 modifications because they do not interact with the
@@ -789,9 +791,8 @@ from terminating the JVM.}
 Most of the applications that interact with the sandbox in
 non-security ways did so to enforce architectural constraints when interacting with
 other applications; the rest forcibly disabled the sandbox to reduce development
-complexity. These applications provide insights into cases that are currently
-hard for Java developers to handle without abusing security features. This abuse
-of security features increases the difficultly of mitigating attacks against
+complexity. This misappropriation
+of Java's security features increases the difficulty of mitigating attacks against
 them by increasing the odds of backwards compatibility issues.  These applications
 included applications in both categories 1 and 2, and all require defenseless security managers.
 
@@ -799,7 +800,7 @@ included applications in both categories 1 and 2, and all require defenseless se
 
 Java applications often call \texttt{System.exit()} when a non-recoverable
 error occurs.  When such an application is 
-used as a library, the \texttt{System.exit()} closes the calling
+used as a library, \texttt{System.exit()} closes the calling
 application as well, because both 
 are running in the same JVM. 
 To prevent this without modifying the library application,
@@ -832,8 +833,7 @@ library code that the application calls.
 
 \subsubsection{Web applications outside the sandbox}\label{sub:Reducing-Web-Application-Complexity}
 
-We also found applications that were complicated by the Java security policies
-for web applications (launched via JWS). By default,
+We also found applications that insisted on being run outside a sandbox. By default,
 Java executes such applications inside a self-protecting 
 sandbox with a restrictive policy that excludes
 operations like accessing local files, retrieving resources
@@ -853,11 +853,13 @@ performs the same operation, but without associated explanatory comments that we
 could find, thus we can only 
 infer developers motivation. 
 
-The alternative to this method is to either painstakingly
-construct the application to run reasonably without required privileges (e.g. by
-detecting the sandbox and avoiding or disabling privileged operations), or get
-the application digitally signed by a recognized certificate authority and
-then specify that it should be run without a sandbox.  The examples from our study suggest that
+The developers of Eclipse and Timelage could have either: 1) painstakingly
+constructed versions of the application that run reasonably using only the 
+permissions available within the sandbox (e.g. by
+detecting the sandbox and avoiding or disabling privileged operations) 2) gotten
+the applications digitally signed by a recognized certificate authority and
+configured them to be run without a sandbox. These developers likely found these 
+alternatives to overly burdensome. The examples from our study suggest that
 developers are sometimes willing to exchange security guarantees in the interest
 of avoiding such labor-intensive options.
 % . To avoid executing
