@@ -638,9 +638,9 @@ test interactions to test against multiple security settings.
 
 We created static and dynamic analysis tools
 to assist in a manual inspection of each application's security manager
-interactions. We created a dynamic 
+interactions. We created a 
 FindBugs~\cite{hovemeyer_finding_2004} plugin that
-identifies security manager initialization and calls to \texttt{System.setSecurityManager}().
+identifies security manager initialization and calls to \texttt{System.setSecurityManager()}.
 The dynamic analysis tool uses the Java Virtual Machine
 Tool Interface (JVMTI) \cite{_jvmti} to set a modification watch
 on the \texttt{security} field of Java's \texttt{System} class, which
@@ -798,8 +798,8 @@ included applications in both categories 1 and 2, and all require defenseless se
 
 \subsubsection{Enforcing architectural constraints}
 
-Java applications often call \texttt{System.exit()} when a non-recoverable
-error occurs.  When such an application is 
+Java applications often call \texttt{System.exit()} when an unrecoverable
+error occurs. When such an application is 
 used as a library, \texttt{System.exit()} closes the calling
 application as well, because both 
 are running in the same JVM. 
@@ -833,7 +833,7 @@ library code that the application calls.
 
 \subsubsection{Web applications outside the sandbox}\label{sub:Reducing-Web-Application-Complexity}
 
-We also found applications that insisted on being run outside a sandbox. By default,
+We also found web applications that insisted on being run outside a sandbox. By default,
 Java executes such applications inside a self-protecting 
 sandbox with a restrictive policy that excludes
 operations like accessing local files, retrieving resources
@@ -853,13 +853,13 @@ performs the same operation, but without associated explanatory comments that we
 could find, thus we can only 
 infer developers motivation. 
 
-The developers of Eclipse and Timelage could have either: 1) painstakingly
+The developers of Eclipse and Timelag could have either: 1) painstakingly
 constructed versions of the application that run reasonably using only the 
 permissions available within the sandbox (e.g. by
-detecting the sandbox and avoiding or disabling privileged operations) 2) gotten
+detecting the sandbox and avoiding or disabling privileged operations) or 2) gotten
 the applications digitally signed by a recognized certificate authority and
-configured them to be run without a sandbox. These developers likely found these 
-alternatives to overly burdensome. The examples from our study suggest that
+configured to run with all permissions. These developers likely found these 
+alternatives overly burdensome. The examples from our study suggest that
 developers are sometimes willing to exchange security guarantees in the interest
 of avoiding such labor-intensive options.
 % . To avoid executing
@@ -1130,7 +1130,7 @@ for internal JRE use.
 %
 % These packages are listed in the \texttt{package.access}
 %property in the \texttt{java.security.Security} class. 
-Benign applications can (and often do) use other JRE classes to access these
+Benign applications can (and often do) use JDK classes to access these
 restricted implementations (e.g., much of the functionality in \texttt{java.lang.reflect}
 is backed by the restricted-access \texttt{sun} package). %, which
 %contains the internal implementations
@@ -1259,10 +1259,9 @@ mucommander & File Manager & 106 & 27 test cases & 1/23/14 \tabularnewline
 \vspace{-0.5cm}
 \end{table*}
 
-By construction, the proposal rules do not restrict
+By construction, the rules do not restrict
 benign behavior in the applications we studied in
-Sections~\ref{sec:Security-Manager-Study} and~\ref{sec:Study-results}.
-To mitigate the threat of overfitting and increase the generalizability of our results, we 
+Sections~\ref{sec:Security-Manager-Study} and~\ref{sec:Study-results}. To mitigate the threat of overfitting and increase the generalizability of our results, we 
 also executed the monitors on the applications
 in Table~\ref{tab:validation-programs}. This set is composed of benign JWS
 applications that, like applets, are automatically sandboxed.  This
