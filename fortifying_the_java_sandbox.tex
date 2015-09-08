@@ -61,10 +61,10 @@ basicstyle=\ttfamily\bfseries\scriptsize,
 \title{Evaluating the Flexibility of the Java Sandbox}
 
 \numberofauthors{1} 
-%\author{\alignauthor Zack Coker, Michael Maass, Tianyuan Ding, Claire Le Goues, and Joshua Sunshine \\
-\author{BLINDED FOR SUBMISSION
-%\affaddr{Carnegie Mellon University} \\
-%\email{\{zfc,mmaass\}@cs.cmu.edu, tding@cmu.edu, \{clegoues,sunshine\}@cs.cmu.edu}
+\author{\alignauthor Zack Coker, Michael Maass, Tianyuan Ding, Claire Le Goues, and Joshua Sunshine \\
+%\author{BLINDED FOR SUBMISSION
+\affaddr{Carnegie Mellon University} \\
+\email{\{zfc,mmaass\}@cs.cmu.edu, tding@cmu.edu, \{clegoues,sunshine\}@cs.cmu.edu}
 } 
 
 \maketitle
@@ -550,8 +550,7 @@ to remove false positives and find applications that disable the
 manager, respectively. We picked the top 6 applications from the results for each keyword,
 removing manually-identified false positives and duplicates. 
 We studied each GitHub program at its most
-recent commit as of June 2014.
-
+recent commit and each QC program at its most recent stable release as of June 2014.
 
 \begin{table}
 \small
@@ -639,8 +638,7 @@ test interactions to test against multiple security settings.
 We created static and dynamic analysis tools
 to assist in a manual inspection of each application's security manager
 interactions. We created a 
-FindBugs~\cite{hovemeyer_finding_2004} plugin that
-identifies security manager initialization and calls to \texttt{System.setSecurityManager()}.
+FindBugs~\cite{hovemeyer_finding_2004} plugin that uses a sound dataflow analysis to determine which manager definitions reach calls to \texttt{System.setSecurityManager()}.
 The dynamic analysis tool uses the Java Virtual Machine
 Tool Interface (JVMTI) \cite{_jvmti} to set a modification watch
 on the \texttt{security} field of Java's \texttt{System} class, which
@@ -657,7 +655,7 @@ applications using the following steps:
   \setlength{\itemsep}{0pt}
 \item Run \texttt{grep} on all Java source files in the application to find
 lines containing the keyword \texttt{SecurityManager}.
-Manually inspect the lines in their original source code files to understand
+Manually inspect the results in their original source code files to understand
 how the application interacts with the sandbox.
 \item Run the static analysis on retained applications. Manually inspect the
   returned code, focusing on initialization. 
