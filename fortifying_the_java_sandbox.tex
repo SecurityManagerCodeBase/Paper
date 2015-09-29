@@ -536,10 +536,9 @@ because of Java's strict restrictions on their behavior.}
 \ref{Table:applications-studied} lists the 36 applications that comprise the
 dataset.  Version numbers
 and Git commit hashes are available in an online supplement.%
-\footnote{http://goo.gl/dtcqTM}
-%\footnote{https://github.com/SecurityManagerCodeBase/\\
-%ProjectsProfiles/blob/master/\\
-%projects list.xlsx}
+%\footnote{http://goo.gl/dtcqTM}
+\footnote{https://github.com/SecurityManagerCodeBase/\\
+ProjectsProfiles/blob/master/projects list.xlsx}
 
 We identified relevant applications in the QC set 
 by searching for the keyword \texttt{SecurityManager} in the applications'
@@ -1275,11 +1274,10 @@ contained unit tests that we ran in the presence of our monitors. Costello, and
 JabRef did not provide tests, but do provide example workloads that we used
 in their place. CrossFTP contained neither tests nor sample workloads, thus
 we fuzzed the GUI for 30 minutes using a custom fuzzer and uploaded a file to a
-remote FTP server as a sample workload.\footnote{We will release the GUI fuzzing
-  source code upon unblinding of the submission.}
-%can
-%  be found at
-%  \url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
+remote FTP server as a sample workload.\footnote{GUI fuzzing source code
+can be found at
+\url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
+%http://goo.gl/dtcqTM
 
 In each case, we confirmed that the tests, sample workloads, or fuzzed executions
 worked without a security manager. To sandbox the applications,
