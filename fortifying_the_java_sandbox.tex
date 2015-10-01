@@ -834,11 +834,10 @@ library code that the application calls.
 
 \subsubsection{Web applications outside the sandbox}\label{sub:Reducing-Web-Application-Complexity}
 
-We also found web applications that insisted on being run outside a sandbox. By default,
+We found web applications that insist on being run unsandboxed. By default,
 Java executes such applications inside a self-protecting 
 sandbox with a restrictive policy that excludes
-operations like accessing local files, retrieving resources
-from any third party server, or changing the security manager. 
+operations like accessing local files, retrieving resources from third party servers, or changing the security manager. 
 
 Applications in our set that require these permissions
 opted to run outside of the sandbox.  
@@ -919,7 +918,7 @@ or its consumers about appropriate security policies for untrusted code.
 \begin{lstlisting}[language=XML,basicstyle={\scriptsize}]
 <permissions>   
   <grant class="java.security.AllPermission"/>   
-  <revoke class="java.util.PropertyPermission"/> 
+  <revoke class="java.util.PropertyPermission"/>   
 </permissions>
 \end{lstlisting}
 
@@ -1008,10 +1007,10 @@ the sandbox. The comment implies that this sequence
 of operations was implemented to prevent malicious applications from
 changing the settings of the sandbox.
 
-The Freemind code responsible for initiating the execution of the
-Groovy scripts sets a proxy security manager that does not allow unsigned
-scripts to create network sockets, access the file-system, or execute
-programs on the machine. The manager explicitly allows all other permissions by overriding permission check methods with implementations that do nothing. As a result, a malicious script can turn off the sandbox at any point.
+Freemind sets a proxy security manager to stop unsigned
+scripts from creating network sockets, accessing the file-system, or executing
+programs before initiating execution of a
+Groovy script. The manager grants all other permissions by overriding permission checks with implementations that do nothing, thus any script can turn off the sandbox.
 
 We demonstrated that the custom security manager is easily removed
 using reflection to show that the problem is more complex than simply
@@ -1028,8 +1027,7 @@ their desired outcome.
 \begin{figure}
 \begin{lstlisting}[language=Java,basicstyle={\scriptsize},breaklines=true]
 def sm = System.getSecurityManager() 
-def sm_class = sm.getClass() 
-def final_sm = sm_class.getDeclaredField("mFinalSecurityManager")
+def final_sm = sm.getClass().getDeclaredField("mFinalSecurityManager")
 final_sm.setAccessible(true) 
 final_sm.set(sm, null)
 new File("hacked.txt").withWriter { out -> out.writeLine("HACKED!") }
@@ -1280,7 +1278,7 @@ in their place. CrossFTP contained neither tests nor sample workloads, thus
 we fuzzed the GUI for 30 minutes using a custom fuzzer and uploaded a file to a
 remote FTP server as a sample workload.\footnote{GUI fuzzing source code
 can be found at
-\url{https://github.com/SecurityManagerCodeBase/GUITest/blob/master/RunGUITest.java}.} 
+\url{https://goo.gl/ccTLVR}.} 
 %http://goo.gl/dtcqTM
 
 In each case, we confirmed that the tests, sample workloads, or fuzzed executions
@@ -1292,11 +1290,11 @@ using our policy and the standard Java security manager with our monitors
 attached and enforcing the rules. The rules did not break any unit tests, sample
 workloads, or fuzzed executions.
 
-Finally, to validate our rules on representative desktop applications, we confirmed that the
+Finally, to validate our rules on representative desktop applications, we confirmed the
 agent does not break programs in the DaCapo Benchmarks v9.12-bach set~\cite{dacapo}. 
 DaCapo systematically exercises each application using a range of inputs to achieve
 adequate coverage. For all but one
-application, we set a security manager that granted all
+case, we set a security manager that granted all
 permissions and attached our monitors to application execution; we let Batik set
 its own security manager because it exits if it cannot do so. 
 % We executed all applications with the arguments ``-n 1''. 
